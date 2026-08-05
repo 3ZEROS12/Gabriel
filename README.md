@@ -1,6 +1,6 @@
 # Gabriel
 
-A lightweight, non-intrusive GUI sidecar for CLI-based AI agents (e.g., Antigravity, Claude Code). 
+A lightweight, non-intrusive GUI sidecar for CLI-based AI agents (e.g., Antigravity, Claude Code, Cursor). 
 
 Gabriel runs independently alongside your terminal, tailing agent logs in real-time to provide a dedicated dashboard for state monitoring, API configuration, and knowledge base management without blocking your CLI workflow.
 
@@ -12,7 +12,7 @@ Gabriel runs independently alongside your terminal, tailing agent logs in real-t
    ```bash
    git clone https://github.com/your-username/gabriel.git
    cd gabriel
-   pip install -r requirements.txt
+   pip install -e .
    ```
 
 2. **Configure Environment**
@@ -23,20 +23,20 @@ Gabriel runs independently alongside your terminal, tailing agent logs in real-t
 
 3. **Run the Server**
    ```bash
-   python src/main.py
+   gabriel
    ```
-   *The server will generate a session token (if not set in `.env`) and print a local URL (e.g., `http://127.0.0.1:8080/?token=...`). Click it to open the dashboard.*
+   *The server will generate a session token (if not set in `.env`) and print a local URL (e.g., `http://127.0.0.1:8080`). Enter the token in the dashboard to connect.*
 
 4. **Connect**
    Start your CLI agent in a separate terminal. Gabriel will automatically detect the newest log file and begin tailing.
 
 ## ✨ Core Capabilities
 
-*   **Zero-Intrusion Tailing:** Automatically detects and tails the most recent `.jsonl` or `.log` transcripts.
-    *   **Privacy & Boundary Note:** Gabriel *only* scans for specific agent transcript files (e.g., inside `.gemini/antigravity-cli/brain/`). It does **not** read your generic system logs, browser history, or arbitrary files on your machine. All data processing is strictly local.
-*   **FTS5 Knowledge Base:** Integrated SQLite with Full-Text Search (FTS5) for fast snippet retrieval and injection.
-*   **MCP Support:** Includes a Model Context Protocol (MCP) server (`src/mcp_server.py`) for external tool integration.
-*   **Secure Local Architecture:** Enforces token-based authentication on all API and WebSocket endpoints. Frontend rendering uses DOMPurify to mitigate log-based XSS.
+*   **Zero-Intrusion Tailing:** Automatically detects and tails the most recent `.jsonl` or `.log` transcripts from supported agents.
+    *   **Privacy & Boundary Note:** Gabriel *only* scans for specific agent transcript files (e.g., inside `.gemini/antigravity-cli/brain/` or `.cursor/logs/`). All data processing is strictly local.
+*   **Mission Control (Multi-Agent Grid):** Concurrently monitor multiple active agent sessions in a unified, interference-free CSS Grid dashboard.
+*   **Active Knowledge Base (FTS5):** Integrated SQLite with Full-Text Search (FTS5). The engine extracts context keywords and *proactively* recommends historical solutions via toast notifications when you encounter similar errors.
+*   **Secure Local Architecture:** Enforces token-based authentication on all API and WebSocket endpoints. Frontend rendering falls back safely to text content if DOMPurify is unavailable, preventing XSS.
 
 ## 🛠️ Development
 

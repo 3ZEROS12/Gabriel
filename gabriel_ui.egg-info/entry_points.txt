@@ -1,0 +1,2 @@
+[console_scripts]
+gabriel = src.main:main

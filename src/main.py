@@ -14,6 +14,8 @@ import json
 import logging
 import secrets
 from openai import AsyncOpenAI
+import re
+from collections import Counter
 
 # Setup structured logging
 logging.basicConfig(
@@ -101,8 +103,7 @@ def get_ai_client():
         api_key=config.get("api_key") or "dummy"
     )
 
-
-current_context = ""
+current_contexts = {}
 last_file = None
 
 class ConfigModel(BaseModel):
@@ -239,6 +240,28 @@ async def scan_active_agents():
 async def get_agents(token: str = Depends(verify_token)):
     return JSONResponse(await scan_active_agents())
 
+class FeedbackModel(BaseModel):
+    issue: str
+    context: str
+
+def redact_secrets(text: str) -> str:
+    # Mask common secrets
+    text = re.sub(r'sk-[a-zA-Z0-9]{20,}', 'sk-[REDACTED]', text)
+    text = re.sub(r'Bearer\s+[a-zA-Z0-9\-\._~\+]+', 'Bearer [REDACTED]', text)
+    return text
+
+@app.post("/api/feedback")
+async def submit_feedback(data: FeedbackModel, token: str = Depends(verify_token)):
+    feedback_file = os.path.join(ROOT_DIR, "user_feedback.jsonl")
+    try:
+        sanitized_context = redact_secrets(data.context)
+        with open(feedback_file, "a", encoding="utf-8") as f:
+            f.write(json.dumps({"timestamp": time.time(), "issue": data.issue, "context": sanitized_context}) + "\n")
+        return {"status": "ok"}
+    except Exception as e:
+        logger.error(f"Feedback error: {e}")
+        return {"status": "error"}
+
 class KBModel(BaseModel):
     content: str
 
@@ -372,7 +395,7 @@ class AntigravityParser(BaseParser):
 class ClaudeCodeParser(BaseParser):
     @staticmethod
     def get_scan_patterns() -> list:
-        return [os.path.expanduser(r"~/.claude_code/logs/*.json")]
+        return [os.path.expanduser(r"~/.claude_code/logs/*.json"), os.path.expanduser(r"~/.claude_code/logs/*.jsonl")]
 
     @staticmethod
     def get_agent_name(filepath: str) -> str:
@@ -384,9 +407,79 @@ class ClaudeCodeParser(BaseParser):
         
     @staticmethod
     def parse(line: str) -> str:
-        # Stub for future Claude Code JSON format parsing
-        safe_content = html.escape(line.strip())
-        return f'<div style="margin-bottom:8px;"><span style="color:#a855f7; font-weight:bold;">🟣 [Claude Code]:</span> <span style="color:#cbd5e1;">{safe_content[:200]}...</span></div>'
+        line = line.strip()
+        if not line: return None
+        try:
+            data = json.loads(line)
+        except json.JSONDecodeError:
+            safe_content = html.escape(line[:200])
+            return f'<div style="margin-bottom:8px;"><span style="color:#a855f7; font-weight:bold;">🟣 [Claude Code]:</span> <span style="color:#cbd5e1;">{safe_content}...</span></div>'
+        
+        msg_type = data.get("type") or data.get("role") or data.get("message_type") or "unknown"
+        content = data.get("content") or data.get("message") or data.get("text") or ""
+        
+        if isinstance(content, (dict, list)):
+            content = json.dumps(content, ensure_ascii=False)
+            
+        content = str(content)
+        safe_content = html.escape(content)
+        
+        if msg_type in ("user", "USER_INPUT"):
+            return f'<div style="margin-bottom:8px;"><span style="color:#60a5fa; font-weight:bold;">👤 [USER]:</span> <span style="color:#e2e8f0;">{safe_content[:200]}...</span></div>'
+        elif msg_type in ("assistant", "agent", "PLANNER_RESPONSE", "model"):
+            return f'<div style="margin-bottom:8px;"><span style="color:#a855f7; font-weight:bold;">🟣 [Claude]:</span> <span style="color:#cbd5e1;">{safe_content[:200]}...</span></div>'
+        elif msg_type in ("tool", "system", "TOOL_RESPONSE", "tool_call"):
+            if len(safe_content) > 300:
+                safe_content = safe_content[:300] + "... (truncated)"
+            return f'<div style="margin-bottom:8px;"><span style="color:#10b981; font-weight:bold;">🛠️ [TOOL]:</span><br><span style="color:#94a3b8; font-size:0.8em;">{safe_content}</span></div>'
+        else:
+            return f'<div style="margin-bottom:8px;"><span style="color:#a855f7; font-weight:bold;">🟣 [Claude Code]:</span> <span style="color:#cbd5e1;">{safe_content[:200]}...</span></div>'
+
+class CursorParser(BaseParser):
+    @staticmethod
+    def get_scan_patterns() -> list:
+        return [os.path.join(os.getcwd(), ".cursor", "logs", "*.log"), os.path.join(os.getcwd(), ".cursor", "logs", "*.jsonl")]
+
+    @staticmethod
+    def get_agent_name(filepath: str) -> str:
+        return f"cursor ({os.path.basename(filepath)})"
+
+    @staticmethod
+    def identify(filepath: str, line: str) -> bool:
+        return ".cursor" in filepath.lower()
+        
+    @staticmethod
+    def parse(line: str) -> str:
+        line = line.strip()
+        if not line: return None
+        try:
+            data = json.loads(line)
+        except json.JSONDecodeError:
+            safe_content = html.escape(line[:200])
+            if line.startswith("User:"):
+                return f'<div style="margin-bottom:8px;"><span style="color:#60a5fa; font-weight:bold;">👤 [USER]:</span> <span style="color:#e2e8f0;">{safe_content[5:200]}...</span></div>'
+            elif line.startswith("Cursor:"):
+                return f'<div style="margin-bottom:8px;"><span style="color:#3b82f6; font-weight:bold;">🔵 [Cursor]:</span> <span style="color:#cbd5e1;">{safe_content[7:200]}...</span></div>'
+            return f'<div style="margin-bottom:4px; font-family:monospace; color:#94a3b8; font-size:0.8em;">{safe_content}</div>'
+            
+        role = data.get("role") or data.get("type") or "unknown"
+        content = data.get("content") or data.get("message") or data.get("text") or ""
+        
+        if isinstance(content, (dict, list)):
+            content = json.dumps(content, ensure_ascii=False)
+        content = str(content)
+        safe_content = html.escape(content)
+        
+        if role in ("user", "USER_INPUT"):
+            return f'<div style="margin-bottom:8px;"><span style="color:#60a5fa; font-weight:bold;">👤 [USER]:</span> <span style="color:#e2e8f0;">{safe_content[:200]}...</span></div>'
+        elif role in ("assistant", "agent", "model"):
+            return f'<div style="margin-bottom:8px;"><span style="color:#3b82f6; font-weight:bold;">🔵 [Cursor]:</span> <span style="color:#cbd5e1;">{safe_content[:200]}...</span></div>'
+        elif role in ("tool", "system", "tool_call"):
+            if len(safe_content) > 300:
+                safe_content = safe_content[:300] + "... (truncated)"
+            return f'<div style="margin-bottom:8px;"><span style="color:#10b981; font-weight:bold;">🛠️ [TOOL]:</span><br><span style="color:#94a3b8; font-size:0.8em;">{safe_content}</span></div>'
+        else:
+            return f'<div style="margin-bottom:8px;"><span style="color:#3b82f6; font-weight:bold;">🔵 [Cursor]:</span> <span style="color:#cbd5e1;">{safe_content[:200]}...</span></div>'
 
 class PlainTextFallbackParser(BaseParser):
     @staticmethod
@@ -399,7 +492,7 @@ class PlainTextFallbackParser(BaseParser):
         return f'<div style="margin-bottom:4px; font-family:monospace; color:#94a3b8; font-size:0.8em;">{html.escape(line.strip()[:200])}</div>'
 
 class ParserRegistry:
-    parsers = [AntigravityParser, ClaudeCodeParser, PlainTextFallbackParser]
+    parsers = [AntigravityParser, ClaudeCodeParser, CursorParser, PlainTextFallbackParser]
     
     @classmethod
     def get_all_scan_patterns(cls) -> list:
@@ -440,32 +533,79 @@ def _format_transcript_sync(filepath):
 async def format_transcript(filepath):
     return await asyncio.to_thread(_format_transcript_sync, filepath)
 
+STOP_WORDS = {"this", "that", "with", "from", "your", "have", "what", "there", "their", "will", "would", "could", "should", "about", "which", "when", "where", "while", "these", "those", "error", "failed", "using", "function", "return", "class", "import"}
+
+def extract_keywords(text: str, max_words=3) -> str:
+    clean_text = re.sub(r'<[^>]+>', ' ', text).lower()
+    words = re.findall(r'\b[a-z]{5,}\b', clean_text)
+    filtered = [w for w in words if w not in STOP_WORDS]
+    most_common = [w[0] for w in Counter(filtered).most_common(max_words)]
+    return " AND ".join(most_common) if most_common else ""
+
+def check_active_kb(text: str):
+    kw = extract_keywords(text)
+    if not kw: return None
+    db_path = os.path.join(ROOT_DIR, "knowledge.db")
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT content FROM insights_fts WHERE content MATCH ? ORDER BY rank LIMIT 1", (kw,))
+        row = cursor.fetchone()
+        if row:
+            return row[0]
+    except Exception as e:
+        pass
+    finally:
+        conn.close()
+    return None
+
 async def async_log_tailer():
-    global current_context, last_file
-    last_mtime = 0
+    global current_contexts
+    last_mtimes = {}
+    last_recommended_kbs = {}
     
     while True:
         try:
-            target_file = await get_target_transcript_file()
-            if target_file:
-                current_mtime = os.path.getmtime(target_file)
-                if current_mtime != last_mtime or target_file != last_file:
-                    last_mtime = current_mtime
-                    last_file = target_file
-                    
-                    agent_name = os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(target_file))))[:8]
+            agents = await scan_active_agents()
+            for agent in agents:
+                target_file = agent["path"]
+                current_mtime = agent["mtime"]
+                
+                # If target_agent is manual, skip others
+                if config.get("target_agent") != "auto" and target_file != config.get("target_agent"):
+                    continue
+
+                if current_mtime != last_mtimes.get(target_file, 0):
+                    last_mtimes[target_file] = current_mtime
+                    agent_name = agent["name"]
                     
                     new_context = await format_transcript(target_file)
-                    current_context = new_context
+                    current_contexts[target_file] = new_context
                     
-                    payload = json.dumps({"type": "context_update", "content": current_context, "agent": agent_name})
+                    payload = json.dumps({
+                        "type": "context_update", 
+                        "content": new_context, 
+                        "agent": agent_name,
+                        "path": target_file
+                    })
                     await broker.publish(payload)
-        except Exception:
-            pass
+                    
+                    kb_match = await asyncio.to_thread(check_active_kb, new_context[-1500:])
+                    last_kb = last_recommended_kbs.get(target_file, "")
+                    if kb_match and kb_match != last_kb:
+                        last_recommended_kbs[target_file] = kb_match
+                        await broker.publish(json.dumps({
+                            "type": "kb_recommendation", 
+                            "content": kb_match,
+                            "agent": agent_name,
+                            "path": target_file
+                        }))
+        except Exception as e:
+            logger.error(f"Tailer error: {e}")
         await asyncio.sleep(1)
 
 @app.on_event("startup")
-async def startup_event():
+async def startup_event_tailer():
     asyncio.create_task(async_log_tailer())
 
 @app.get("/", response_class=HTMLResponse)
@@ -487,11 +627,12 @@ async def websocket_endpoint(websocket: WebSocket, token: str = None):
         logger.warning("Rejected unauthorized WebSocket connection.")
         return
         
-    global current_context, config
+    global current_contexts, config
     await websocket.accept()
     await broker.subscribe(websocket)
     try:
-        await websocket.send_text(json.dumps({"type": "context_update", "content": current_context, "agent": "Loading..."}))
+        combined = "\n".join([f"--- Agent: {path} ---\n{ctx}" for path, ctx in current_contexts.items()])
+        await websocket.send_text(json.dumps({"type": "context_update", "content": combined, "agent": "Loading...", "path": "all"}))
         last_request_time = 0
         
         while True:
@@ -507,7 +648,8 @@ async def websocket_endpoint(websocket: WebSocket, token: str = None):
                 last_request_time = current_time
                 
                 user_prompt = msg["content"]
-                full_prompt = f"Terminal Snapshot:\n```\n{current_context}\n```\n\nUser Question:\n{user_prompt}"
+                combined = "\n".join([f"--- Agent: {path} ---\n{ctx}" for path, ctx in current_contexts.items()])
+                full_prompt = f"Terminal Snapshot(s):\n```\n{combined}\n```\n\nUser Question:\n{user_prompt}"
                 
                 try:
                     client = get_ai_client()
@@ -549,7 +691,8 @@ async def websocket_endpoint(websocket: WebSocket, token: str = None):
                         pass
                 
             elif msg["type"] == "merge_kb":
-                kb_prompt = f"请将以下开发日志中的核心问题和解决方案提炼成一段 Markdown 笔记（包含问题描述、原因分析、解决方案、以及可以直接复制粘贴的修复代码）。要求格式极其严谨。\n\n日志上下文:\n```\n{current_context}\n```"
+                combined = "\n".join([f"--- Agent: {path} ---\n{ctx}" for path, ctx in current_contexts.items()])
+                kb_prompt = f"请将以下开发日志中的核心问题和解决方案提炼成一段 Markdown 笔记（包含问题描述、原因分析、解决方案、以及可以直接复制粘贴的修复代码）。要求格式极其严谨。\n\n日志上下文:\n```\n{combined}\n```"
                 try:
                     client = get_ai_client()
                     response = await client.chat.completions.create(
@@ -575,5 +718,12 @@ async def websocket_endpoint(websocket: WebSocket, token: str = None):
         await broker.unsubscribe(websocket)
         logger.info("Client disconnected from WebSocket.")
             
+def main():
+    import argparse
+    parser = argparse.ArgumentParser(description="Gabriel Control Center")
+    parser.add_argument("--port", type=int, default=8080)
+    args = parser.parse_args()
+    uvicorn.run(app, host="127.0.0.1", port=args.port)
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8080)
+    main()

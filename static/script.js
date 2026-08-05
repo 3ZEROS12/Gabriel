@@ -15,8 +15,8 @@ const dict = {
         "settings_workflow": "Workflow Strategy", "settings_merge": "Knowledge Base Merge", "settings_save": "Save Configuration",
         "mode_manual": "Manual (Geek)", "mode_auto": "Automatic",
         "settings_ui": "UI Preferences", "settings_lang": "Language", "lang_en": "English", "lang_zh": "中文 (Chinese)",
-        "copied": "Copied to Clipboard!", "saved": "Saved", "scanning": "Scanning...""radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 3.1.0 (Cyber-Dark Edition)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "👼 Gabriel",
-        
+        "copied": "Copied to Clipboard!", "saved": "Saved", "scanning": "Scanning...","radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 3.1.0 (Cyber-Dark Edition)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "👼 Gabriel",
+        "chat_feedback": "Feedback", "kb_recommendation": "Knowledge Base Recommendation"
     },
     "zh": {
         "nav_chat": "对话", "nav_radar": "雷达", "nav_kb": "知识库", "nav_settings": "设置",
@@ -398,7 +398,11 @@ btnPreviewKb.addEventListener('click', () => {
     if (kbPreview.classList.contains('hidden')) {
         // Show Preview
         const rawHtml = window.marked ? marked.parse(kbEditor.value) : kbEditor.value;
-        kbPreview.innerHTML = window.DOMPurify ? DOMPurify.sanitize(rawHtml) : rawHtml;
+        if (window.DOMPurify) {
+            kbPreview.innerHTML = DOMPurify.sanitize(rawHtml);
+        } else {
+            kbPreview.textContent = rawHtml;
+        }
         kbPreview.classList.remove('hidden');
         kbEditor.style.display = 'none';
         btnPreviewKb.innerText = dict[currentLang].btn_edit || '✏️ Edit';
@@ -513,16 +517,50 @@ function connectWebSocket() {
                 telemetryChart.update('none');
             }
             
-            // Render logs and preserve scroll position
-            const display = document.getElementById('contextDisplay');
-            if (display) {
-                const parent = display.parentElement;
+            // Render logs into grid
+            const grid = document.getElementById('contextGrid');
+            if (grid && msg.path && msg.path !== "all") {
+                // Remove the waiting placeholder if it exists
+                const placeholder = document.getElementById('contextDisplay');
+                if (placeholder && placeholder.parentElement) {
+                    placeholder.parentElement.remove();
+                }
+                
+                let agentId = 'agent_' + msg.path.replace(/[^a-zA-Z0-9]/g, '_');
+                let displayCard = document.getElementById(agentId);
+                
+                if (!displayCard) {
+                    displayCard = document.createElement('div');
+                    displayCard.id = agentId;
+                    displayCard.className = 'agent-terminal-card';
+                    displayCard.style.cssText = 'background: rgba(15, 23, 42, 0.6); border: 1px solid var(--panel-border); border-radius: 8px; display: flex; flex-direction: column; height: 400px; overflow: hidden;';
+                    displayCard.innerHTML = `
+                        <div style="background: rgba(0,0,0,0.4); padding: 6px 12px; border-bottom: 1px solid var(--panel-border); font-size: 0.8rem; font-weight: bold; color: var(--accent); display:flex; justify-content:space-between;">
+                            <span>🖥️ ${msg.agent}</span>
+                        </div>
+                        <pre style="margin:0; padding:12px; height:calc(100% - 30px); overflow-y:auto; white-space:pre-wrap; word-wrap:break-word;"><code class="agent-display-code"></code></pre>
+                    `;
+                    grid.appendChild(displayCard);
+                }
+                
+                const codeEl = displayCard.querySelector('.agent-display-code');
+                const parent = codeEl.parentElement;
                 const isAtBottom = parent.scrollHeight - parent.scrollTop - parent.clientHeight < 50;
                 
-                display.innerHTML = window.DOMPurify ? DOMPurify.sanitize(msg.content) : msg.content;
+                if (window.DOMPurify) {
+                    codeEl.innerHTML = DOMPurify.sanitize(msg.content);
+                } else {
+                    codeEl.textContent = msg.content;
+                }
                 
                 if (isAtBottom) {
                     parent.scrollTop = parent.scrollHeight;
+                }
+            } else if (msg.path === "all") {
+                // Handle initial loading sync
+                const placeholder = document.getElementById('contextDisplay');
+                if (placeholder) {
+                    placeholder.innerHTML = "Connected. Waiting for agent updates...";
                 }
             }
             
@@ -536,6 +574,18 @@ function connectWebSocket() {
                     pulse.style.boxShadow = 'none';
                 }, 150);
             }
+        } else if (msg.type === "kb_recommendation") {
+            const toast = document.getElementById('kbToast');
+            const toastContent = document.getElementById('kbToastContent');
+            if (toast && toastContent) {
+                const parsed = window.marked ? marked.parse(msg.content) : msg.content;
+                if (window.DOMPurify) {
+                    toastContent.innerHTML = DOMPurify.sanitize(parsed);
+                } else {
+                    toastContent.textContent = parsed;
+                }
+                toast.classList.remove('hidden');
+            }
         } else if (msg.type === "ai_response_start") {
             currentAiMessageContent = "";
             currentAiMessageDiv = createMessageDiv('ai-message');
@@ -544,7 +594,11 @@ function connectWebSocket() {
             currentAiMessageContent += msg.content;
             if(window.marked) {
                 const parsed = marked.parse(currentAiMessageContent);
-                currentAiMessageDiv.innerHTML = window.DOMPurify ? DOMPurify.sanitize(parsed) : parsed;
+                if (window.DOMPurify) {
+                    currentAiMessageDiv.innerHTML = DOMPurify.sanitize(parsed);
+                } else {
+                    currentAiMessageDiv.textContent = parsed;
+                }
             } else {
                 currentAiMessageDiv.innerText = currentAiMessageContent;
             }
@@ -576,7 +630,11 @@ function appendMessage(text, className) {
     const div = createMessageDiv(className);
     if(className === 'ai-message' && window.marked) {
         const parsed = marked.parse(text);
-        div.innerHTML = window.DOMPurify ? DOMPurify.sanitize(parsed) : parsed;
+        if (window.DOMPurify) {
+            div.innerHTML = DOMPurify.sanitize(parsed);
+        } else {
+            div.textContent = parsed;
+        }
     } else {
         div.innerText = text;
     }
@@ -609,6 +667,29 @@ document.getElementById('btnMerge').addEventListener('click', () => {
         appendMessage(dict[currentLang].gen_draft || "⏳ Generating solution draft...", "sys-message");
     }
 });
+
+document.getElementById('btnFeedback').addEventListener('click', () => {
+    document.getElementById('feedbackModal').style.display = 'flex';
+});
+document.getElementById('btnSubmitFeedback').addEventListener('click', async () => {
+    const text = document.getElementById('feedbackText').value;
+    if (!text) return;
+    
+    // Gather all agent contents for feedback
+    let combinedCtx = "";
+    document.querySelectorAll('.agent-display-code').forEach(el => {
+        combinedCtx += "\n---\n" + el.innerText;
+    });
+    
+    try {
+        await fetch('/api/feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Gabriel-Token': localToken },
+            body: JSON.stringify({ issue: text, context: combinedCtx.slice(-1500) })
+        });
+        document.getElementById('feedbackModal').style.display = 'none';
+        document.getElementById('feedbackText').value = '';
+    } catch(e) {}
 });
 
 // Init

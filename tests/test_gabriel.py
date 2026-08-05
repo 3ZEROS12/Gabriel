@@ -96,7 +96,74 @@ class TestGabrielControlCenter(unittest.TestCase):
             response1 = websocket.receive_json()
             self.assertIn(response1["type"], ["ai_response_start", "ai_response_chunk"])
             
+            
         print("✅ WebSocket Connection & EventBroker Pub/Sub successful")
+
+    def test_claude_code_parser(self):
+        from main import ClaudeCodeParser
+        import html
+        
+        # Normal user
+        res = ClaudeCodeParser.parse('{"type": "user", "content": "hello"}')
+        self.assertIn("👤 [USER]", res)
+        self.assertIn("hello", res)
+        
+        # Normal agent
+        res = ClaudeCodeParser.parse('{"type": "assistant", "content": "I am here"}')
+        self.assertIn("🟣 [Claude]", res)
+        self.assertIn("I am here", res)
+        
+        # Abnormal / non-json
+        res = ClaudeCodeParser.parse('just some text')
+        self.assertIn("🟣 [Claude Code]", res)
+        self.assertIn("just some text", res)
+        
+        # Edge case: empty content
+        res = ClaudeCodeParser.parse('')
+        self.assertIsNone(res)
+        
+        # Edge case: super long content
+        long_text = "a" * 500
+        res = ClaudeCodeParser.parse(f'{{"type": "assistant", "content": "{long_text}"}}')
+        self.assertIn("a" * 200, res)
+        self.assertTrue(len(res) < 600)
+        
+        print("✅ ClaudeCodeParser tests successful")
+
+    def test_cursor_parser(self):
+        from main import CursorParser
+        
+        # Normal user JSON
+        res = CursorParser.parse('{"role": "user", "content": "fix this"}')
+        self.assertIn("👤 [USER]", res)
+        self.assertIn("fix this", res)
+        
+        # Normal agent JSON
+        res = CursorParser.parse('{"role": "assistant", "content": "I fixed it"}')
+        self.assertIn("🔵 [Cursor]", res)
+        self.assertIn("I fixed it", res)
+        
+        # Plain text User
+        res = CursorParser.parse('User: plain text input')
+        self.assertIn("👤 [USER]", res)
+        self.assertIn("plain text input", res)
+        
+        # Plain text Agent
+        res = CursorParser.parse('Cursor: plain text response')
+        self.assertIn("🔵 [Cursor]", res)
+        self.assertIn("plain text response", res)
+        
+        # Empty
+        res = CursorParser.parse('')
+        self.assertIsNone(res)
+        
+        # Super long content
+        long_text = "a" * 500
+        res = CursorParser.parse(f'{{"role": "assistant", "content": "{long_text}"}}')
+        self.assertIn("a" * 200, res)
+        self.assertTrue(len(res) < 600)
+        
+        print("✅ CursorParser tests successful")
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
