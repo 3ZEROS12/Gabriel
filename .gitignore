@@ -1,0 +1,22 @@
+# Environments
+.env
+venv/
+env/
+__pycache__/
+*.pyc
+
+# Database and Data files
+knowledge.db
+config.json
+*.jsonl
+
+# Logs
+*.log
+
+# Build
+dist/
+build/
+*.spec
+
+# Temp files
+Gabriel_Codebase_For_Claude.txt

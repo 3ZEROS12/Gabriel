@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Awakening Gabriel</title>
+<style>
+  body { 
+      background: #f8f9fa; 
+      color: #1e293b; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      height: 100vh; 
+      margin: 0; 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      overflow: hidden;
+  }
+  .loader { 
+      border: 2px solid rgba(212, 175, 55, 0.1); 
+      border-top: 2px solid #d4af37; 
+      border-radius: 50%; 
+      width: 40px; 
+      height: 40px; 
+      animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite; 
+      margin: 0 auto 16px auto; 
+  }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  .box { text-align: center; }
+  .text { 
+      font-size: 13px; 
+      letter-spacing: 3px; 
+      font-weight: 500; 
+      color: #64748b; 
+      text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+<div class="box">
+    <img src="/static/icon.svg" alt="Gabriel Logo" style="width: 120px; height: 120px; margin-bottom: 24px; filter: drop-shadow(0px 8px 16px rgba(0,0,0,0.05)); animation: float 3s ease-in-out infinite;">
+    <style>
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+    <div class="loader"></div>
+    <div class="text">Awakening Gabriel</div>
+</div>
+<script>
+    const checkServer = () => {
+        fetch('/api/ping')
+        .then(r => { 
+            if(r.ok) {
+                setTimeout(() => {
+                    window.location.replace('/');
+                }, 1200); // 1.2s minimum delay to show off the beautiful animation
+            } else {
+                setTimeout(checkServer, 200);
+            }
+        })
+        .catch(e => {
+            setTimeout(checkServer, 200);
+        });
+    };
+    checkServer();
+</script>
+</body>
+</html>
