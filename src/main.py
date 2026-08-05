@@ -17,15 +17,19 @@ from openai import AsyncOpenAI
 import re
 from collections import Counter
 
-# Setup structured logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s - %(message)s"
+import traceback
+from logging.handlers import RotatingFileHandler
+
+os.makedirs("logs", exist_ok=True)
+logger = logging.getLogger("gabriel")
+logger.setLevel(logging.INFO)
+handler = RotatingFileHandler(
+    "logs/gabriel.log", maxBytes=5 * 1024 * 1024, backupCount=3, encoding="utf-8"
 )
-logger = logging.getLogger("GabrielCore")
+handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
+logger.addHandler(handler)
 
 app = FastAPI(title="Gabriel Control Center")
-
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
     start_time = time.time()
@@ -123,13 +127,12 @@ print(f"Token: {API_KEY}")
 print(f"Access the Control Center at: http://127.0.0.1:8080")
 print(f"=======================================================\n")
 
-api_key_header = APIKeyHeader(name="X-Gabriel-Token", auto_error=False)
-
-async def verify_token(api_key: str = Security(api_key_header)):
-    if not api_key or not secrets.compare_digest(api_key, API_KEY):
+from fastapi import Header
+async def verify_token(x_gabriel_token: str = Header(None)):
+    if not x_gabriel_token or not secrets.compare_digest(x_gabriel_token, API_KEY):
         logger.warning(f"Unauthorized API access attempt or missing token.")
-        raise HTTPException(status_code=403, detail="Invalid or missing X-Gabriel-Token")
-    return api_key
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    return x_gabriel_token
 
 # --- Message Broker (Pub/Sub) ---
 class EventBroker:
@@ -173,16 +176,19 @@ async def startup_event():
     await broker.start()
     logger.info("EventBroker started.")
 
-@app.get("/api/ping")
+from fastapi import APIRouter
+api_router = APIRouter(prefix="/api", dependencies=[Depends(verify_token)])
+
+@api_router.get("/ping")
 async def ping():
     return {"status": "ok"}
 
-@app.get("/api/config")
-async def get_config(token: str = Depends(verify_token)):
+@api_router.get("/config")
+async def get_config():
     return JSONResponse(load_config())
 
-@app.post("/api/config")
-async def update_config(cfg: ConfigModel, token: str = Depends(verify_token)):
+@api_router.post("/config")
+async def update_config(cfg: ConfigModel):
     global config
     try:
         if hasattr(cfg, "model_dump"):
@@ -236,8 +242,8 @@ def _scan_active_agents_sync():
 async def scan_active_agents():
     return await asyncio.to_thread(_scan_active_agents_sync)
 
-@app.get("/api/agents")
-async def get_agents(token: str = Depends(verify_token)):
+@api_router.get("/agents")
+async def get_agents():
     return JSONResponse(await scan_active_agents())
 
 class FeedbackModel(BaseModel):
@@ -250,8 +256,8 @@ def redact_secrets(text: str) -> str:
     text = re.sub(r'Bearer\s+[a-zA-Z0-9\-\._~\+]+', 'Bearer [REDACTED]', text)
     return text
 
-@app.post("/api/feedback")
-async def submit_feedback(data: FeedbackModel, token: str = Depends(verify_token)):
+@api_router.post("/feedback")
+async def submit_feedback(data: FeedbackModel):
     feedback_file = os.path.join(ROOT_DIR, "user_feedback.jsonl")
     try:
         sanitized_context = redact_secrets(data.context)
@@ -292,8 +298,8 @@ def get_db():
     finally:
         conn.close()
 
-@app.get("/api/kb")
-async def get_kb(db: sqlite3.Connection = Depends(get_db), token: str = Depends(verify_token)):
+@api_router.get("/kb")
+async def get_kb(db: sqlite3.Connection = Depends(get_db)):
     try:
         cursor = db.cursor()
         # Fallback to normal table if FTS is empty for backward compatibility
@@ -308,8 +314,8 @@ async def get_kb(db: sqlite3.Connection = Depends(get_db), token: str = Depends(
         logger.error(f"KB Get Error: {e}")
     return JSONResponse({"content": ""})
 
-@app.post("/api/kb")
-async def update_kb(data: KBModel, db: sqlite3.Connection = Depends(get_db), token: str = Depends(verify_token)):
+@api_router.post("/kb")
+async def update_kb(data: KBModel, db: sqlite3.Connection = Depends(get_db)):
     try:
         cursor = db.cursor()
         # Insert into legacy table for backup
@@ -600,9 +606,11 @@ async def async_log_tailer():
                             "agent": agent_name,
                             "path": target_file
                         }))
-        except Exception as e:
-            logger.error(f"Tailer error: {e}")
+        except Exception:
+            logger.error("async_log_tailer 轮询异常: %s", traceback.format_exc())
         await asyncio.sleep(1)
+
+app.include_router(api_router)
 
 @app.on_event("startup")
 async def startup_event_tailer():
@@ -727,3 +735,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+

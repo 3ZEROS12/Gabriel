@@ -472,6 +472,21 @@ function initChart() {
     }, 1000);
 }
 
+// ==========================================
+// Safe Rendering
+// ==========================================
+function renderAgentContent(codeEl, content) {
+    if (window.DOMPurify && typeof DOMPurify.sanitize === 'function') {
+        codeEl.innerHTML = DOMPurify.sanitize(content, {
+            ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'code', 'pre', 'span', 'br'],
+            ALLOWED_ATTR: ['class']
+        });
+    } else {
+        codeEl.textContent = content;
+        console.warn('[Gabriel] DOMPurify 未加载，已降级为纯文本渲染');
+    }
+}
+
 // --- WebSocket & Chat ---
 let ws;
 let reconnectAttempts = 0;
@@ -547,11 +562,7 @@ function connectWebSocket() {
                 const parent = codeEl.parentElement;
                 const isAtBottom = parent.scrollHeight - parent.scrollTop - parent.clientHeight < 50;
                 
-                if (window.DOMPurify) {
-                    codeEl.innerHTML = DOMPurify.sanitize(msg.content);
-                } else {
-                    codeEl.textContent = msg.content;
-                }
+                renderAgentContent(codeEl, msg.content);
                 
                 if (isAtBottom) {
                     parent.scrollTop = parent.scrollHeight;
@@ -671,7 +682,7 @@ document.getElementById('btnMerge').addEventListener('click', () => {
 document.getElementById('btnFeedback').addEventListener('click', () => {
     document.getElementById('feedbackModal').style.display = 'flex';
 });
-document.getElementById('btnSubmitFeedback').addEventListener('click', async () => {
+document.getElementById('btnPreviewFeedback').addEventListener('click', () => {
     const text = document.getElementById('feedbackText').value;
     if (!text) return;
     
@@ -681,13 +692,29 @@ document.getElementById('btnSubmitFeedback').addEventListener('click', async () 
         combinedCtx += "\n---\n" + el.innerText;
     });
     
+    const contextPreview = combinedCtx.slice(-1500);
+    const fullPreview = `Issue:\n${text}\n\nContext:\n${contextPreview}`;
+    
+    document.getElementById('feedbackPreviewText').value = fullPreview;
+    document.getElementById('feedbackModal').style.display = 'none';
+    document.getElementById('feedbackPreviewModal').style.display = 'flex';
+});
+
+document.getElementById('btnConfirmFeedback').addEventListener('click', async () => {
+    const content = document.getElementById('feedbackPreviewText').value;
+    if (!content) return;
+    
+    const parts = content.split("\n\nContext:\n");
+    const issue = parts[0].replace(/^Issue:\n/, '');
+    const context = parts.length > 1 ? parts[1] : '';
+
     try {
         await fetch('/api/feedback', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-Gabriel-Token': localToken },
-            body: JSON.stringify({ issue: text, context: combinedCtx.slice(-1500) })
+            body: JSON.stringify({ issue: issue, context: context })
         });
-        document.getElementById('feedbackModal').style.display = 'none';
+        document.getElementById('feedbackPreviewModal').style.display = 'none';
         document.getElementById('feedbackText').value = '';
     } catch(e) {}
 });

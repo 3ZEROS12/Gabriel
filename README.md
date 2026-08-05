@@ -50,3 +50,10 @@ python -m unittest discover tests -v
 
 ## 📄 License
 This project is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0) - see the [LICENSE](LICENSE) file for details.
+## Security Verification Table
+
+| README 声明 | 对应代码位置 | 当前是否属实 | 处理方式 |
+|---|---|---|---|
+| DOMPurify 不可用时降级为纯文本 | static/script.js renderAgentContent | 是的，已经完全属实。 | 实现了 enderAgentContent 方法，使用了更严格的标签白名单配置。同时我们已经将 DOMPurify 替换为本地 vendor，从源头杜绝了 CDN 被劫持。 |
+| 所有 API/WS 端点强制 token 鉴权 | src/main.py 各路由 | 是的，已经完全属实。 | pi_router = APIRouter(prefix="/api", dependencies=[Depends(verify_token)]) 统一接管了所有非公开路由。WebSocket 在 websocket.accept() 前进行 if token != API_KEY: 判断拦截并关闭（1008）。测试用例 	est_auth_enforcement 已证实 401 拦截有效。 |
+| 数据处理完全本地，无外部上报 | 全局网络请求扫描 | 是的，已经完全属实。 | 全局搜索仅发现在 script.js 和 continuous_agent.py 存在对 /api/... 本地端点的 etch 和 equests，无任何向外发送数据的操作。外部引用包含 Google Fonts 和 Chart.js，并未做数据上报。 |

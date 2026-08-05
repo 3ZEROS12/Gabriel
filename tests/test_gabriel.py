@@ -24,7 +24,7 @@ class TestGabrielControlCenter(unittest.TestCase):
 
     def test_ping_endpoint(self):
         """Test if the server is responsive"""
-        response = client.get("/api/ping")
+        response = client.get("/api/ping", headers={"X-Gabriel-Token": API_KEY})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"status": "ok"})
         print("✅ Ping successful")
@@ -164,6 +164,19 @@ class TestGabrielControlCenter(unittest.TestCase):
         self.assertTrue(len(res) < 600)
         
         print("✅ CursorParser tests successful")
+
+    def test_auth_enforcement(self):
+        """Test that API endpoints and WS reject requests without token"""
+        response = client.get("/api/config")
+        self.assertEqual(response.status_code, 401)
+        
+        # Test WS auth
+        from fastapi.websockets import WebSocketDisconnect
+        with self.assertRaises(WebSocketDisconnect) as context:
+            with client.websocket_connect("/ws") as websocket:
+                pass
+        self.assertEqual(context.exception.code, 1008)
+        print("✅ Auth enforcement test successful")
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
