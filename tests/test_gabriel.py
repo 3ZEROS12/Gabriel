@@ -115,8 +115,13 @@ class TestGabrielControlCenter(unittest.TestCase):
         
         # Abnormal / non-json
         res = ClaudeCodeParser.parse('just some text')
-        self.assertIn("🟣 [Claude Code]", res)
         self.assertIn("just some text", res)
+        self.assertIn("font-family:monospace", res)
+        
+        # Unknown JSON structure
+        res_json = ClaudeCodeParser.parse('{"unknown_field": "value"}')
+        self.assertIn('{&quot;unknown_field&quot;: &quot;value&quot;}', res_json)
+        self.assertIn("font-family:monospace", res_json)
         
         # Edge case: empty content
         res = ClaudeCodeParser.parse('')
@@ -152,6 +157,16 @@ class TestGabrielControlCenter(unittest.TestCase):
         res = CursorParser.parse('Cursor: plain text response')
         self.assertIn("🔵 [Cursor]", res)
         self.assertIn("plain text response", res)
+        
+        # Abnormal / non-json that does not match User/Cursor prefix
+        res = CursorParser.parse('just some text')
+        self.assertIn("just some text", res)
+        self.assertIn("font-family:monospace", res)
+        
+        # Unknown JSON structure
+        res_json = CursorParser.parse('{"unknown_field": "value"}')
+        self.assertIn('{&quot;unknown_field&quot;: &quot;value&quot;}', res_json)
+        self.assertIn("font-family:monospace", res_json)
         
         # Empty
         res = CursorParser.parse('')

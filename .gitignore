@@ -12,6 +12,7 @@ config.json
 
 # Logs
 *.log
+logs/
 
 # Build
 dist/

@@ -135,10 +135,12 @@ const dict = {
 
 let currentLang = localStorage.getItem('gabriel_lang') || "en";
 
-const urlParams = new URLSearchParams(window.location.search);
-let localToken = urlParams.get('token') || sessionStorage.getItem('gabriel_token');
+// [NOTE]: Using localStorage for token is acceptable for this local single-machine tool. 
+// If Gabriel supports multi-user LAN access in the future, this must be re-evaluated.
+let localToken = urlParams.get('token') || sessionStorage.getItem('gabriel_token') || localStorage.getItem('gabriel_token');
 if (localToken) {
     sessionStorage.setItem('gabriel_token', localToken);
+    localStorage.setItem('gabriel_token', localToken);
     window.history.replaceState({}, document.title, window.location.pathname);
 } else {
     document.getElementById('loginModal').style.display = 'flex';
@@ -148,6 +150,7 @@ document.getElementById('btnLogin').addEventListener('click', () => {
     const t = document.getElementById('inputToken').value.trim();
     if (t) {
         sessionStorage.setItem('gabriel_token', t);
+        localStorage.setItem('gabriel_token', t);
         window.location.reload();
     }
 });
@@ -719,7 +722,31 @@ document.getElementById('btnConfirmFeedback').addEventListener('click', async ()
     } catch(e) {}
 });
 
+document.getElementById('btnForgetToken').addEventListener('click', () => {
+    localStorage.removeItem('gabriel_token');
+    sessionStorage.removeItem('gabriel_token');
+    window.location.reload();
+});
+
 // Init
 applyLang();
 loadConfig();
 connectWebSocket();
+
+async function pollHealth() {
+    if (!localToken) return;
+    try {
+        const res = await fetch('/api/health', { headers: { 'X-Gabriel-Token': localToken } });
+        if (!res.ok) {
+            document.getElementById('healthAlertBanner').style.display = 'block';
+        } else {
+            document.getElementById('healthAlertBanner').style.display = 'none';
+        }
+    } catch(e) {
+        document.getElementById('healthAlertBanner').style.display = 'block';
+    }
+}
+
+setInterval(pollHealth, 10000);
+setTimeout(pollHealth, 2000);
+

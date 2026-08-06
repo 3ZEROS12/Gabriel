@@ -179,6 +179,18 @@ async def startup_event():
 from fastapi import APIRouter
 api_router = APIRouter(prefix="/api", dependencies=[Depends(verify_token)])
 
+tailer_last_heartbeat = {"timestamp": None, "status": "starting"}
+
+@api_router.get("/health")
+async def health_check():
+    if tailer_last_heartbeat["timestamp"] is None:
+        return JSONResponse({"status": "starting"}, status_code=503)
+    stale = time.time() - tailer_last_heartbeat["timestamp"] > 30
+    return JSONResponse({
+        "status": "stale" if stale else "healthy",
+        "last_heartbeat": tailer_last_heartbeat["timestamp"]
+    }, status_code=503 if stale else 200)
+
 @api_router.get("/ping")
 async def ping():
     return {"status": "ok"}
@@ -384,6 +396,8 @@ class AntigravityParser(BaseParser):
             data = json.loads(line)
             step_type = data.get("type", "")
             content = data.get("content", "")
+            if not step_type:
+                raise ValueError("Missing 'type' field")
             safe_content = html.escape(str(content))
             
             if step_type == "USER_INPUT":
@@ -394,9 +408,11 @@ class AntigravityParser(BaseParser):
                 if len(safe_content) > 300:
                     safe_content = safe_content[:300] + "... (truncated)"
                 return f'<div style="margin-bottom:8px;"><span style="color:#10b981; font-weight:bold;">🛠️ [TOOL OUTPUT]:</span><br><span style="color:#94a3b8; font-size:0.8em;">{safe_content}</span></div>'
-        except:
-            pass
-        return None
+            else:
+                raise ValueError(f"Unrecognized type: {step_type}")
+        except Exception as e:
+            logger.warning(f"AntigravityParser parse warning: {e}. Degrading to plain text.")
+            return PlainTextFallbackParser.parse(line)
 
 class ClaudeCodeParser(BaseParser):
     @staticmethod
@@ -417,11 +433,15 @@ class ClaudeCodeParser(BaseParser):
         if not line: return None
         try:
             data = json.loads(line)
-        except json.JSONDecodeError:
-            safe_content = html.escape(line[:200])
-            return f'<div style="margin-bottom:8px;"><span style="color:#a855f7; font-weight:bold;">🟣 [Claude Code]:</span> <span style="color:#cbd5e1;">{safe_content}...</span></div>'
-        
-        msg_type = data.get("type") or data.get("role") or data.get("message_type") or "unknown"
+            if not isinstance(data, dict):
+                raise ValueError("JSON root is not an object")
+            msg_type = data.get("type") or data.get("role") or data.get("message_type")
+            if not msg_type:
+                raise ValueError("Missing role/type field")
+        except Exception as e:
+            logger.warning(f"ClaudeCodeParser parse warning: {e}. Degrading to plain text.")
+            return PlainTextFallbackParser.parse(line)
+            
         content = data.get("content") or data.get("message") or data.get("text") or ""
         
         if isinstance(content, (dict, list)):
@@ -460,15 +480,20 @@ class CursorParser(BaseParser):
         if not line: return None
         try:
             data = json.loads(line)
-        except json.JSONDecodeError:
+            if not isinstance(data, dict):
+                raise ValueError("JSON root is not an object")
+            role = data.get("role") or data.get("type")
+            if not role:
+                raise ValueError("Missing role/type field")
+        except Exception as e:
+            logger.warning(f"CursorParser parse warning: {e}. Degrading to plain text.")
             safe_content = html.escape(line[:200])
             if line.startswith("User:"):
                 return f'<div style="margin-bottom:8px;"><span style="color:#60a5fa; font-weight:bold;">👤 [USER]:</span> <span style="color:#e2e8f0;">{safe_content[5:200]}...</span></div>'
             elif line.startswith("Cursor:"):
                 return f'<div style="margin-bottom:8px;"><span style="color:#3b82f6; font-weight:bold;">🔵 [Cursor]:</span> <span style="color:#cbd5e1;">{safe_content[7:200]}...</span></div>'
-            return f'<div style="margin-bottom:4px; font-family:monospace; color:#94a3b8; font-size:0.8em;">{safe_content}</div>'
+            return PlainTextFallbackParser.parse(line)
             
-        role = data.get("role") or data.get("type") or "unknown"
         content = data.get("content") or data.get("message") or data.get("text") or ""
         
         if isinstance(content, (dict, list)):
@@ -573,6 +598,8 @@ async def async_log_tailer():
     while True:
         try:
             agents = await scan_active_agents()
+            tailer_last_heartbeat["timestamp"] = time.time()
+            tailer_last_heartbeat["status"] = "healthy"
             for agent in agents:
                 target_file = agent["path"]
                 current_mtime = agent["mtime"]

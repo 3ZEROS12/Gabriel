@@ -1,5 +1,6 @@
 # Gabriel
 
+![demo](docs/demo.gif)
 A lightweight, non-intrusive GUI sidecar for CLI-based AI agents (e.g., Antigravity, Claude Code, Cursor). 
 
 Gabriel runs independently alongside your terminal, tailing agent logs in real-time to provide a dedicated dashboard for state monitoring, API configuration, and knowledge base management without blocking your CLI workflow.

@@ -57,6 +57,10 @@
         </div>
     </div>
 
+    <div id="healthAlertBanner" style="display: none; background: #ef4444; color: white; padding: 12px; text-align: center; font-weight: bold; width: 100%; z-index: 10000; position: absolute; top: 0;">
+        后台监控可能已停止响应 (Backend monitoring may have stopped responding)
+    </div>
+
     <div class="app-container">
         
         <!-- Sidebar Navigation -->
@@ -255,6 +259,8 @@
                         </div>
                         <button id="btnSaveConfig" class="btn-primary" style="margin-top: 10px;" data-i18n="settings_save">Save Configuration</button>
                         
+                        <button id="btnForgetToken" class="btn-outline" style="margin-top: 10px; border-color: #ef4444; color: #ef4444;">Forget Token</button>
+
                         <div class="form-section" style="margin-top: 30px; border-top: 1px solid var(--panel-border); padding-top: 20px;">
                             <h3 data-i18n="settings_about">About Gabriel</h3>
                             <p class="subtitle" style="font-size: 0.8rem; line-height: 1.6;">
