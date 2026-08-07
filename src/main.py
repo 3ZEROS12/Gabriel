@@ -94,7 +94,9 @@ def init_schema(conn: sqlite3.Connection):
     cursor.execute("CREATE TABLE IF NOT EXISTS session_meta (id INTEGER PRIMARY KEY, agent_name TEXT, path TEXT, ts DATETIME DEFAULT CURRENT_TIMESTAMP, turns INTEGER DEFAULT 0, chars INTEGER DEFAULT 0, est_cost REAL DEFAULT 0.0)")
     cursor.execute("CREATE TABLE IF NOT EXISTS chat_history (id INTEGER PRIMARY KEY, agent_path TEXT, role TEXT, content TEXT, ts DATETIME DEFAULT CURRENT_TIMESTAMP)")
     
-    for col_def in ["turns INTEGER DEFAULT 0", "chars INTEGER DEFAULT 0", "est_cost REAL DEFAULT 0.0"]:
+    for col_def in ["turns INTEGER DEFAULT 0", "chars INTEGER DEFAULT 0", "est_cost REAL DEFAULT 0.0",
+                    "input_tokens INTEGER DEFAULT 0", "output_tokens INTEGER DEFAULT 0",
+                    "cache_read_tokens INTEGER DEFAULT 0", "cache_creation_tokens INTEGER DEFAULT 0"]:
         try:
             cursor.execute(f"ALTER TABLE session_meta ADD COLUMN {col_def}")
         except Exception:
@@ -477,12 +479,18 @@ def submit_kb_feedback(data: KBFeedbackModel, db: sqlite3.Connection = Depends(g
 def get_stats(db: sqlite3.Connection = Depends(get_db)):
     try:
         cursor = db.cursor()
-        cursor.execute("SELECT id, agent_name, path, ts, turns, chars, est_cost FROM session_meta ORDER BY id DESC LIMIT 50")
+        cursor.execute("SELECT id, agent_name, path, ts, turns, chars, est_cost, "
+                       "input_tokens, output_tokens, cache_read_tokens, cache_creation_tokens "
+                       "FROM session_meta ORDER BY id DESC LIMIT 50")
         rows = cursor.fetchall()
-        
+
         total_turns = sum(r["turns"] or 0 for r in rows)
         total_chars = sum(r["chars"] or 0 for r in rows)
         total_cost = sum(r["est_cost"] or 0.0 for r in rows)
+        total_input = sum(r["input_tokens"] or 0 for r in rows)
+        total_output = sum(r["output_tokens"] or 0 for r in rows)
+        total_cache_read = sum(r["cache_read_tokens"] or 0 for r in rows)
+        total_cache_write = sum(r["cache_creation_tokens"] or 0 for r in rows)
         
         total_errors = 0
         total_tools = 0
@@ -505,6 +513,10 @@ def get_stats(db: sqlite3.Connection = Depends(get_db)):
             "errors": total_errors,
             "tools": total_tools,
             "cost": round(total_cost, 4),
+            "input_tokens": total_input,
+            "output_tokens": total_output,
+            "cache_read_tokens": total_cache_read,
+            "cache_creation_tokens": total_cache_write,
             "sessions": [{
                 "id": r["id"],
                 "agent": r["agent_name"],
@@ -512,7 +524,11 @@ def get_stats(db: sqlite3.Connection = Depends(get_db)):
                 "ts": str(r["ts"]),
                 "turns": r["turns"] or 0,
                 "chars": r["chars"] or 0,
-                "est_cost": round(r["est_cost"] or 0.0, 4)
+                "est_cost": round(r["est_cost"] or 0.0, 4),
+                "input_tokens": r["input_tokens"] or 0,
+                "output_tokens": r["output_tokens"] or 0,
+                "cache_read_tokens": r["cache_read_tokens"] or 0,
+                "cache_creation_tokens": r["cache_creation_tokens"] or 0
             } for r in rows]
         })
     except Exception as e:
@@ -559,7 +575,7 @@ def get_session_transcript(session_id: int, db: sqlite3.Connection = Depends(get
         if not os.path.exists(path):
             return JSONResponse({"status": "error", "message": f"Log file at {path} no longer exists"}, status_code=404)
             
-        rendered_html, raw_lines = _format_transcript_sync(path, is_initial=True)
+        rendered_html, raw_lines, _ = _format_transcript_sync(path, is_initial=True)
         return JSONResponse({
             "status": "success",
             "id": session_id,
@@ -844,17 +860,17 @@ def _format_transcript_sync(filepath, is_initial=False):
                 cache['last_200_lines'].append(line)
                 
         if not cache['first_line']:
-            return "", []
-        
+            return "", [], []
+
         parser = ParserRegistry.get_parser(filepath, cache['first_line'])
-        
+
         if is_initial:
             output = [f'<div class="log-header">[Agent 日志实时同步中... 渲染引擎: {parser.__name__}]</div>']
             lines_to_render = cache['last_200_lines']
         else:
             output = []
             lines_to_render = new_lines
-            
+
         for line in lines_to_render:
             try:
                 parsed = parser.parse(line)
@@ -862,9 +878,9 @@ def _format_transcript_sync(filepath, is_initial=False):
                     output.append(parsed)
             except:
                 pass
-        return "".join(output), cache['last_200_lines']
+        return "".join(output), cache['last_200_lines'], new_lines
     except Exception as e:
-        return f"Error reading log: {e}", []
+        return f"Error reading log: {e}", [], []
 
 async def format_transcript(filepath, is_initial=False):
     return await asyncio.to_thread(_format_transcript_sync, filepath, is_initial)
@@ -1076,6 +1092,53 @@ def estimate_cost(chars: int, config_ref=None) -> float:
     price_out = cfg.get("price_output_per_m", 3.0)
     return (chars / 4) * (0.7 * price_in + 0.3 * price_out) / 1e6
 
+def extract_token_usage(lines: list) -> dict:
+    """Extract exact Claude Code token usage from transcript lines.
+
+    Claude Code JSONL entries carry `message.usage`:
+      input_tokens / output_tokens / cache_read_input_tokens / cache_creation_input_tokens
+    Returns summed totals; all zeros when a transcript has no usage data
+    (e.g. Antigravity), which signals the caller to fall back to estimate_cost().
+    """
+    usage = {"input_tokens": 0, "output_tokens": 0,
+             "cache_read_tokens": 0, "cache_creation_tokens": 0}
+    for line in lines:
+        try:
+            data = json.loads(line)
+            if not isinstance(data, dict):
+                continue
+        except Exception:
+            continue
+        msg = data.get("message") if isinstance(data.get("message"), dict) else None
+        u = msg.get("usage") if isinstance(msg, dict) and isinstance(msg.get("usage"), dict) else None
+        if not isinstance(u, dict):
+            u = data.get("usage") if isinstance(data.get("usage"), dict) else None
+        if not isinstance(u, dict):
+            continue
+        usage["input_tokens"] += u.get("input_tokens") or 0
+        usage["output_tokens"] += u.get("output_tokens") or 0
+        usage["cache_read_tokens"] += u.get("cache_read_input_tokens") or 0
+        usage["cache_creation_tokens"] += u.get("cache_creation_input_tokens") or 0
+    return usage
+
+def token_cost(usage: dict, config_ref=None) -> float:
+    """Exact cost from token counts ($ per 1M tokens).
+
+    Cache prices default to Anthropic-style ratios of the input price
+    (read 0.1x, creation 1.25x) unless explicitly configured.
+    """
+    cfg = config_ref if config_ref is not None else config
+    price_in = cfg.get("price_input_per_m", 1.0)
+    price_out = cfg.get("price_output_per_m", 3.0)
+    price_cache_read = cfg.get("price_cache_read_per_m", 0.1 * price_in)
+    price_cache_write = cfg.get("price_cache_creation_per_m", 1.25 * price_in)
+    return (
+        usage["input_tokens"] * price_in
+        + usage["output_tokens"] * price_out
+        + usage["cache_read_tokens"] * price_cache_read
+        + usage["cache_creation_tokens"] * price_cache_write
+    ) / 1e6
+
 def check_waiting_status(lines: list) -> bool:
     if not lines:
         return False
@@ -1103,6 +1166,7 @@ async def async_log_tailer():
     last_error_warnings = {}
     last_wait_state = {}
     last_wait_notified = {}
+    session_token_totals = {}
     active_tracking = set()
     
     while True:
@@ -1145,7 +1209,7 @@ async def async_log_tailer():
                     last_mtimes[target_file] = current_mtime
                     
                     is_initial = target_file not in current_contexts
-                    new_html, last_lines = await format_transcript(target_file, is_initial)
+                    new_html, last_lines, new_lines = await format_transcript(target_file, is_initial)
                     kb_match = None
                     
                     if is_initial:
@@ -1158,12 +1222,31 @@ async def async_log_tailer():
                     if last_lines:
                         file_chars = os.path.getsize(target_file) if os.path.exists(target_file) else len("".join(last_lines))
                         file_turns = sum(1 for line in last_lines if re.search(r'(?i)(assistant|agent|planner_response|user)', line))
-                        file_cost = estimate_cost(file_chars)
-                        
+
+                        # Exact Claude Code token usage (incremental accumulation over
+                        # newly appended lines); falls back to chars-based estimate when
+                        # the transcript carries no usage data (e.g. Antigravity).
+                        usage_delta = extract_token_usage(new_lines)
+                        tok = session_token_totals.setdefault(
+                            target_file, {k: 0 for k in usage_delta})
+                        for k, v in usage_delta.items():
+                            tok[k] += v
+                        if sum(tok.values()) > 0:
+                            file_cost = token_cost(tok)
+                        else:
+                            file_cost = estimate_cost(file_chars)
+
                         def update_session_stats():
                             try:
                                 with sqlite3.connect(os.path.join(ROOT_DIR, "knowledge.db")) as conn:
-                                    conn.execute("UPDATE session_meta SET turns = ?, chars = ?, est_cost = ? WHERE path = ?", (file_turns, file_chars, file_cost, target_file))
+                                    conn.execute(
+                                        "UPDATE session_meta SET turns = ?, chars = ?, est_cost = ?, "
+                                        "input_tokens = ?, output_tokens = ?, cache_read_tokens = ?, "
+                                        "cache_creation_tokens = ? WHERE path = ?",
+                                        (file_turns, file_chars, file_cost,
+                                         tok["input_tokens"], tok["output_tokens"],
+                                         tok["cache_read_tokens"], tok["cache_creation_tokens"],
+                                         target_file))
                                     conn.commit()
                             except: pass
                         await asyncio.to_thread(update_session_stats)
@@ -1241,6 +1324,8 @@ async def async_log_tailer():
                     del current_contexts[f]
                 if f in last_mtimes:
                     del last_mtimes[f]
+                if f in session_token_totals:
+                    del session_token_totals[f]
                     
         except Exception:
             logger.error("async_log_tailer 轮询异常: %s", traceback.format_exc())
@@ -1330,7 +1415,7 @@ async def websocket_endpoint(websocket: WebSocket, token: str = None, ticket: st
             if msg.get("type") == "adopt_session":
                 target_path = msg.get("path")
                 if target_path and os.path.exists(target_path):
-                    rendered_html, last_lines = _format_transcript_sync(target_path, is_initial=True)
+                    rendered_html, last_lines, _ = _format_transcript_sync(target_path, is_initial=True)
                     current_contexts[target_path] = rendered_html
                     combined = "\n".join([f"--- Agent: {p} ---\n{ctx}" for p, ctx in current_contexts.items()])
                     await wrapper.send_text(json.dumps({

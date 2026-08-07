@@ -1,107 +1,83 @@
-import json
-import sys
-import sqlite3
+"""Gabriel MCP server — official MCP Python SDK (v2).
+
+Exposes Gabriel's local SQLite FTS5 knowledge base to external agents
+(Claude Code, Cursor, Antigravity, ...) via the Model Context Protocol.
+
+Run:
+    python -m src.mcp_server            # stdio (default — Claude Code / Cursor)
+    python -m src.mcp_server --http     # Streamable HTTP (experimental)
+
+Test with the MCP Inspector:
+    uvx mcp dev src/mcp_server.py
+"""
+import argparse
 import os
+import sqlite3
 
-DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "knowledge.db")
+from mcp.server import MCPServer
 
-def handle_request(request):
+DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "knowledge.db")
+
+mcp = MCPServer(
+    "gabriel-kb",
+    title="Gabriel Knowledge Base",
+    description="Read and search insights from Gabriel's local SQLite FTS5 knowledge base.",
+    version="2.0.0",
+)
+
+
+@mcp.tool(
+    name="read_gabriel_kb",
+    description=(
+        "Search Gabriel's knowledge base for insights matching a query. "
+        "Returns up to 5 most relevant entries, or the 5 latest if no query is given. "
+        "Use this to recall previously solved problems and their fixes."
+    ),
+)
+def read_gabriel_kb(query: str = "") -> str:
+    """Read the latest or query-matched insights from Gabriel's Knowledge Base (FTS5)."""
     try:
-        if request.get("method") == "initialize":
-            return {
-                "jsonrpc": "2.0",
-                "id": request.get("id"),
-                "result": {
-                    "protocolVersion": "2024-11-05",
-                    "capabilities": {"tools": {}},
-                    "serverInfo": {"name": "gabriel-kb", "version": "1.0.0"}
-                }
-            }
-            
-        elif request.get("method") == "tools/list":
-            return {
-                "jsonrpc": "2.0",
-                "id": request.get("id"),
-                "result": {
-                    "tools": [{
-                        "name": "read_gabriel_kb",
-                        "description": "Reads the latest insights from Gabriel's Knowledge Base (FTS5).",
-                        "inputSchema": {
-                            "type": "object",
-                            "properties": {
-                                "query": {"type": "string", "description": "Optional search term"}
-                            }
-                        }
-                    }]
-                }
-            }
-            
-        elif request.get("method") == "tools/call":
-            params = request.get("params", {})
-            name = params.get("name")
-            args = params.get("arguments", {})
-            
-            if name == "read_gabriel_kb":
-                query = args.get("query", "")
-                conn = sqlite3.connect(DB_PATH)
-                conn.row_factory = sqlite3.Row
-                cursor = conn.cursor()
-                
-                if query:
-                    # Sanitize for FTS5 by escaping double quotes and wrapping in quotes
-                    # This prevents syntax errors from special characters like -, *, OR
-                    safe_query = f'"{query.replace("\"", "\"\"")}"'
-                    try:
-                        cursor.execute("SELECT content FROM insights_fts WHERE content MATCH ? ORDER BY timestamp DESC LIMIT 5", (safe_query,))
-                    except sqlite3.OperationalError:
-                        # Fallback to simple query if FTS syntax still fails
-                        cursor.execute("SELECT content FROM insights_fts ORDER BY timestamp DESC LIMIT 5")
-                else:
-                    cursor.execute("SELECT content FROM insights_fts ORDER BY timestamp DESC LIMIT 1")
-                    
-                rows = cursor.fetchall()
-                conn.close()
-                
-                content = "\n\n".join([r["content"] for r in rows]) if rows else "No insights found."
-                
-                return {
-                    "jsonrpc": "2.0",
-                    "id": request.get("id"),
-                    "result": {
-                        "content": [{"type": "text", "text": content}],
-                        "isError": False
-                    }
-                }
-                
-        # Unknown method
-        return {
-            "jsonrpc": "2.0",
-            "id": request.get("id"),
-            "error": {"code": -32601, "message": "Method not found"}
-        }
-            
-    except Exception as e:
-        return {
-            "jsonrpc": "2.0",
-            "id": request.get("id"),
-            "error": {"code": -32603, "message": str(e)}
-        }
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        try:
+            if query and query.strip():
+                # Wrap in double quotes to neutralize FTS5 special characters.
+                safe_query = f'"{query.strip().replace(chr(34), chr(34) * 2)}"'
+                cursor.execute(
+                    "SELECT content FROM insights_fts WHERE insights_fts MATCH ? "
+                    "ORDER BY rank LIMIT 5",
+                    (safe_query,),
+                )
+            else:
+                cursor.execute(
+                    "SELECT content FROM insights_fts ORDER BY timestamp DESC LIMIT 5"
+                )
+        except sqlite3.OperationalError:
+            # FTS syntax still failed (e.g. CJK tokenization): fall back to latest.
+            cursor.execute(
+                "SELECT content FROM insights_fts ORDER BY timestamp DESC LIMIT 5"
+            )
+        rows = cursor.fetchall()
+        conn.close()
+        return "\n\n".join(r["content"] for r in rows) if rows else "No insights found."
+    except Exception as e:  # pragma: no cover - defensive for DB unavailability
+        return f"Error reading Gabriel knowledge base: {e}"
+
 
 def main():
-    """
-    Gabriel MCP (Model Context Protocol) Server.
-    Runs via STDIO to integrate seamlessly with Claude Code, Cursor, or Antigravity.
-    """
-    for line in sys.stdin:
-        if not line.strip():
-            continue
-        try:
-            req = json.loads(line)
-            res = handle_request(req)
-            sys.stdout.write(json.dumps(res) + "\n")
-            sys.stdout.flush()
-        except json.JSONDecodeError:
-            pass
+    parser = argparse.ArgumentParser(description="Gabriel MCP server")
+    parser.add_argument(
+        "--http",
+        action="store_true",
+        help="Run with Streamable HTTP transport (default: stdio)",
+    )
+    args = parser.parse_args()
+    if args.http:
+        mcp.run(transport="streamable-http")
+    else:
+        mcp.run(transport="stdio")
+
 
 if __name__ == "__main__":
     main()

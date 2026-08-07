@@ -448,5 +448,44 @@ class TestGabrielControlCenter(unittest.TestCase):
         self.assertAlmostEqual(estimate_cost(1_000_000, big_cfg), 0.175, places=7)
         print("✅ Estimate cost formula test successful")
 
+    def test_token_usage_extraction(self):
+        """Extract exact Claude Code message.usage tokens from transcript lines"""
+        from main import extract_token_usage
+
+        lines = [
+            '{"type": "assistant", "message": {"usage": {"input_tokens": 100, "output_tokens": 25, "cache_read_input_tokens": 300, "cache_creation_input_tokens": 50}}}',
+            '{"type": "assistant", "message": {"usage": {"input_tokens": 40, "output_tokens": 10, "cache_read_input_tokens": 100, "cache_creation_input_tokens": 20}}}',
+            '{"type": "user", "content": "plain question"}',
+            "just some plain text line",
+            "not even json",
+        ]
+        usage = extract_token_usage(lines)
+        self.assertEqual(usage["input_tokens"], 140)
+        self.assertEqual(usage["output_tokens"], 35)
+        self.assertEqual(usage["cache_read_tokens"], 400)
+        self.assertEqual(usage["cache_creation_tokens"], 70)
+
+        # No usage data anywhere -> all zeros, signaling chars-estimate fallback
+        empty = extract_token_usage(["no usage here", '{"a": 1}', "plain text"])
+        self.assertEqual(empty, {"input_tokens": 0, "output_tokens": 0,
+                                 "cache_read_tokens": 0, "cache_creation_tokens": 0})
+        print("✅ Token usage extraction test successful")
+
+    def test_token_cost_calculation(self):
+        """token_cost exact pricing with cache default ratios and explicit overrides"""
+        from main import token_cost
+
+        cfg = {"price_input_per_m": 3.0, "price_output_per_m": 15.0}
+        usage = {"input_tokens": 1000, "output_tokens": 200,
+                 "cache_read_tokens": 5000, "cache_creation_tokens": 100}
+        # 1000*3 + 200*15 + 5000*0.3(cache read=0.1x) + 100*3.75(create=1.25x) = 7875
+        self.assertAlmostEqual(token_cost(usage, cfg), 0.007875, places=9)
+
+        # Explicit cache price override honored (0.0 is a valid price)
+        cfg2 = dict(cfg)
+        cfg2["price_cache_read_per_m"] = 0.0
+        self.assertAlmostEqual(token_cost(usage, cfg2), (3000 + 3000 + 375) / 1e6, places=9)
+        print("✅ Token cost calculation test successful")
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

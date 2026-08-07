@@ -1370,6 +1370,7 @@ async function fetchSessionHistory() {
                 <div style="text-align:right; font-size:0.8rem; color:var(--text-secondary);">
                     <div>🕒 ${sess.ts}</div>
                     <div style="font-size:0.75rem; color:var(--accent);">Turns: ${sess.turns || '--'} | Cost: $${(sess.est_cost || 0).toFixed(4)} | Avg: $${avgCost}/turn</div>
+                    <div style="font-size:0.7rem; color:#94a3b8;">⚡ ${fmtTokens(sess.input_tokens || 0)} in / ${fmtTokens(sess.output_tokens || 0)} out${(sess.cache_read_tokens || 0) ? ' | cache ' + fmtTokens(sess.cache_read_tokens) + 'r / ' + fmtTokens(sess.cache_creation_tokens || 0) + 'w' : ''}</div>
                 </div>
             `;
             if (sess.exists) {
@@ -1548,11 +1549,17 @@ document.getElementById('btnAskKb').addEventListener('click', () => {
 // ==========================================
 // C1 Stats Fetching
 // ==========================================
+function fmtTokens(n) {
+    if (!n) return '0';
+    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+    if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
+    return String(n);
+}
+
 async function fetchStats() {
     try {
-        const token = document.getElementById("inputToken") ? document.getElementById("inputToken").value : "";
         const response = await fetch('/api/stats', {
-            headers: { 'X-Gabriel-Token': token }
+            headers: { 'X-Gabriel-Token': localToken }
         });
         if (response.ok) {
             const stats = await response.json();
@@ -1560,10 +1567,12 @@ async function fetchStats() {
             const eErrs = document.getElementById('statErrors');
             const eTools = document.getElementById('statTools');
             const eCost = document.getElementById('statCost');
+            const eTokens = document.getElementById('statTokens');
             if (eTurns) eTurns.innerText = stats.turns;
             if (eErrs) eErrs.innerText = stats.errors;
             if (eTools) eTools.innerText = stats.tools;
             if (eCost) eCost.innerText = '$' + stats.cost.toFixed(4);
+            if (eTokens) eTokens.innerText = fmtTokens(stats.input_tokens) + ' / ' + fmtTokens(stats.output_tokens);
         }
     } catch (e) {}
 }
