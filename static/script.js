@@ -14,6 +14,7 @@ const dict = {
         "settings_baseurl": "Base URL", "settings_apikey": "API Key", "settings_model": "Model Name",
         "settings_workflow": "Workflow Strategy", "settings_merge": "Knowledge Base Merge", "settings_save": "Save Configuration",
         "mode_manual": "Manual (Geek)", "mode_auto": "Automatic",
+        "chat_mode_title": "Side-brain Mode", "mode_light": "💨 Quick (Snapshot + Save)", "mode_private": "🔒 Private (Snapshot, no save)", "mode_audit": "🔬 Deep Audit (Full + Save)", "mode_onedive": "⚡ One-shot Deep (Full, no save)",
         "settings_ui": "UI Preferences", "settings_lang": "Language", "lang_en": "English", "lang_zh": "中文 (Chinese)",
         "copied": "Copied to Clipboard!", "saved": "Saved", "scanning": "Scanning...","radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 3.1.0 (Cyber-Dark Edition)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "👼 Gabriel",
         "chat_feedback": "Feedback", "kb_recommendation": "Knowledge Base Recommendation"
@@ -33,6 +34,7 @@ const dict = {
         "settings_baseurl": "接口地址 (Base URL)", "settings_apikey": "密钥 (API Key)", "settings_model": "模型名称 (Model)",
         "settings_workflow": "工作流策略", "settings_merge": "知识库合并模式", "settings_save": "保存配置",
         "mode_manual": "手动提取 (极客)", "mode_auto": "全自动注入",
+        "chat_mode_title": "副脑模式", "mode_light": "💨 轻量助手（快照+保存）", "mode_private": "🔒 私密问答（快照+不保存）", "mode_audit": "🔬 深潜审计（完整上下文+保存）", "mode_onedive": "⚡ 一次性深潜（完整+不保存）",
         "settings_ui": "界面偏好", "settings_lang": "显示语言",
         "copied": "已复制到剪贴板！", "saved": "已保存", "scanning": "正在扫描...", "radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 3.1.0 (Cyber-Dark Edition)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "👼 Gabriel",
         
@@ -52,6 +54,7 @@ const dict = {
         "settings_baseurl": "ベース URL", "settings_apikey": "API キー", "settings_model": "モデル名",
         "settings_workflow": "ワークフロー戦略", "settings_merge": "知識ベース結合モード", "settings_save": "設定を保存",
         "mode_manual": "手動抽出", "mode_auto": "自動注入",
+        "chat_mode_title": "サイドブレインモード", "mode_light": "💨 クイック（スナップショット+保存）", "mode_private": "🔒 プライベート（スナップショット、保存なし）", "mode_audit": "🔬 ディープ監査（全文脈+保存）", "mode_onedive": "⚡ ワンショット（全文脈、保存なし）",
         "settings_ui": "UI 設定", "settings_lang": "表示言語",
         "copied": "コピーしました！", "saved": "保存しました", "scanning": "スキャン中...", "radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 3.1.0 (Cyber-Dark Edition)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "👼 Gabriel",
         
@@ -71,6 +74,7 @@ const dict = {
         "settings_baseurl": "介面位址 (Base URL)", "settings_apikey": "密鑰 (API Key)", "settings_model": "模型名稱 (Model)",
         "settings_workflow": "工作流策略", "settings_merge": "知識庫合併模式", "settings_save": "保存配置",
         "mode_manual": "手動提取 (極客)", "mode_auto": "全自動注入",
+        "chat_mode_title": "副腦模式", "mode_light": "💨 輕量助手（快照+保存）", "mode_private": "🔒 私密問答（快照+不保存）", "mode_audit": "🔬 深潛審計（完整上下文+保存）", "mode_onedive": "⚡ 一次性深潛（完整+不保存）",
         "settings_ui": "介面偏好", "settings_lang": "顯示語言",
         "copied": "已複製到剪貼簿！", "saved": "已保存", "scanning": "正在掃描...", "radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 3.1.0 (Cyber-Dark Edition)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "👼 Gabriel",
         
@@ -90,6 +94,7 @@ const dict = {
         "settings_baseurl": "URL de base", "settings_apikey": "Clé API", "settings_model": "Modèle",
         "settings_workflow": "Stratégie de Workflow", "settings_merge": "Mode de Fusion", "settings_save": "Enregistrer",
         "mode_manual": "Manuel (Geek)", "mode_auto": "Automatique",
+        "chat_mode_title": "Mode second cerveau", "mode_light": "💨 Rapide (Snapshot + Sauvegarde)", "mode_private": "🔒 Privé (Snapshot, sans sauvegarde)", "mode_audit": "🔬 Audit profond (Contexte complet + Sauvegarde)", "mode_onedive": "⚡ Plongée unique (Complet, sans sauvegarde)",
         "settings_ui": "Préférences UI", "settings_lang": "Langue",
         "copied": "Copié !", "saved": "Enregistré", "scanning": "Analyse...", "radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 3.1.0 (Cyber-Dark Edition)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "👼 Gabriel",
         
@@ -109,6 +114,7 @@ const dict = {
         "settings_baseurl": "URL Base", "settings_apikey": "Clave API", "settings_model": "Modelo",
         "settings_workflow": "Flujo de trabajo", "settings_merge": "Modo de Fusión", "settings_save": "Guardar Ajustes",
         "mode_manual": "Manual (Geek)", "mode_auto": "Automático",
+        "chat_mode_title": "Modo cerebro auxiliar", "mode_light": "💨 Rápido (Snapshot + Guardar)", "mode_private": "🔒 Privado (Snapshot, sin guardar)", "mode_audit": "🔬 Auditoría profunda (Contexto completo + Guardar)", "mode_onedive": "⚡ Inmersión única (Completo, sin guardar)",
         "settings_ui": "Preferencias de IU", "settings_lang": "Idioma",
         "copied": "¡Copiado!", "saved": "Guardado", "scanning": "Escaneando...", "radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 3.1.0 (Cyber-Dark Edition)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "👼 Gabriel",
         
@@ -128,6 +134,7 @@ const dict = {
         "settings_baseurl": "기본 URL", "settings_apikey": "API 키", "settings_model": "모델명",
         "settings_workflow": "워크플로 전략", "settings_merge": "지식 베이스 병합 모드", "settings_save": "설정 저장",
         "mode_manual": "수동", "mode_auto": "자동",
+        "chat_mode_title": "보조 뇌 모드", "mode_light": "💨 빠른 (스냅샷+저장)", "mode_private": "🔒 비공개 (스냅샷, 저장 안 함)", "mode_audit": "🔬 딥 감사 (전체 컨텍스트+저장)", "mode_onedive": "⚡ 원샷 딥 (전체, 저장 안 함)",
         "settings_ui": "UI 환경설정", "settings_lang": "언어",
         "copied": "복사 완료!", "saved": "저장됨", "scanning": "스캔 중..."
     }
@@ -151,23 +158,29 @@ if (window.marked && window.hljs) {
 
 // [NOTE]: Using localStorage for token is acceptable for this local single-machine tool. 
 // If Gabriel supports multi-user LAN access in the future, this must be re-evaluated.
+const urlParams = new URLSearchParams(window.location.search);
 let localToken = urlParams.get('token') || sessionStorage.getItem('gabriel_token') || localStorage.getItem('gabriel_token');
 if (localToken) {
     sessionStorage.setItem('gabriel_token', localToken);
     localStorage.setItem('gabriel_token', localToken);
     window.history.replaceState({}, document.title, window.location.pathname);
 } else {
-    document.getElementById('loginModal').style.display = 'flex';
+    const loginModal = document.getElementById('loginModal');
+    if (loginModal) loginModal.style.display = 'flex';
 }
 
-document.getElementById('btnLogin').addEventListener('click', () => {
-    const t = document.getElementById('inputToken').value.trim();
-    if (t) {
-        sessionStorage.setItem('gabriel_token', t);
-        localStorage.setItem('gabriel_token', t);
-        window.location.reload();
-    }
-});
+const btnLogin = document.getElementById('btnLogin');
+if (btnLogin) {
+    btnLogin.addEventListener('click', () => {
+        const inputToken = document.getElementById('inputToken');
+        const t = inputToken ? inputToken.value.trim() : "";
+        if (t) {
+            sessionStorage.setItem('gabriel_token', t);
+            localStorage.setItem('gabriel_token', t);
+            window.location.reload();
+        }
+    });
+}
 
 function applyLang() {
     const map = dict[currentLang];
@@ -214,7 +227,7 @@ navItems.forEach(item => {
         const target = document.getElementById(item.dataset.tab);
         target.classList.remove('hidden');
         
-        if(item.dataset.tab === 'tab-monitor') fetchAgents();
+        if(item.dataset.tab === 'tab-radar') fetchAgents();
         if(item.dataset.tab === 'tab-kb') loadKb();
     });
 });
@@ -260,7 +273,8 @@ document.addEventListener('mouseup', () => {
 const cfgBaseUrl = document.getElementById('cfgBaseUrl');
 const cfgApiKey = document.getElementById('cfgApiKey');
 const cfgModel = document.getElementById('cfgModel');
-let currentMergeMode = "manual";
+const cfgPriceInput = document.getElementById('cfgPriceInput');
+const cfgPriceOutput = document.getElementById('cfgPriceOutput');
 let currentTargetAgent = "auto";
 
 async function loadConfig() {
@@ -270,24 +284,26 @@ async function loadConfig() {
         if(data.base_url) cfgBaseUrl.value = data.base_url;
         if(data.api_key) cfgApiKey.value = data.api_key;
         if(data.model) cfgModel.value = data.model;
-        currentMergeMode = data.merge_mode || "manual";
-        document.querySelector(`input[name="mergeMode"][value="${currentMergeMode}"]`).checked = true;
+        if(cfgPriceInput) cfgPriceInput.value = data.price_input_per_m ?? 1.0;
+        if(cfgPriceOutput) cfgPriceOutput.value = data.price_output_per_m ?? 3.0;
         currentTargetAgent = data.target_agent || "auto";
-        document.getElementById('toggleAutoCursor').checked = (currentTargetAgent === "auto");
+        const toggleEl = document.getElementById('toggleAutoCursor');
+        if (toggleEl) toggleEl.checked = (currentTargetAgent === "auto");
     } catch(e) { console.error("Config load error", e); }
 }
 
 async function saveConfig() {
-    currentMergeMode = document.querySelector('input[name="mergeMode"]:checked').value;
-    const isAuto = document.getElementById('toggleAutoCursor').checked;
+    const toggleEl = document.getElementById('toggleAutoCursor');
+    const isAuto = toggleEl ? toggleEl.checked : false;
     if(isAuto) currentTargetAgent = "auto";
     
     const payload = {
         base_url: cfgBaseUrl.value,
         api_key: cfgApiKey.value,
         model: cfgModel.value,
-        merge_mode: currentMergeMode,
-        target_agent: currentTargetAgent
+        target_agent: currentTargetAgent,
+        price_input_per_m: parseFloat(cfgPriceInput ? cfgPriceInput.value : 1.0) || 1.0,
+        price_output_per_m: parseFloat(cfgPriceOutput ? cfgPriceOutput.value : 3.0) || 3.0
     };
     try {
         await fetch('/api/config', {
@@ -311,13 +327,16 @@ document.getElementById('btnSaveConfig').addEventListener('click', async () => {
 });
 
 // --- Agent Monitor ---
-document.getElementById('toggleAutoCursor').addEventListener('change', async (e) => {
-    if(e.target.checked) {
-        currentTargetAgent = "auto";
-        await saveConfig();
-        fetchAgents();
-    }
-});
+const toggleAutoCursorEl = document.getElementById('toggleAutoCursor');
+if (toggleAutoCursorEl) {
+    toggleAutoCursorEl.addEventListener('change', async (e) => {
+        if(e.target.checked) {
+            currentTargetAgent = "auto";
+            await saveConfig();
+            fetchAgents();
+        }
+    });
+}
 
 async function fetchAgents() {
     const list = document.getElementById('agentList');
@@ -329,7 +348,8 @@ async function fetchAgents() {
         .then(r => r.json())
         .then(agents => {
             // Sorting Logic
-            const sortMode = document.getElementById('agentSortSelect').value;
+            const sortSelect = document.getElementById('agentSortSelect');
+            const sortMode = sortSelect ? sortSelect.value : 'mtime_desc';
             const [sortKey, sortDir] = sortMode.split('_');
             
             agents.sort((a, b) => {
@@ -405,7 +425,8 @@ window.lockAgent = async function(path) {
     fetchAgents();
 }
 
-document.getElementById('agentSortSelect').addEventListener('change', fetchAgents);
+const agentSortSelect = document.getElementById('agentSortSelect');
+if (agentSortSelect) agentSortSelect.addEventListener('change', fetchAgents);
 const chatSelectEl = document.getElementById('chatTargetAgent');
 if(chatSelectEl) {
     chatSelectEl.addEventListener('change', (e) => lockAgent(e.target.value));
@@ -495,7 +516,7 @@ function renderAgentContent(codeEl, content) {
 
     if (window.DOMPurify && typeof DOMPurify.sanitize === 'function') {
         codeEl.innerHTML = DOMPurify.sanitize(displayContent, {
-            ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'code', 'pre', 'span', 'br'],
+            ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'code', 'pre', 'span', 'br', 'div'],
             ALLOWED_ATTR: ['class']
         });
     } else {
@@ -509,9 +530,25 @@ let ws;
 let reconnectAttempts = 0;
 const MAX_RECONNECT_DELAY = 30000;
 
-function connectWebSocket() {
+async function connectWebSocket() {
     if (!localToken) return;
-    const wsUrl = `ws://${window.location.host || '127.0.0.1:8080'}/ws?token=${localToken}`;
+    let ticket = null;
+    try {
+        const ticketRes = await fetch('/api/auth/ticket', {
+            method: 'POST',
+            headers: { 'X-Gabriel-Token': localToken }
+        });
+        if (ticketRes.ok) {
+            const data = await ticketRes.json();
+            ticket = data.ticket;
+        }
+    } catch (e) {
+        console.warn("Could not fetch WS auth ticket, falling back to token parameter.");
+    }
+    
+    const host = window.location.host || '127.0.0.1:8080';
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = ticket ? `${wsProtocol}//${host}/ws?ticket=${ticket}` : `${wsProtocol}//${host}/ws?token=${localToken}`;
     ws = new WebSocket(wsUrl);
     
     ws.onopen = () => {
@@ -541,8 +578,15 @@ function connectWebSocket() {
         if (window.pingInterval) clearInterval(window.pingInterval);
         
         const wsStatus = document.getElementById('wsStatus');
-        wsStatus.classList.remove('connected');
-        wsStatus.classList.add('disconnected');
+        if (wsStatus) {
+            wsStatus.classList.remove('connected');
+            wsStatus.classList.add('disconnected');
+        }
+        
+        const statusTextEl = document.getElementById('statusText');
+        if (statusTextEl) statusTextEl.innerText = dict[currentLang].status_disconnected || "Disconnected";
+        const statusDot = document.querySelector('.status-dot');
+        if (statusDot) statusDot.classList.add('disconnected');
         
         const chatInput = document.getElementById('chatInput');
         if (chatInput) chatInput.disabled = true;
@@ -576,14 +620,7 @@ function connectWebSocket() {
 
     ws.onmessage = (event) => {
         const msg = JSON.parse(event.data);
-        if (msg.type === "context_update") {
-            // Spike the telemetry chart to simulate agent computation
-            if (telemetryChart) {
-                const spike = Math.min(100, Math.floor(Math.random() * 40) + 60);
-                chartData.datasets[0].data.shift();
-                chartData.datasets[0].data.push(spike);
-                telemetryChart.update('none');
-            }
+        if (msg.type === "context_update" || msg.type === "context_append") {
             
             // Render logs into grid
             const grid = document.getElementById('contextGrid');
@@ -603,9 +640,11 @@ function connectWebSocket() {
                     displayCard.className = 'agent-terminal-card';
                     displayCard.style.cssText = 'background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; display: flex; flex-direction: column; height: 400px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.3); transition: all 0.3s;';
                     displayCard.innerHTML = `
-                        <div style="background: rgba(0,0,0,0.4); padding: 6px 12px; border-bottom: 1px solid var(--panel-border); font-size: 0.8rem; font-weight: bold; color: var(--accent); display:flex; justify-content:space-between; align-items:center;">
-                            <span>🖥️ ${msg.agent}</span>
-                            <button onclick="exportAgentLog('${msg.agent}', '${agentId}')" style="background:none; border:1px solid rgba(255,255,255,0.1); color:#a1a1aa; border-radius:4px; padding:2px 6px; font-size:0.7rem; cursor:pointer;" onmouseover="this.style.color='#fff'; this.style.borderColor='#8b5cf6'" onmouseout="this.style.color='#a1a1aa'; this.style.borderColor='rgba(255,255,255,0.1)'">💾 Export MD</button>
+                        <div class="agent-card-header" style="background: rgba(0,0,0,0.4); padding: 6px 12px; border-bottom: 1px solid var(--panel-border); font-size: 0.8rem; font-weight: bold; color: var(--accent); display:flex; flex-direction:column;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span>🖥️ ${msg.agent}</span>
+                                <button onclick="exportAgentLog('${msg.agent}', '${agentId}')" style="background:none; border:1px solid rgba(255,255,255,0.1); color:#a1a1aa; border-radius:4px; padding:2px 6px; font-size:0.7rem; cursor:pointer;" onmouseover="this.style.color='#fff'; this.style.borderColor='#8b5cf6'" onmouseout="this.style.color='#a1a1aa'; this.style.borderColor='rgba(255,255,255,0.1)'">💾 Export MD</button>
+                            </div>
                         </div>
                         <pre style="margin:0; padding:12px; height:calc(100% - 30px); overflow-y:auto; white-space:pre-wrap; word-wrap:break-word;"><code class="agent-display-code"></code></pre>
                     `;
@@ -616,7 +655,54 @@ function connectWebSocket() {
                 const parent = codeEl.parentElement;
                 const isAtBottom = parent.scrollHeight - parent.scrollTop - parent.clientHeight < 50;
                 
-                renderAgentContent(codeEl, msg.content);
+                if (msg.type === "context_append") {
+                    if (window.DOMPurify && typeof DOMPurify.sanitize === 'function') {
+                        codeEl.insertAdjacentHTML('beforeend', DOMPurify.sanitize(msg.content, {
+                            ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'code', 'pre', 'span', 'br', 'div'],
+                            ALLOWED_ATTR: ['class']
+                        }));
+                    } else {
+                        const temp = document.createElement('div');
+                        temp.textContent = msg.content;
+                        codeEl.insertAdjacentHTML('beforeend', temp.innerHTML);
+                    }
+                    if (codeEl.children.length > 800) {
+                        for (let i = 0; i < codeEl.children.length - 800; i++) {
+                            codeEl.removeChild(codeEl.firstChild);
+                        }
+                    }
+                } else {
+                    renderAgentContent(codeEl, msg.content);
+                }
+                
+                // Update context gauge
+                if (typeof msg.context_percent !== 'undefined') {
+                    let header = displayCard.querySelector('.agent-card-header');
+                    let gauge = header.querySelector('.context-gauge');
+                    if (!gauge) {
+                        gauge = document.createElement('div');
+                        gauge.className = 'context-gauge';
+                        gauge.style.height = '3px';
+                        gauge.style.background = 'rgba(255,255,255,0.1)';
+                        gauge.style.marginTop = '6px';
+                        gauge.style.borderRadius = '2px';
+                        gauge.innerHTML = '<div class="context-gauge-bar" style="height:100%; width:0%; background:#10b981; transition:width 0.3s; border-radius:2px;"></div>';
+                        header.appendChild(gauge);
+                    }
+                    let bar = gauge.querySelector('.context-gauge-bar');
+                    bar.style.width = Math.min(100, msg.context_percent) + '%';
+                    
+                    let warningMsg = header.querySelector('.context-warning');
+                    if (msg.context_percent > 85) {
+                        bar.style.background = '#ef4444';
+                        if (!warningMsg) {
+                            header.insertAdjacentHTML('beforeend', '<div class="context-warning" style="color:#ef4444; font-size:0.75rem; margin-top:2px;">⚠️ 上下文剩余量低，建议重开或 /compact</div>');
+                        }
+                    } else {
+                        bar.style.background = msg.context_percent > 70 ? '#f59e0b' : '#10b981';
+                        if (warningMsg) warningMsg.remove();
+                    }
+                }
                 
                 // Rounds 91-95: Auto-Scroll Lock with UI Feedback
                 let headerStatus = displayCard.querySelector('.scroll-lock-status');
@@ -684,6 +770,35 @@ function connectWebSocket() {
                     radarList.appendChild(el);
                 }
             }
+        } else if (msg.type === "agent_waiting") {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                try {
+                    new Notification('Gabriel — Agent 需要你', {
+                        body: `Agent ${msg.agent || ''} 正在等待你的输入`
+                    });
+                } catch(e) {}
+            }
+            let cardId = 'agent_' + msg.path.replace(/[^a-zA-Z0-9]/g, '_');
+            let card = document.getElementById(cardId);
+            if (card && !card.classList.contains('waiting-state')) {
+                card.classList.add('waiting-state');
+                card.style.borderColor = '#f59e0b';
+                card.style.boxShadow = '0 0 10px rgba(245, 158, 11, 0.4)';
+                let header = card.querySelector('.agent-card-header');
+                if (header && !header.querySelector('.waiting-banner')) {
+                    header.insertAdjacentHTML('beforeend', '<div class="waiting-banner" style="color:#f59e0b; font-size:0.8em; font-weight:bold; animation:pulse 2s infinite; margin-left:8px;">⚠️ 需要你处理</div>');
+                }
+            }
+        } else if (msg.type === "agent_unblocked") {
+            let cardId = 'agent_' + msg.path.replace(/[^a-zA-Z0-9]/g, '_');
+            let card = document.getElementById(cardId);
+            if (card && card.classList.contains('waiting-state')) {
+                card.classList.remove('waiting-state');
+                card.style.borderColor = 'var(--border-color)';
+                card.style.boxShadow = 'none';
+                let banner = card.querySelector('.waiting-banner');
+                if (banner) banner.remove();
+            }
         } else if (msg.type === "agent_frozen") {
             // Round 47: Freeze Agent Radar footprint
             let agentId = 'radar_' + msg.path.replace(/[^a-zA-Z0-9]/g, '_');
@@ -704,17 +819,28 @@ function connectWebSocket() {
             if (toast && toastContent) {
                 const encodedText = encodeURIComponent(msg.content);
                 const parsed = window.marked ? marked.parse(msg.content) : msg.content;
-                const htmlContent = window.DOMPurify ? DOMPurify.sanitize(parsed) : parsed;
+                const insightId = msg.insight_id || 0;
+                let localToken = document.getElementById("inputToken") ? document.getElementById("inputToken").value : "";
+                
                 toastContent.innerHTML = `
                     <div class="insight-card-header">
                         <span>⚡ Agent Instruction / Insight</span>
                         <div>
+                            <button class="btn-insight-copy" style="border-color:#10b981; color:#10b981; background:rgba(16, 185, 129, 0.1); margin-right:4px;" onclick="fetch('/api/kb/feedback', {method:'POST', headers:{'Content-Type': 'application/json', 'X-Gabriel-Token': '${localToken}'}, body: JSON.stringify({insight_id: ${insightId}, action: 'useful'})}); this.innerText='👍'; this.disabled=true;" title="Useful (用过)">👍</button>
+                            <button class="btn-insight-copy" style="border-color:#ef4444; color:#ef4444; background:rgba(239, 68, 68, 0.1); margin-right:4px;" onclick="fetch('/api/kb/feedback', {method:'POST', headers:{'Content-Type': 'application/json', 'X-Gabriel-Token': '${localToken}'}, body: JSON.stringify({insight_id: ${insightId}, action: 'useless'})}); this.innerText='👎'; this.disabled=true;" title="Useless (没用)">👎</button>
+                            <button class="btn-insight-copy" style="border-color:#f59e0b; color:#f59e0b; background:rgba(245, 158, 11, 0.1); margin-right:4px;" onclick="fetch('/api/kb/feedback', {method:'POST', headers:{'Content-Type': 'application/json', 'X-Gabriel-Token': '${localToken}'}, body: JSON.stringify({insight_id: ${insightId}, action: 'favorite'})}); this.innerText='⭐'; this.disabled=true;" title="Favorite (收藏)">⭐</button>
+                            
                             <button class="btn-insight-copy" style="border-color:#8b5cf6; color:#8b5cf6; background:rgba(139, 92, 246, 0.1); margin-right:4px;" onclick="ws.send(JSON.stringify({type: 'inject_insight', content: decodeURIComponent('${encodedText}')})); this.classList.add('success-pulse'); this.innerText='Injected!'; setTimeout(() => { this.classList.remove('success-pulse'); this.innerText='⚡ Inject'; }, 2000);">⚡ Add to KB</button>
                             <button class="btn-insight-copy" onclick="navigator.clipboard.writeText(decodeURIComponent('${encodedText}')); this.classList.add('success-pulse'); this.innerText='Copied!'; setTimeout(() => { this.classList.remove('success-pulse'); this.innerText='Copy'; }, 2000);">Copy</button>
                         </div>
                     </div>
-                    <div class="insight-content">${htmlContent}</div>
+                    <div class="insight-content"></div>
                 `;
+                if (window.DOMPurify) {
+                    toastContent.querySelector('.insight-content').innerHTML = DOMPurify.sanitize(parsed);
+                } else {
+                    toastContent.querySelector('.insight-content').textContent = parsed;
+                }
                 toast.classList.remove('hidden');
                 
                 // Round 32: Dynamic Toast Auto-hide logic (15s)
@@ -723,6 +849,32 @@ function connectWebSocket() {
                     toast.classList.add('hidden');
                 }, 15000);
             }
+        } else if (msg.type === "error_warning") {
+            const warningDiv = document.createElement('div');
+            warningDiv.className = 'message sys-message';
+            warningDiv.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+            warningDiv.style.background = 'rgba(239, 68, 68, 0.1)';
+            warningDiv.style.color = '#fca5a5';
+            
+            const errId = 'err_' + Math.random().toString(36).substr(2, 9);
+            const promptContent = encodeURIComponent(`检测到连续异常，请诊断：\n\n\`\`\`\n${msg.content}\n\`\`\``);
+            
+            warningDiv.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <strong>⚠️ 疑似卡点预警 (${msg.agent || 'Agent'})</strong>
+                    <div>
+                        <button onclick="document.getElementById('${errId}').style.display = document.getElementById('${errId}').style.display === 'none' ? 'block' : 'none'" style="background:transparent; border:1px solid #fca5a5; color:#fca5a5; padding:2px 8px; border-radius:4px; cursor:pointer; margin-right:4px;">详情</button>
+                        <button onclick="ws.send(JSON.stringify({type: 'chat', content: decodeURIComponent('${promptContent}'), mode: getChatMode()}))" style="background:#ef4444; border:none; color:white; padding:2px 8px; border-radius:4px; cursor:pointer;">⚡ 一键诊断</button>
+                    </div>
+                </div>
+                <div id="${errId}" style="display:none; margin-top:8px; font-family:monospace; font-size:0.8em; white-space:pre-wrap; max-height:200px; overflow-y:auto; background:rgba(0,0,0,0.2); padding:8px; border-radius:4px;"></div>
+            `;
+            const contentDiv = warningDiv.querySelector('#' + errId);
+            if (window.DOMPurify) contentDiv.innerHTML = DOMPurify.sanitize(msg.content);
+            else contentDiv.textContent = msg.content;
+            
+            document.getElementById('chatHistory').appendChild(warningDiv);
+            scrollToBottom();
         } else if (msg.type === "ai_response_start") {
             if (window.currentThinkingId) {
                 const el = document.getElementById(window.currentThinkingId);
@@ -762,11 +914,6 @@ function connectWebSocket() {
             appendMessage(msg.content, 'sys-message');
         }
     };
-    ws.onclose = () => {
-        document.getElementById('statusText').innerText = dict[currentLang].status_disconnected || "Disconnected";
-        document.querySelector('.status-dot').classList.add('disconnected');
-        setTimeout(connectWebSocket, 3000);
-    };
 }
 
 function createMessageDiv(className) {
@@ -792,12 +939,51 @@ function appendMessage(text, className) {
     container.scrollTop = container.scrollHeight;
 }
 
+// Per-message side-brain mode: controls context injection + persistence.
+function getChatMode() {
+    const el = document.getElementById('chatMode');
+    const v = el ? el.value : 'light';
+    switch (v) {
+        case 'light':   return { context: 'snapshot', save: true };
+        case 'private': return { context: 'snapshot', save: false };
+        case 'audit':   return { context: 'full', save: true };
+        case 'onedive': return { context: 'full', save: false };
+        default:        return { context: 'snapshot', save: true };
+    }
+}
+
+// Restore + persist the selected side-brain mode across reloads.
+(function initChatMode() {
+    const sel = document.getElementById('chatMode');
+    if (!sel) return;
+    const saved = localStorage.getItem('gabriel_chat_mode');
+    if (saved && sel.querySelector(`option[value="${saved}"]`)) sel.value = saved;
+    sel.addEventListener('change', () => localStorage.setItem('gabriel_chat_mode', sel.value));
+})();
+
 document.getElementById('btnSend').addEventListener('click', () => {
     const input = document.getElementById('chatInput');
     const text = input.value.trim();
-    if (text && ws && ws.readyState === WebSocket.OPEN) {
+    if (!text) return;
+    
+    if (text === '/help' || text === '/h') {
+        const helpModal = document.getElementById('helpModal');
+        if (helpModal) helpModal.style.display = 'flex';
+        input.value = '';
+        input.style.height = 'auto';
+        return;
+    }
+    if (text === '/clear') {
+        const btnClear = document.getElementById('btnClearChat');
+        if (btnClear) btnClear.click();
+        input.value = '';
+        input.style.height = 'auto';
+        return;
+    }
+
+    if (ws && ws.readyState === WebSocket.OPEN) {
         appendMessage(text, 'user-message');
-        ws.send(JSON.stringify({type: "chat", content: text}));
+        ws.send(JSON.stringify({type: "chat", content: text, mode: getChatMode()}));
         input.value = '';
         input.style.height = 'auto';
         
@@ -861,7 +1047,7 @@ if (btnExportChat) {
             const isUser = msg.classList.contains('user-message');
             const isSys = msg.classList.contains('sys-message');
             const role = isUser ? "**User**" : (isSys ? "**System**" : "**Gabriel**");
-            let text = isUser || isSys ? msg.innerText : msg.innerText; 
+            let text = msg.innerText; 
             md += `${role}:\n${text}\n\n`;
         });
         
@@ -945,81 +1131,7 @@ async function pollHealth() {
 setInterval(pollHealth, 10000);
 setTimeout(pollHealth, 2000);
 
-// ==========================================
-// Round 3 Optimization: Cyber-Dark Telemetry Visualizer
-// ==========================================
-let telemetryChart;
-const chartData = {
-    labels: Array(20).fill(''),
-    datasets: [{
-        label: 'Neural Activity (Load %)',
-        data: Array(20).fill(5),
-        borderColor: 'rgba(139, 92, 246, 0.8)', // Purple glowing line
-        backgroundColor: (context) => {
-            if (!context.chart.chartArea) return;
-            const ctx = context.chart.ctx;
-            const gradient = ctx.createLinearGradient(0, 0, 0, context.chart.chartArea.bottom);
-            gradient.addColorStop(0, 'rgba(139, 92, 246, 0.4)');
-            gradient.addColorStop(1, 'rgba(139, 92, 246, 0.0)');
-            return gradient;
-        },
-        borderWidth: 2,
-        tension: 0.4,
-        fill: true,
-        pointRadius: 0
-    }]
-};
-
-function initChart() {
-    const ctx = document.getElementById('telemetryChart');
-    if (!ctx) return;
-    
-    // Add glow effect via plugin
-    Chart.register({
-        id: 'glow',
-        beforeDraw: (chart) => {
-            if (chart.ctx) {
-                chart.ctx.save();
-                chart.ctx.shadowColor = 'rgba(139, 92, 246, 0.8)';
-                chart.ctx.shadowBlur = 10;
-                chart.ctx.shadowOffsetX = 0;
-                chart.ctx.shadowOffsetY = 4;
-            }
-        },
-        afterDraw: (chart) => {
-            if (chart.ctx) chart.ctx.restore();
-        }
-    });
-
-    telemetryChart = new Chart(ctx, {
-        type: 'line',
-        data: chartData,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: { duration: 300, easing: 'easeOutQuart' },
-            plugins: { legend: { display: false } },
-            scales: {
-                y: { min: 0, max: 100, display: false },
-                x: { display: false }
-            },
-            interaction: { intersect: false, mode: 'index' }
-        }
-    });
-
-    // Idle cooldown loop
-    setInterval(() => {
-        const lastVal = chartData.datasets[0].data[19];
-        // Jitter the cooldown to look alive
-        const newVal = Math.max(5, lastVal - (lastVal * (0.05 + Math.random() * 0.1)));
-        chartData.datasets[0].data.shift();
-        chartData.datasets[0].data.push(newVal);
-        telemetryChart.update('none');
-    }, 1000);
-}
-
-// Call initChart immediately
-initChart();
+// (Dead code telemetryChart removed in T1)
 
 // ==========================================
 // Round 13 Optimization: Reveal-on-Hover Copy Button for Code Blocks
@@ -1066,11 +1178,72 @@ codeObserver.observe(document.getElementById('chatHistory'), { childList: true, 
 // ==========================================
 // Round 38 Optimization: Knowledge Graph Fetch Logic
 // ==========================================
+let currentKbSubTab = 'all';
+
 async function fetchKbRules() {
     const listEl = document.getElementById('kbRulesList');
     if (!listEl) return;
+    
     try {
         listEl.innerHTML = '<div style="color:var(--text-secondary); font-size:0.9rem; text-align:center; margin-top:20px;">Fetching...</div>';
+        
+        if (currentKbSubTab === 'fav') {
+            const res = await fetch('/api/kb?filter=favorite', {
+                headers: { 'X-Gabriel-Token': localToken }
+            });
+            const json = await res.json();
+            const favs = json.favorites || [];
+            
+            if (favs.length === 0) {
+                listEl.innerHTML = '<div style="color:var(--text-secondary); font-size:0.9rem; text-align:center; margin-top:20px;">百宝箱为空，点击 ⭐ 可收藏常用 Insight。</div>';
+                return;
+            }
+            
+            listEl.innerHTML = '';
+            favs.forEach(rule => {
+                const div = document.createElement('div');
+                div.className = 'kb-rule-card';
+                div.style.position = 'relative';
+                
+                const displayContent = rule.content.length > 150 ? rule.content.substring(0, 150) + '...' : rule.content;
+                const parsed = window.DOMPurify && window.marked ? DOMPurify.sanitize(marked.parse(displayContent)) : displayContent;
+                
+                div.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                        <span class="kb-rule-date">🕒 ${rule.timestamp}</span>
+                        <div style="display:flex; gap:4px;">
+                            <button class="btn-outline btn-unfav" style="font-size:0.75rem; padding:2px 6px; color:#ef4444; border-color:rgba(239,68,68,0.3);">取消收藏</button>
+                        </div>
+                    </div>
+                    <div style="font-family:var(--font-ui);">${parsed}</div>
+                `;
+                
+                const btnUnfav = div.querySelector('.btn-unfav');
+                if (btnUnfav) {
+                    btnUnfav.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        await fetch('/api/kb/feedback', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'X-Gabriel-Token': localToken },
+                            body: JSON.stringify({ insight_id: rule.id, action: 'unfavorite' })
+                        });
+                        fetchKbRules();
+                    });
+                }
+                
+                div.addEventListener('click', () => {
+                    const editor = document.getElementById('kbEditor');
+                    if (editor) {
+                        editor.value = rule.content;
+                        editor.dispatchEvent(new Event('input'));
+                    }
+                });
+                
+                listEl.appendChild(div);
+            });
+            return;
+        }
+        
         const res = await fetch('/api/knowledge');
         const json = await res.json();
         
@@ -1110,9 +1283,136 @@ async function fetchKbRules() {
     }
 }
 
+const btnKbSubAll = document.getElementById('btnKbSubAll');
+const btnKbSubFav = document.getElementById('btnKbSubFav');
+
+if (btnKbSubAll && btnKbSubFav) {
+    btnKbSubAll.addEventListener('click', () => {
+        currentKbSubTab = 'all';
+        btnKbSubAll.classList.add('active');
+        btnKbSubFav.classList.remove('active');
+        fetchKbRules();
+    });
+    btnKbSubFav.addEventListener('click', () => {
+        currentKbSubTab = 'fav';
+        btnKbSubFav.classList.add('active');
+        btnKbSubAll.classList.remove('active');
+        fetchKbRules();
+    });
+}
+
 const btnRefreshKb = document.getElementById('btnRefreshKb');
 if (btnRefreshKb) {
     btnRefreshKb.addEventListener('click', fetchKbRules);
+}
+
+// --- Session History Browser (Task T5) ---
+let currentSessionReviewPath = null;
+
+async function fetchSessionHistory() {
+    const listEl = document.getElementById('sessionHistoryList');
+    if (!listEl) return;
+    try {
+        listEl.innerHTML = '<div style="color:var(--text-secondary); text-align:center; padding:20px;">加载中...</div>';
+        const res = await fetch('/api/sessions', {
+            headers: { 'X-Gabriel-Token': localToken }
+        });
+        const sessions = await res.json();
+        if (!sessions || sessions.length === 0) {
+            listEl.innerHTML = '<div style="color:var(--text-secondary); text-align:center; padding:20px;">尚无历史会话记录。</div>';
+            return;
+        }
+        listEl.innerHTML = '';
+        sessions.forEach(sess => {
+            const item = document.createElement('div');
+            item.className = 'agent-item';
+            item.style.cursor = 'pointer';
+            item.style.justifyContent = 'space-between';
+            const existsBadge = sess.exists ? '<span style="color:#10b981; font-size:0.75rem;">(存在)</span>' : '<span style="color:#ef4444; font-size:0.75rem;">(已删)</span>';
+            item.innerHTML = `
+                <div class="agent-info">
+                    <span class="agent-name">📜 ${sess.agent} ${existsBadge}</span>
+                    <span class="agent-path" style="font-size:0.75rem; color:var(--text-secondary);">${sess.path}</span>
+                </div>
+                <div style="text-align:right; font-size:0.8rem; color:var(--text-secondary);">
+                    <div>🕒 ${sess.ts}</div>
+                    <div style="font-size:0.75rem; color:var(--accent);">Turns: ${sess.turns || '--'} | Cost: $${(sess.est_cost || 0).toFixed(4)}</div>
+                </div>
+            `;
+            if (sess.exists) {
+                item.addEventListener('click', () => openSessionReview(sess.id, sess.agent, sess.path));
+            } else {
+                item.style.opacity = '0.5';
+            }
+            listEl.appendChild(item);
+        });
+    } catch (e) {
+        listEl.innerHTML = `<div style="color:var(--error); text-align:center; padding:20px;">加载历史失败: ${e.message}</div>`;
+    }
+}
+
+async function openSessionReview(id, agent, path) {
+    currentSessionReviewPath = path;
+    const modal = document.getElementById('sessionReviewModal');
+    const titleEl = document.getElementById('sessionReviewTitle');
+    const bodyEl = document.getElementById('sessionReviewBody');
+    if (!modal || !bodyEl) return;
+    
+    titleEl.innerText = `📜 回看会话: ${agent}`;
+    bodyEl.innerHTML = '<div style="color:var(--text-secondary); text-align:center;">加载日志文本中...</div>';
+    modal.style.display = 'flex';
+    
+    try {
+        const res = await fetch(`/api/sessions/${id}/transcript`, {
+            headers: { 'X-Gabriel-Token': localToken }
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+            const sanitized = window.DOMPurify ? DOMPurify.sanitize(data.html) : data.html;
+            bodyEl.innerHTML = sanitized;
+        } else {
+            bodyEl.innerHTML = `<div style="color:var(--error);">${data.message || '无法获取会话内容'}</div>`;
+        }
+    } catch(e) {
+        bodyEl.innerHTML = `<div style="color:var(--error);">请求报错: ${e.message}</div>`;
+    }
+}
+
+const btnRadarSubLive = document.getElementById('btnRadarSubLive');
+const btnRadarSubHistory = document.getElementById('btnRadarSubHistory');
+if (btnRadarSubLive && btnRadarSubHistory) {
+    btnRadarSubLive.addEventListener('click', () => {
+        btnRadarSubLive.classList.add('active');
+        btnRadarSubHistory.classList.remove('active');
+        document.getElementById('radarSubViewLive').classList.remove('hidden');
+        document.getElementById('radarSubViewHistory').classList.add('hidden');
+    });
+    btnRadarSubHistory.addEventListener('click', () => {
+        btnRadarSubHistory.classList.add('active');
+        btnRadarSubLive.classList.remove('active');
+        document.getElementById('radarSubViewLive').classList.add('hidden');
+        document.getElementById('radarSubViewHistory').classList.remove('hidden');
+        fetchSessionHistory();
+    });
+}
+
+const btnCloseSessionReview = document.getElementById('btnCloseSessionReview');
+if (btnCloseSessionReview) {
+    btnCloseSessionReview.addEventListener('click', () => {
+        document.getElementById('sessionReviewModal').style.display = 'none';
+    });
+}
+
+const btnAdoptSession = document.getElementById('btnAdoptSession');
+if (btnAdoptSession) {
+    btnAdoptSession.addEventListener('click', () => {
+        if (currentSessionReviewPath && ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'adopt_session', path: currentSessionReviewPath }));
+            document.getElementById('sessionReviewModal').style.display = 'none';
+            const chatNav = document.querySelector('.nav-item[data-tab="tab-chat"]');
+            if (chatNav) chatNav.click();
+        }
+    });
 }
 
 // Fetch on startup if tab is clicked
@@ -1127,9 +1427,17 @@ document.querySelectorAll('.nav-item').forEach(el => {
 // ==========================================
 // Rounds 81-85: Power-User Ergonomics
 // ==========================================
+const btnCloseHelpModal = document.getElementById('btnCloseHelpModal');
+if (btnCloseHelpModal) {
+    btnCloseHelpModal.addEventListener('click', () => {
+        const helpModal = document.getElementById('helpModal');
+        if (helpModal) helpModal.style.display = 'none';
+    });
+}
+
 document.addEventListener('keydown', (e) => {
     // Cmd+K or Ctrl+K to focus AI chat
-    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         const chatInput = document.getElementById('chatInput');
         if (chatInput) chatInput.focus();
@@ -1141,12 +1449,33 @@ document.addEventListener('keydown', (e) => {
         const kbTab = document.querySelector('.nav-item[data-tab="tab-kb"]');
         if (kbTab) kbTab.click();
     }
+
+    // Number keys 1, 2, 3, 4 for tab switching when not in text input
+    const isEditing = document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
+    if (!isEditing && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        if (e.key === '1') {
+            const tab = document.querySelector('.nav-item[data-tab="tab-chat"]');
+            if (tab) tab.click();
+        } else if (e.key === '2') {
+            const tab = document.querySelector('.nav-item[data-tab="tab-radar"]');
+            if (tab) tab.click();
+        } else if (e.key === '3') {
+            const tab = document.querySelector('.nav-item[data-tab="tab-kb"]');
+            if (tab) tab.click();
+        } else if (e.key === '4') {
+            const tab = document.querySelector('.nav-item[data-tab="tab-settings"]');
+            if (tab) tab.click();
+        }
+    }
     
-    // Escape to unfocus
+    // Escape to unfocus and close open modals
     if (e.key === 'Escape') {
         if (document.activeElement === document.getElementById('chatInput')) {
             document.activeElement.blur();
         }
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.style.display = 'none';
+        });
     }
 });
 
@@ -1182,3 +1511,45 @@ document.getElementById('btnAskKb').addEventListener('click', () => {
     chatInput.focus();
     document.getElementById('kbToast').classList.add('hidden');
 });
+
+// ==========================================
+// C1 Stats Fetching
+// ==========================================
+async function fetchStats() {
+    try {
+        const token = document.getElementById("inputToken") ? document.getElementById("inputToken").value : "";
+        const response = await fetch('/api/stats', {
+            headers: { 'X-Gabriel-Token': token }
+        });
+        if (response.ok) {
+            const stats = await response.json();
+            const eTurns = document.getElementById('statTurns');
+            const eErrs = document.getElementById('statErrors');
+            const eTools = document.getElementById('statTools');
+            const eCost = document.getElementById('statCost');
+            if (eTurns) eTurns.innerText = stats.turns;
+            if (eErrs) eErrs.innerText = stats.errors;
+            if (eTools) eTools.innerText = stats.tools;
+            if (eCost) eCost.innerText = '$' + stats.cost.toFixed(4);
+        }
+    } catch (e) {}
+}
+setInterval(fetchStats, 5000);
+
+// ==========================================
+// C5 Onboarding & Ergonomics
+// ==========================================
+if (!localStorage.getItem('gb_has_run')) {
+    const ob = document.getElementById('onboardingModal');
+    if (ob) ob.style.display = 'flex';
+}
+const chatInputBox = document.getElementById('chatInput');
+if (chatInputBox) {
+    chatInputBox.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            document.getElementById('btnSend').click();
+        }
+    });
+}
+
