@@ -34,7 +34,7 @@ const dict = {
         "settings_workflow": "工作流策略", "settings_merge": "知识库合并模式", "settings_save": "保存配置",
         "mode_manual": "手动提取 (极客)", "mode_auto": "全自动注入",
         "settings_ui": "界面偏好", "settings_lang": "显示语言",
-        "copied": "已复制到剪贴板！", "saved": "已保存", "scanning": "正在扫描...""radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 3.1.0 (Cyber-Dark Edition)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "👼 Gabriel",
+        "copied": "已复制到剪贴板！", "saved": "已保存", "scanning": "正在扫描...", "radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 3.1.0 (Cyber-Dark Edition)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "👼 Gabriel",
         
     },
     "ja": {
@@ -53,7 +53,7 @@ const dict = {
         "settings_workflow": "ワークフロー戦略", "settings_merge": "知識ベース結合モード", "settings_save": "設定を保存",
         "mode_manual": "手動抽出", "mode_auto": "自動注入",
         "settings_ui": "UI 設定", "settings_lang": "表示言語",
-        "copied": "コピーしました！", "saved": "保存しました", "scanning": "スキャン中...""radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 3.1.0 (Cyber-Dark Edition)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "👼 Gabriel",
+        "copied": "コピーしました！", "saved": "保存しました", "scanning": "スキャン中...", "radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 3.1.0 (Cyber-Dark Edition)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "👼 Gabriel",
         
     },
     "zh-TW": {
@@ -72,7 +72,7 @@ const dict = {
         "settings_workflow": "工作流策略", "settings_merge": "知識庫合併模式", "settings_save": "保存配置",
         "mode_manual": "手動提取 (極客)", "mode_auto": "全自動注入",
         "settings_ui": "介面偏好", "settings_lang": "顯示語言",
-        "copied": "已複製到剪貼簿！", "saved": "已保存", "scanning": "正在掃描...""radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 3.1.0 (Cyber-Dark Edition)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "👼 Gabriel",
+        "copied": "已複製到剪貼簿！", "saved": "已保存", "scanning": "正在掃描...", "radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 3.1.0 (Cyber-Dark Edition)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "👼 Gabriel",
         
     },
     "fr": {
@@ -91,7 +91,7 @@ const dict = {
         "settings_workflow": "Stratégie de Workflow", "settings_merge": "Mode de Fusion", "settings_save": "Enregistrer",
         "mode_manual": "Manuel (Geek)", "mode_auto": "Automatique",
         "settings_ui": "Préférences UI", "settings_lang": "Langue",
-        "copied": "Copié !", "saved": "Enregistré", "scanning": "Analyse...""radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 3.1.0 (Cyber-Dark Edition)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "👼 Gabriel",
+        "copied": "Copié !", "saved": "Enregistré", "scanning": "Analyse...", "radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 3.1.0 (Cyber-Dark Edition)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "👼 Gabriel",
         
     },
     "es": {
@@ -110,7 +110,7 @@ const dict = {
         "settings_workflow": "Flujo de trabajo", "settings_merge": "Modo de Fusión", "settings_save": "Guardar Ajustes",
         "mode_manual": "Manual (Geek)", "mode_auto": "Automático",
         "settings_ui": "Preferencias de IU", "settings_lang": "Idioma",
-        "copied": "¡Copiado!", "saved": "Guardado", "scanning": "Escaneando...""radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 3.1.0 (Cyber-Dark Edition)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "👼 Gabriel",
+        "copied": "¡Copiado!", "saved": "Guardado", "scanning": "Escaneando...", "radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 3.1.0 (Cyber-Dark Edition)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "👼 Gabriel",
         
     },
     "ko": {
@@ -134,6 +134,20 @@ const dict = {
 };
 
 let currentLang = localStorage.getItem('gabriel_lang') || "en";
+
+if (window.marked && window.hljs) {
+    const renderer = new marked.Renderer();
+    renderer.code = function(code, language) {
+        const validLang = hljs.getLanguage(language) ? language : 'plaintext';
+        const highlighted = hljs.highlight(code, { language: validLang }).value;
+        const encodedCode = encodeURIComponent(code);
+        return `<div class="code-block-wrapper" style="position: relative; margin-bottom: 1em;">
+            <button class="code-copy-btn" onclick="navigator.clipboard.writeText(decodeURIComponent('${encodedCode}')); this.innerText='Copied!'; setTimeout(() => this.innerText='Copy', 2000);" style="position: absolute; right: 8px; top: 8px; padding: 4px 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: #fff; font-size: 12px; cursor: pointer; z-index: 10;">Copy</button>
+            <pre><code class="hljs ${validLang}">${highlighted}</code></pre>
+        </div>`;
+    };
+    marked.setOptions({ renderer });
+}
 
 // [NOTE]: Using localStorage for token is acceptable for this local single-machine tool. 
 // If Gabriel supports multi-user LAN access in the future, this must be re-evaluated.
@@ -326,7 +340,13 @@ async function fetchAgents() {
             });
 
             list.innerHTML = "";
+            const chatSelect = document.getElementById('chatTargetAgent');
+            const radarSelect = document.getElementById('targetAgent');
+            let optionsHTML = `<option value="auto" data-i18n="auto_track">${dict[currentLang]?.auto_track || "Auto-track Newest"}</option>`;
+
             if (agents.length === 0) {
+                if(chatSelect) { chatSelect.innerHTML = optionsHTML; chatSelect.value = "auto"; }
+                if(radarSelect) { radarSelect.innerHTML = optionsHTML; radarSelect.value = "auto"; }
                 list.innerHTML = `
                     <div class="agent-item" style="justify-content: center; opacity: 0.5; flex-direction: column; padding: 32px 16px;">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:12px; color:var(--text-secondary);"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4m0 4h.01"></path></svg>
@@ -337,9 +357,21 @@ async function fetchAgents() {
                 applyLang();
                 return;
             }
+            
             agents.forEach(a => {
+                const safePath = a.path.replace(/\\/g, '\\\\');
+                optionsHTML += `<option value="${safePath}">${a.name}</option>`;
                 const isLocked = (currentTargetAgent === a.path);
-                const date = new Date(a.mtime * 1000).toLocaleString();
+                const timeAgo = (ts) => {
+                    const seconds = Math.floor((new Date() - ts) / 1000);
+                    if (seconds < 60) return `${Math.max(0, seconds)} seconds ago`;
+                    const minutes = Math.floor(seconds / 60);
+                    if (minutes < 60) return `${minutes} minutes ago`;
+                    const hours = Math.floor(minutes / 60);
+                    if (hours < 24) return `${hours} hours ago`;
+                    return `${Math.floor(hours / 24)} days ago`;
+                };
+                const date = timeAgo(a.mtime * 1000);
                 const div = document.createElement('div');
                 div.className = `agent-item ${isLocked ? 'locked' : ''}`;
                 div.innerHTML = `
@@ -351,19 +383,37 @@ async function fetchAgents() {
                 `;
                 list.appendChild(div);
             });
+            
+            if(chatSelect) {
+                chatSelect.innerHTML = optionsHTML;
+                chatSelect.value = currentTargetAgent;
+            }
+            if(radarSelect) {
+                radarSelect.innerHTML = optionsHTML;
+                radarSelect.value = currentTargetAgent;
+            }
         });
     } catch(e) {
         list.innerHTML = `<div class="agent-item">${dict[currentLang].err_fetching_agents || "Error fetching agents."}</div>`;
     }
 }
 window.lockAgent = async function(path) {
-    document.getElementById('toggleAutoCursor').checked = false;
+    const toggleAuto = document.getElementById('toggleAutoCursor');
+    if (toggleAuto) toggleAuto.checked = (path === "auto");
     currentTargetAgent = path;
     await saveConfig();
     fetchAgents();
 }
 
 document.getElementById('agentSortSelect').addEventListener('change', fetchAgents);
+const chatSelectEl = document.getElementById('chatTargetAgent');
+if(chatSelectEl) {
+    chatSelectEl.addEventListener('change', (e) => lockAgent(e.target.value));
+}
+const radarSelectEl = document.getElementById('targetAgent');
+if(radarSelectEl) {
+    radarSelectEl.addEventListener('change', (e) => lockAgent(e.target.value));
+}
 
 // --- Knowledge Base ---
 const kbEditor = document.getElementById('kbEditor');
@@ -395,7 +445,6 @@ document.getElementById('btnSaveKb').addEventListener('click', async () => {
 
 // Markdown Preview Toggle
 const btnPreviewKb = document.getElementById('btnPreviewKb');
-const kbEditor = document.getElementById('kbEditor');
 const kbPreview = document.getElementById('kbPreview');
 btnPreviewKb.addEventListener('click', () => {
     if (kbPreview.classList.contains('hidden')) {
@@ -431,61 +480,26 @@ document.getElementById('btnCopyInject').addEventListener('click', () => {
     });
 });
 
-// --- Chart.js Telemetry ---
-let telemetryChart;
-const chartData = {
-    labels: Array(20).fill(''),
-    datasets: [{
-        label: 'Neural Activity (Load %)',
-        data: Array(20).fill(5),
-        borderColor: 'rgba(16, 185, 129, 0.8)', // var(--success)
-        backgroundColor: 'rgba(16, 185, 129, 0.2)',
-        borderWidth: 2,
-        tension: 0.4,
-        fill: true,
-        pointRadius: 0
-    }]
-};
 
-function initChart() {
-    const ctx = document.getElementById('telemetryChart');
-    if (!ctx) return;
-    telemetryChart = new Chart(ctx, {
-        type: 'line',
-        data: chartData,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: { duration: 300 },
-            plugins: { legend: { display: false } },
-            scales: {
-                y: { min: 0, max: 100, display: false },
-                x: { display: false }
-            }
-        }
-    });
-
-    // Idle cooldown loop
-    setInterval(() => {
-        const lastVal = chartData.datasets[0].data[19];
-        const newVal = Math.max(5, lastVal - (lastVal * 0.2)); // Cool down by 20%
-        chartData.datasets[0].data.shift();
-        chartData.datasets[0].data.push(newVal);
-        telemetryChart.update('none');
-    }, 1000);
-}
 
 // ==========================================
 // Safe Rendering
 // ==========================================
 function renderAgentContent(codeEl, content) {
+    // Round 52: DOM Memory Profiling & Cap (prevent UI freezing from 10k line logs)
+    const lines = content.split('\n');
+    let displayContent = content;
+    if (lines.length > 800) {
+        displayContent = "...\n[Gabriel DOM Capper: Older logs hidden for performance]\n...\n\n" + lines.slice(-800).join('\n');
+    }
+
     if (window.DOMPurify && typeof DOMPurify.sanitize === 'function') {
-        codeEl.innerHTML = DOMPurify.sanitize(content, {
+        codeEl.innerHTML = DOMPurify.sanitize(displayContent, {
             ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'code', 'pre', 'span', 'br'],
             ALLOWED_ATTR: ['class']
         });
     } else {
-        codeEl.textContent = content;
+        codeEl.textContent = displayContent;
         console.warn('[Gabriel] DOMPurify 未加载，已降级为纯文本渲染');
     }
 }
@@ -501,16 +515,52 @@ function connectWebSocket() {
     ws = new WebSocket(wsUrl);
     
     ws.onopen = () => {
+        // Round 62: Offline Recovery
         document.getElementById('wsStatus').classList.remove('disconnected');
         document.getElementById('wsStatus').classList.add('connected');
+        document.getElementById('wsStatus').innerText = 'System Online';
+        const chatInput = document.getElementById('chatInput');
+        if (chatInput) chatInput.disabled = false;
+        
+        // Round 64: Jitter tolerance
         reconnectAttempts = 0;
+        
+        // Round 65: State Recovery
+        ws.send(JSON.stringify({ type: "request_full_sync" }));
+        
+        // Round 63: Keepalive Ping (30s)
+        if (window.pingInterval) clearInterval(window.pingInterval);
+        window.pingInterval = setInterval(() => {
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: "ping" }));
+            }
+        }, 30000);
     };
     
     ws.onclose = (e) => {
-        document.getElementById('wsStatus').classList.remove('connected');
-        document.getElementById('wsStatus').classList.add('disconnected');
+        if (window.pingInterval) clearInterval(window.pingInterval);
+        
+        const wsStatus = document.getElementById('wsStatus');
+        wsStatus.classList.remove('connected');
+        wsStatus.classList.add('disconnected');
+        
+        const chatInput = document.getElementById('chatInput');
+        if (chatInput) chatInput.disabled = true;
         
         const delay = Math.min(1000 * Math.pow(1.5, reconnectAttempts), MAX_RECONNECT_DELAY);
+        
+        // Round 61: UI Graceful Reconnect Notification
+        let countdown = Math.ceil(delay / 1000);
+        wsStatus.innerHTML = `Offline. Reconnecting in <span id="reconnectCountdown">${countdown}</span>s`;
+        
+        if (window.reconnectCountdownTimer) clearInterval(window.reconnectCountdownTimer);
+        window.reconnectCountdownTimer = setInterval(() => {
+            countdown--;
+            const countEl = document.getElementById('reconnectCountdown');
+            if (countEl) countEl.innerText = countdown > 0 ? countdown : 0;
+            if (countdown <= 0) clearInterval(window.reconnectCountdownTimer);
+        }, 1000);
+
         setTimeout(() => {
             reconnectAttempts++;
             connectWebSocket();
@@ -551,10 +601,11 @@ function connectWebSocket() {
                     displayCard = document.createElement('div');
                     displayCard.id = agentId;
                     displayCard.className = 'agent-terminal-card';
-                    displayCard.style.cssText = 'background: rgba(15, 23, 42, 0.6); border: 1px solid var(--panel-border); border-radius: 8px; display: flex; flex-direction: column; height: 400px; overflow: hidden;';
+                    displayCard.style.cssText = 'background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; display: flex; flex-direction: column; height: 400px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.3); transition: all 0.3s;';
                     displayCard.innerHTML = `
-                        <div style="background: rgba(0,0,0,0.4); padding: 6px 12px; border-bottom: 1px solid var(--panel-border); font-size: 0.8rem; font-weight: bold; color: var(--accent); display:flex; justify-content:space-between;">
+                        <div style="background: rgba(0,0,0,0.4); padding: 6px 12px; border-bottom: 1px solid var(--panel-border); font-size: 0.8rem; font-weight: bold; color: var(--accent); display:flex; justify-content:space-between; align-items:center;">
                             <span>🖥️ ${msg.agent}</span>
+                            <button onclick="exportAgentLog('${msg.agent}', '${agentId}')" style="background:none; border:1px solid rgba(255,255,255,0.1); color:#a1a1aa; border-radius:4px; padding:2px 6px; font-size:0.7rem; cursor:pointer;" onmouseover="this.style.color='#fff'; this.style.borderColor='#8b5cf6'" onmouseout="this.style.color='#a1a1aa'; this.style.borderColor='rgba(255,255,255,0.1)'">💾 Export MD</button>
                         </div>
                         <pre style="margin:0; padding:12px; height:calc(100% - 30px); overflow-y:auto; white-space:pre-wrap; word-wrap:break-word;"><code class="agent-display-code"></code></pre>
                     `;
@@ -567,8 +618,23 @@ function connectWebSocket() {
                 
                 renderAgentContent(codeEl, msg.content);
                 
+                // Rounds 91-95: Auto-Scroll Lock with UI Feedback
+                let headerStatus = displayCard.querySelector('.scroll-lock-status');
+                if (!headerStatus) {
+                    headerStatus = document.createElement('span');
+                    headerStatus.className = 'scroll-lock-status';
+                    headerStatus.style.cssText = 'color: var(--warning); font-size: 0.7rem; margin-left: auto; margin-right: 8px; display: none;';
+                    headerStatus.innerText = '⏸ Scroll Locked';
+                    displayCard.querySelector('div').insertBefore(headerStatus, displayCard.querySelector('button'));
+                }
+
                 if (isAtBottom) {
                     parent.scrollTop = parent.scrollHeight;
+                    headerStatus.style.display = 'none';
+                    parent.style.borderBottom = 'none';
+                } else {
+                    headerStatus.style.display = 'inline-block';
+                    parent.style.borderBottom = '2px solid var(--warning)';
                 }
             } else if (msg.path === "all") {
                 // Handle initial loading sync
@@ -588,19 +654,81 @@ function connectWebSocket() {
                     pulse.style.boxShadow = 'none';
                 }, 150);
             }
-        } else if (msg.type === "kb_recommendation") {
+            
+            // Round 42: UI topology update for touched files
+            if (msg.touched_files && msg.touched_files.length > 0) {
+                let agentId = 'agent_' + msg.path.replace(/[^a-zA-Z0-9]/g, '_');
+                let displayCard = document.getElementById(agentId);
+                if (displayCard) {
+                    let headerSpan = displayCard.querySelector('div span');
+                    if (headerSpan) {
+                        let filesStr = msg.touched_files.map(f => f.split(/[\\/]/).pop()).join(', ');
+                        headerSpan.innerHTML = `🖥️ ${msg.agent} <span style="color:#a1a1aa; font-size:0.7rem; margin-left:8px;">(Touches: ${filesStr})</span>`;
+                    }
+                }
+            }
+        } else if (msg.type === "agent_spawn") {
+            // Round 46: Build Agent Radar footprint
+            const radarList = document.getElementById('agentList');
+            if (radarList) {
+                let agentId = 'radar_' + msg.path.replace(/[^a-zA-Z0-9]/g, '_');
+                if (!document.getElementById(agentId)) {
+                    let el = document.createElement('div');
+                    el.id = agentId;
+                    el.className = 'agent-item';
+                    el.innerHTML = `
+                        <div class="status-indicator"></div>
+                        <span style="flex:1;">${msg.agent}</span>
+                        <span style="font-size:0.7rem; color:var(--success);">ACTIVE</span>
+                    `;
+                    radarList.appendChild(el);
+                }
+            }
+        } else if (msg.type === "agent_frozen") {
+            // Round 47: Freeze Agent Radar footprint
+            let agentId = 'radar_' + msg.path.replace(/[^a-zA-Z0-9]/g, '_');
+            let el = document.getElementById(agentId);
+            if (el) {
+                el.querySelector('.status-indicator').style.background = 'var(--text-secondary)';
+                el.querySelector('.status-indicator').style.boxShadow = 'none';
+                el.querySelector('span:last-child').innerText = 'FROZEN';
+                el.querySelector('span:last-child').style.color = 'var(--text-secondary)';
+            }
+            // Remove from context grid
+            let cardId = 'agent_' + msg.path.replace(/[^a-zA-Z0-9]/g, '_');
+            let card = document.getElementById(cardId);
+            if (card) card.remove();
+        } else if (msg.type === "kb_recommendation" || msg.type === "kb_toast") {
             const toast = document.getElementById('kbToast');
             const toastContent = document.getElementById('kbToastContent');
             if (toast && toastContent) {
+                const encodedText = encodeURIComponent(msg.content);
                 const parsed = window.marked ? marked.parse(msg.content) : msg.content;
-                if (window.DOMPurify) {
-                    toastContent.innerHTML = DOMPurify.sanitize(parsed);
-                } else {
-                    toastContent.textContent = parsed;
-                }
+                const htmlContent = window.DOMPurify ? DOMPurify.sanitize(parsed) : parsed;
+                toastContent.innerHTML = `
+                    <div class="insight-card-header">
+                        <span>⚡ Agent Instruction / Insight</span>
+                        <div>
+                            <button class="btn-insight-copy" style="border-color:#8b5cf6; color:#8b5cf6; background:rgba(139, 92, 246, 0.1); margin-right:4px;" onclick="ws.send(JSON.stringify({type: 'inject_insight', content: decodeURIComponent('${encodedText}')})); this.classList.add('success-pulse'); this.innerText='Injected!'; setTimeout(() => { this.classList.remove('success-pulse'); this.innerText='⚡ Inject'; }, 2000);">⚡ Add to KB</button>
+                            <button class="btn-insight-copy" onclick="navigator.clipboard.writeText(decodeURIComponent('${encodedText}')); this.classList.add('success-pulse'); this.innerText='Copied!'; setTimeout(() => { this.classList.remove('success-pulse'); this.innerText='Copy'; }, 2000);">Copy</button>
+                        </div>
+                    </div>
+                    <div class="insight-content">${htmlContent}</div>
+                `;
                 toast.classList.remove('hidden');
+                
+                // Round 32: Dynamic Toast Auto-hide logic (15s)
+                if (window.kbToastTimeout) clearTimeout(window.kbToastTimeout);
+                window.kbToastTimeout = setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 15000);
             }
         } else if (msg.type === "ai_response_start") {
+            if (window.currentThinkingId) {
+                const el = document.getElementById(window.currentThinkingId);
+                if (el) el.remove();
+                window.currentThinkingId = null;
+            }
             currentAiMessageContent = "";
             currentAiMessageDiv = createMessageDiv('ai-message');
             document.getElementById('chatHistory').appendChild(currentAiMessageDiv);
@@ -616,8 +744,16 @@ function connectWebSocket() {
             } else {
                 currentAiMessageDiv.innerText = currentAiMessageContent;
             }
+            // Round 11 (UX): Cinematic Scroll Smoothness & Auto-Scroll Lock
             const container = document.getElementById('chatHistory');
-            container.scrollTop = container.scrollHeight;
+            // Allow 80px threshold for breathing room
+            const isScrolledToBottom = container.scrollHeight - container.clientHeight <= container.scrollTop + 80;
+            if (isScrolledToBottom) {
+                // Use requestAnimationFrame to sync scrolling with display refresh rate, preventing jitter
+                window.requestAnimationFrame(() => {
+                    container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+                });
+            }
         } else if (msg.type === "ai_response_end") {
             currentAiMessageDiv = null;
         } else if (msg.type === "ai_response") {
@@ -663,24 +799,83 @@ document.getElementById('btnSend').addEventListener('click', () => {
         appendMessage(text, 'user-message');
         ws.send(JSON.stringify({type: "chat", content: text}));
         input.value = '';
+        input.style.height = 'auto';
+        
+        // Add typing indicator
+        window.currentThinkingId = 'thinking-' + Date.now();
+        const thinkingDiv = document.createElement('div');
+        thinkingDiv.id = window.currentThinkingId;
+        thinkingDiv.className = 'message sys-message';
+        thinkingDiv.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span> Gabriel is thinking...';
+        document.getElementById('chatHistory').appendChild(thinkingDiv);
+        document.getElementById('chatHistory').scrollTop = document.getElementById('chatHistory').scrollHeight;
     }
 });
+document.getElementById('chatInput').addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = (this.scrollHeight) + 'px';
+    if (this.scrollHeight > 150) {
+        this.style.overflowY = 'auto';
+    } else {
+        this.style.overflowY = 'hidden';
+    }
+});
+
 document.getElementById('chatInput').addEventListener('keypress', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         document.getElementById('btnSend').click();
+        const input = document.getElementById('chatInput');
+        input.style.height = 'auto';
     }
 });
 
 document.getElementById('btnMerge').addEventListener('click', () => {
-    initTabs();
-    initChart();
-    document.getElementById('btnStartTerminal').addEventListener('click', () => {
     if(ws && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({type: "merge_kb", content: ""}));
         appendMessage(dict[currentLang].gen_draft || "⏳ Generating solution draft...", "sys-message");
     }
 });
+
+const btnClearChat = document.getElementById('btnClearChat');
+if(btnClearChat) {
+    btnClearChat.addEventListener('click', () => {
+        if(ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({type: "clear_history", content: ""}));
+            const chatHistory = document.getElementById('chatHistory');
+            chatHistory.innerHTML = `<div class="message sys-message" data-i18n="chat_welcome">${dict[currentLang]?.chat_welcome || "Gabriel launched. Terminal snapshot is actively tracked."}</div>`;
+        }
+    });
+}
+
+const btnExportChat = document.getElementById('btnExportChat');
+if (btnExportChat) {
+    btnExportChat.addEventListener('click', () => {
+        const historyEl = document.getElementById('chatHistory');
+        const messages = historyEl.querySelectorAll('.message');
+        let md = "# Gabriel Side-Screen Chat Export\n\n";
+        md += `*Exported on: ${new Date().toLocaleString()}*\n\n---\n\n`;
+        
+        messages.forEach(msg => {
+            if (msg.classList.contains('sys-message') && msg.id && msg.id.startsWith('thinking-')) return;
+            const isUser = msg.classList.contains('user-message');
+            const isSys = msg.classList.contains('sys-message');
+            const role = isUser ? "**User**" : (isSys ? "**System**" : "**Gabriel**");
+            let text = isUser || isSys ? msg.innerText : msg.innerText; 
+            md += `${role}:\n${text}\n\n`;
+        });
+        
+        const blob = new Blob([md], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Gabriel_Export_${new Date().getTime()}.md`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+}
 
 document.getElementById('btnFeedback').addEventListener('click', () => {
     document.getElementById('feedbackModal').style.display = 'flex';
@@ -750,3 +945,240 @@ async function pollHealth() {
 setInterval(pollHealth, 10000);
 setTimeout(pollHealth, 2000);
 
+// ==========================================
+// Round 3 Optimization: Cyber-Dark Telemetry Visualizer
+// ==========================================
+let telemetryChart;
+const chartData = {
+    labels: Array(20).fill(''),
+    datasets: [{
+        label: 'Neural Activity (Load %)',
+        data: Array(20).fill(5),
+        borderColor: 'rgba(139, 92, 246, 0.8)', // Purple glowing line
+        backgroundColor: (context) => {
+            if (!context.chart.chartArea) return;
+            const ctx = context.chart.ctx;
+            const gradient = ctx.createLinearGradient(0, 0, 0, context.chart.chartArea.bottom);
+            gradient.addColorStop(0, 'rgba(139, 92, 246, 0.4)');
+            gradient.addColorStop(1, 'rgba(139, 92, 246, 0.0)');
+            return gradient;
+        },
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true,
+        pointRadius: 0
+    }]
+};
+
+function initChart() {
+    const ctx = document.getElementById('telemetryChart');
+    if (!ctx) return;
+    
+    // Add glow effect via plugin
+    Chart.register({
+        id: 'glow',
+        beforeDraw: (chart) => {
+            if (chart.ctx) {
+                chart.ctx.save();
+                chart.ctx.shadowColor = 'rgba(139, 92, 246, 0.8)';
+                chart.ctx.shadowBlur = 10;
+                chart.ctx.shadowOffsetX = 0;
+                chart.ctx.shadowOffsetY = 4;
+            }
+        },
+        afterDraw: (chart) => {
+            if (chart.ctx) chart.ctx.restore();
+        }
+    });
+
+    telemetryChart = new Chart(ctx, {
+        type: 'line',
+        data: chartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 300, easing: 'easeOutQuart' },
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { min: 0, max: 100, display: false },
+                x: { display: false }
+            },
+            interaction: { intersect: false, mode: 'index' }
+        }
+    });
+
+    // Idle cooldown loop
+    setInterval(() => {
+        const lastVal = chartData.datasets[0].data[19];
+        // Jitter the cooldown to look alive
+        const newVal = Math.max(5, lastVal - (lastVal * (0.05 + Math.random() * 0.1)));
+        chartData.datasets[0].data.shift();
+        chartData.datasets[0].data.push(newVal);
+        telemetryChart.update('none');
+    }, 1000);
+}
+
+// Call initChart immediately
+initChart();
+
+// ==========================================
+// Round 13 Optimization: Reveal-on-Hover Copy Button for Code Blocks
+// ==========================================
+const codeObserver = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+        if (mutation.addedNodes.length) {
+            document.querySelectorAll('.chat-history pre').forEach((preBlock) => {
+                // If it already has a copy button, skip
+                if (preBlock.querySelector('.btn-code-copy')) return;
+                
+                // Also apply hljs if available
+                const codeBlock = preBlock.querySelector('code');
+                if (codeBlock && window.hljs && !codeBlock.classList.contains('hljs')) {
+                    hljs.highlightElement(codeBlock);
+                }
+
+                // Create floating copy button
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'btn-code-copy';
+                copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+                
+                copyBtn.addEventListener('click', () => {
+                    const text = codeBlock ? codeBlock.innerText : preBlock.innerText;
+                    navigator.clipboard.writeText(text);
+                    
+                    // Trigger success animation
+                    copyBtn.classList.add('success-pulse');
+                    copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+                    
+                    setTimeout(() => {
+                        copyBtn.classList.remove('success-pulse');
+                        copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+                    }, 2000);
+                });
+                
+                preBlock.appendChild(copyBtn);
+            });
+        }
+    });
+});
+codeObserver.observe(document.getElementById('chatHistory'), { childList: true, subtree: true });
+
+// ==========================================
+// Round 38 Optimization: Knowledge Graph Fetch Logic
+// ==========================================
+async function fetchKbRules() {
+    const listEl = document.getElementById('kbRulesList');
+    if (!listEl) return;
+    try {
+        listEl.innerHTML = '<div style="color:var(--text-secondary); font-size:0.9rem; text-align:center; margin-top:20px;">Fetching...</div>';
+        const res = await fetch('/api/knowledge');
+        const json = await res.json();
+        
+        if (json.status !== "success" || !json.data || json.data.length === 0) {
+            listEl.innerHTML = '<div style="color:var(--text-secondary); font-size:0.9rem; text-align:center; margin-top:20px;">No insights found yet.</div>';
+            return;
+        }
+        
+        listEl.innerHTML = '';
+        json.data.forEach(rule => {
+            const date = new Date(rule.timestamp * 1000).toLocaleString();
+            const div = document.createElement('div');
+            div.className = 'kb-rule-card';
+            
+            // Format content: truncate if too long
+            const displayContent = rule.content.length > 150 ? rule.content.substring(0, 150) + '...' : rule.content;
+            const parsed = window.DOMPurify && window.marked ? DOMPurify.sanitize(marked.parse(displayContent)) : displayContent;
+            
+            div.innerHTML = `
+                <span class="kb-rule-date">🕒 ${date}</span>
+                <div style="font-family:var(--font-ui);">${parsed}</div>
+            `;
+            
+            // Clicking a rule populates the editor
+            div.addEventListener('click', () => {
+                const editor = document.getElementById('kbEditor');
+                if (editor) {
+                    editor.value = rule.content;
+                    editor.dispatchEvent(new Event('input'));
+                }
+            });
+            
+            listEl.appendChild(div);
+        });
+    } catch (e) {
+        listEl.innerHTML = `<div style="color:var(--error); font-size:0.9rem; text-align:center; margin-top:20px;">Error loading KB: ${e.message}</div>`;
+    }
+}
+
+const btnRefreshKb = document.getElementById('btnRefreshKb');
+if (btnRefreshKb) {
+    btnRefreshKb.addEventListener('click', fetchKbRules);
+}
+
+// Fetch on startup if tab is clicked
+document.querySelectorAll('.nav-item').forEach(el => {
+    el.addEventListener('click', (e) => {
+        if (el.getAttribute('data-tab') === 'tab-kb') {
+            fetchKbRules();
+        }
+    });
+});
+
+// ==========================================
+// Rounds 81-85: Power-User Ergonomics
+// ==========================================
+document.addEventListener('keydown', (e) => {
+    // Cmd+K or Ctrl+K to focus AI chat
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        const chatInput = document.getElementById('chatInput');
+        if (chatInput) chatInput.focus();
+    }
+    
+    // Cmd+/ or Ctrl+/ to switch to Knowledge Base Tab
+    if ((e.metaKey || e.ctrlKey) && e.key === '/') {
+        e.preventDefault();
+        const kbTab = document.querySelector('.nav-item[data-tab="tab-kb"]');
+        if (kbTab) kbTab.click();
+    }
+    
+    // Escape to unfocus
+    if (e.key === 'Escape') {
+        if (document.activeElement === document.getElementById('chatInput')) {
+            document.activeElement.blur();
+        }
+    }
+});
+
+// ==========================================
+// Rounds 86-90: Markdown Export Engine
+// ==========================================
+window.exportAgentLog = function(agentName, cardId) {
+    const card = document.getElementById(cardId);
+    if (!card) return;
+    
+    const codeEl = card.querySelector('.agent-display-code');
+    if (!codeEl) return;
+    
+    const rawText = codeEl.textContent || "";
+    const blob = new Blob([`# Gabriel AI Telemetry Log\nAgent: ${agentName}\nExported: ${new Date().toISOString()}\n\n---\n\n${rawText}`], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `gabriel_${agentName}_log_${Date.now()}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+};
+
+document.getElementById('btnAskKb').addEventListener('click', () => {
+    const kbContent = document.getElementById('kbToastContent').innerText;
+    const chatInput = document.getElementById('chatInput');
+    chatInput.value = "Regarding this knowledge base recommendation:\n" + kbContent + "\n\nCan you explain how to apply this to the current issue?";
+    chatInput.style.height = 'auto';
+    chatInput.style.height = (chatInput.scrollHeight) + 'px';
+    chatInput.focus();
+    document.getElementById('kbToast').classList.add('hidden');
+});

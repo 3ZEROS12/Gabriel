@@ -1,16 +1,16 @@
 :root {
-    /* 2026 Deep Space Dark Mode */
-    --bg-primary: #0B0F19; /* Deeper background for depth */
-    --bg-secondary: rgba(26, 32, 44, 0.65); /* Translucent glass */
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --accent: #d4af37; /* Gold */
-    --accent-glow: rgba(212, 175, 55, 0.4);
-    --panel-border: rgba(255, 255, 255, 0.08);
+    /* Minimalist High-End Dark Mode (Zinc) */
+    --bg-primary: #09090b;
+    --panel-bg: #18181b;
+    --text-primary: #fafafa;
+    --text-secondary: #a1a1aa;
+    --accent: #fafafa;
+    --panel-border: #27272a;
+    --border-hover: #3f3f46;
     --success: #10b981;
     --error: #ef4444;
-    --sidebar-w: 260px;
-    --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
+    --sidebar-w: 72px;
+    --font-ui: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     
     --win-close: #ef4444;
     --win-min: #eab308;
@@ -18,35 +18,23 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-@keyframes aurora {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
 body {
-    background: linear-gradient(
-        -45deg, 
-        #0B0F19, 
-        #1A1225, 
-        #091724, 
-        #122019
-    );
-    background-size: 400% 400%;
-    animation: aurora 20s ease infinite;
+    background: var(--bg-primary);
     color: var(--text-primary);
     height: 100vh;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     font-family: var(--font-ui);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom Cyber Scrollbars */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); border-radius: 4px; }
-::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.4); border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.1); }
-::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.8); box-shadow: 0 0 10px rgba(212, 175, 55, 0.8); }
+/* Custom Minimal Scrollbars */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #52525b; }
 
 input, textarea, pre, code, .message {
     user-select: auto;
@@ -57,11 +45,12 @@ nav, button, .title-bar, .panel-header {
     -webkit-user-select: none;
 }
 
-.title-bar {
-    display: none;
-}
+.title-bar { display: none; }
 
 .app-container {
+    padding: 12px;
+    gap: 16px;
+    background: transparent;
     display: flex;
     flex: 1;
     height: 100vh;
@@ -71,14 +60,11 @@ nav, button, .title-bar, .panel-header {
 /* Sidebar */
 .sidebar {
     width: var(--sidebar-w);
-    background: rgba(10, 15, 25, 0.7);
-    backdrop-filter: blur(24px) saturate(150%);
-    -webkit-backdrop-filter: blur(24px);
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 5px 0 30px rgba(0,0,0,0.5), inset -1px 0 0 rgba(212,175,55,0.1);
+    background: var(--bg-primary);
+    border-right: 1px solid var(--panel-border);
     display: flex;
     flex-direction: column;
-    padding: 24px 0;
+    padding: 24px 12px;
     align-items: center;
     z-index: 100;
     overflow-y: auto;
@@ -87,7 +73,7 @@ nav, button, .title-bar, .panel-header {
 .sidebar-nav {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 8px;
     width: 100%;
     height: 100%;
 }
@@ -97,36 +83,21 @@ nav, button, .title-bar, .panel-header {
     color: var(--text-secondary);
     cursor: pointer;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 6px;
-    padding: 10px 0;
+    gap: 12px;
+    justify-content: center;
+    padding: 12px;
+    border-radius: 8px;
     transition: all 0.2s ease;
     width: 100%;
     text-decoration: none;
-}
-.nav-item:hover { color: var(--accent); }
-.nav-item.active {
-    color: var(--accent);
-    position: relative;
-    text-shadow: 0 0 10px var(--accent-glow);
-}
-.nav-item.active::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 60%;
-    width: 4px;
-    background: var(--accent);
-    border-radius: 0 4px 4px 0;
-    box-shadow: 0 0 12px var(--accent);
-}
-.nav-text {
-    font-size: 0.65rem;
+    font-size: 0.875rem;
     font-weight: 500;
-    letter-spacing: 0.5px;
+}
+.nav-item:hover { color: var(--text-primary); background: var(--panel-bg); }
+.nav-item.active {
+    color: var(--bg-primary);
+    background: var(--text-primary);
 }
 
 /* Main Content */
@@ -142,7 +113,7 @@ nav, button, .title-bar, .panel-header {
     left: 0;
     width: 100%;
     height: 100%;
-    padding: 16px;
+    padding: 24px;
 }
 .hidden { display: none !important; }
 
@@ -157,31 +128,30 @@ nav, button, .title-bar, .panel-header {
 /* Views */
 .split-view {
     display: flex;
-    gap: 16px;
+    gap: 24px;
+    height: 100%;
 }
 .single-view {
     display: flex;
     justify-content: center;
     padding: 24px;
+    height: 100%;
+    overflow-y: auto;
 }
 
-/* Panel Glassmorphism 2.0 */
+/* Panel - Clean Minimalist */
 .panel {
-    background: rgba(20, 25, 40, 0.5);
-    backdrop-filter: blur(20px) saturate(120%);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 16px;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(212, 175, 55, 0.05);
-    transition: box-shadow 0.3s ease;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.2s ease;
 }
 .panel:hover {
-    box-shadow: 0 12px 50px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(212, 175, 55, 0.1);
-    border-top: 1px solid rgba(212, 175, 55, 0.3);
+    border-color: var(--border-hover);
 }
 .context-panel { flex: 1; min-width: 0; transition: width 0.1s; }
 .context-panel.collapsed { display: none; }
@@ -194,42 +164,44 @@ nav, button, .title-bar, .panel-header {
     background: transparent;
     transition: background 0.2s;
     z-index: 10;
-    margin: 0 -6px;
+    margin: 0 -12px;
     position: relative;
 }
 .resizer::after {
     content: '';
     position: absolute;
     left: 5px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: transparent;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 32px;
+    width: 4px;
+    border-radius: 2px;
+    background: var(--panel-border);
     transition: background 0.2s;
 }
 .resizer:hover::after, .resizer:active::after {
-    background: var(--accent);
+    background: var(--text-secondary);
 }
 
 .panel-header {
-    padding: 12px 16px;
+    padding: 16px 20px;
     border-bottom: 1px solid var(--panel-border);
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     color: var(--text-primary);
     display: flex;
     align-items: center;
-    background: rgba(0, 0, 0, 0.2);
+    background: transparent;
 }
-.panel-body { padding: 16px; overflow-y: auto; flex: 1; }
+.panel-body { padding: 20px; overflow-y: auto; flex: 1; }
 
-.context-body { flex: 1; overflow-y: auto; background: rgba(0,0,0,0.3); } /* deeper terminal dark */
+.context-body { flex: 1; overflow-y: auto; background: var(--bg-primary); border-top: 1px solid var(--panel-border); }
 #contextDisplay {
     margin: 0;
-    padding: 16px;
+    padding: 20px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem;
-    line-height: 1.5;
+    font-size: 0.8125rem;
+    line-height: 1.6;
     color: #e2e8f0;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
@@ -240,47 +212,43 @@ nav, button, .title-bar, .panel-header {
 .chat-history {
     flex: 1;
     overflow-y: auto;
-    padding: 16px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 20px;
 }
 .message {
-    padding: 14px 18px;
-    border-radius: 10px;
-    max-width: 90%;
+    padding: 16px 20px;
+    border-radius: 8px;
+    width: 100%;
     font-size: 0.9rem;
     line-height: 1.6;
     word-wrap: break-word;
     animation: fadeIn 0.3s ease-out forwards;
+    margin-bottom: 12px;
 }
 .sys-message { background: transparent; color: var(--text-secondary); align-self: center; font-size: 0.8rem; text-align: center; }
 .ai-message { 
-    background: var(--bg-secondary); 
-    align-self: flex-start; 
-    border: 1px solid var(--panel-border);
-    border-left: 3px solid var(--accent);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    background: transparent; 
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 0;
 }
 .user-message { 
-    background: var(--text-primary); 
-    color: var(--bg-primary);
     align-self: flex-end; 
-    border-radius: 10px 10px 0 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 /* Markdown Rendering in AI Message */
-.ai-message p { margin-bottom: 0.5em; }
+.ai-message p { margin-bottom: 0.75em; }
 .ai-message p:last-child { margin-bottom: 0; }
-.ai-message h1, .ai-message h2, .ai-message h3 { margin: 1em 0 0.5em 0; color: var(--text-primary); }
-.ai-message pre { background: #090a0c; padding: 12px; border-radius: 8px; overflow-x: auto; margin-top: 8px; border: 1px solid var(--panel-border); }
-.ai-message code { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #a5b4fc; }
-.ai-message p code { background: #090a0c; padding: 2px 6px; border-radius: 4px; color: #f87171; border: 1px solid var(--panel-border); }
+.ai-message h1, .ai-message h2, .ai-message h3 { margin: 1.2em 0 0.8em 0; color: var(--text-primary); font-weight: 600; }
+.ai-message pre { background: var(--panel-bg); padding: 16px; border-radius: 6px; overflow-x: auto; margin-top: 12px; border: 1px solid var(--panel-border); }
+.ai-message code { font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem; color: #e4e4e7; }
+.ai-message p code { background: var(--panel-bg); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--panel-border); }
 
 .chat-input-area {
-    padding: 16px;
-    background: var(--bg-secondary);
+    padding: 20px;
+    background: transparent;
     border-top: 1px solid var(--panel-border);
     display: flex;
     gap: 12px;
@@ -292,15 +260,15 @@ nav, button, .title-bar, .panel-header {
     font-family: inherit;
     font-size: 0.9rem;
     line-height: 1.5;
-    padding: 12px 16px;
+    padding: 14px 18px;
     background: var(--bg-primary);
     border: 1px solid var(--panel-border);
     color: var(--text-primary);
-    border-radius: 20px;
+    border-radius: 8px;
     outline: none;
     transition: all 0.2s;
 }
-.chat-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
+.chat-input:focus { border-color: var(--text-secondary); }
 .chat-input::placeholder { color: var(--text-secondary); }
 
 .icon-btn {
@@ -311,155 +279,2639 @@ nav, button, .title-bar, .panel-header {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    padding: 8px;
+    border-radius: 6px;
+    padding: 10px;
     transition: all 0.2s;
 }
-.icon-btn:hover { background: rgba(0,0,0,0.05); color: var(--text-primary); }
-.send-btn { background: var(--text-primary); color: #fff; width: 40px; height: 40px; }
-.send-btn:hover { background: var(--accent); color: #fff; transform: translateY(-1px); }
+.icon-btn:hover { background: var(--panel-bg); color: var(--text-primary); }
+.send-btn { background: var(--text-primary); color: var(--bg-primary); width: 44px; height: 44px; border-radius: 8px; }
+.send-btn:hover { opacity: 0.9; color: var(--bg-primary); }
 
 /* Status */
-@keyframes pulse {
-    0% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.2); opacity: 0.7; }
-    100% { transform: scale(1); opacity: 1; }
-}
-.connection-status { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--text-secondary); }
-.status-dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 5px #10b981; animation: pulse 2s infinite; }
-.status-dot.disconnected { background: #ef4444; box-shadow: 0 0 5px #ef4444; animation: none; }
+.connection-status { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: var(--text-secondary); font-weight: 500;}
+.status-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; }
+.status-dot.disconnected { background: var(--error); }
 
 /* Buttons */
 .btn-primary {
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    padding: 8px 16px;
+    background: var(--text-primary);
+    color: var(--bg-primary);
+    border: 1px solid transparent;
+    padding: 10px 18px;
     border-radius: 6px;
-    font-weight: 600;
+    font-weight: 500;
+    font-size: 0.875rem;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+    transition: background-color 0.2s ease;
 }
-.btn-primary:hover {
-    background: #e5c158;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 15px var(--accent-glow);
-}
+.btn-primary:hover { opacity: 0.9; }
 .btn-outline {
     background: transparent;
     color: var(--text-primary);
     border: 1px solid var(--panel-border);
-    padding: 8px 16px;
+    padding: 10px 18px;
     border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.875rem;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s ease;
 }
-.btn-outline:hover {
-    border-color: var(--text-secondary);
-    background: rgba(255, 255, 255, 0.05);
-}
+.btn-outline:hover { background: var(--panel-bg); }
 
 /* Forms */
-.form-layout { display: flex; flex-direction: column; gap: 20px; max-width: 500px; margin: 0 auto; }
-.subtitle { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 8px; }
-.form-group { display: flex; flex-direction: column; gap: 8px; }
-.form-group label { font-size: 0.8rem; font-weight: 600; color: var(--text-primary); }
+.form-layout { display: flex; flex-direction: column; gap: 24px; max-width: 500px; margin: 0 auto; width: 100%; }
+.subtitle { color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 8px; }
+.form-group { display: flex; flex-direction: column; gap: 10px; }
+.form-group label { font-size: 0.875rem; font-weight: 500; color: var(--text-primary); }
 .sleek-input {
-    background: var(--bg-base);
+    background: var(--bg-primary);
     border: 1px solid var(--panel-border);
     color: var(--text-primary);
-    padding: 12px;
-    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    padding: 12px 16px;
+    border-radius: 8px;
     font-size: 0.9rem;
     outline: none;
-    transition: all 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
 }
-.sleek-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
+.sleek-input:focus { 
+    border-color: rgba(16, 185, 129, 0.5);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+}
 .sleek-textarea { 
-    background: var(--bg-base);
-    border: 1px solid var(--panel-border);
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--text-primary);
-    padding: 12px;
-    border-radius: 6px;
+    padding: 12px 16px;
+    border-radius: 8px;
     font-size: 0.9rem;
     outline: none;
-    transition: all 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     resize: vertical; 
-    min-height: 100px; 
+    min-height: 120px; 
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
 }
-.sleek-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
-.full-height { height: 100%; flex: 1; resize: none; margin-top: 12px; background: var(--bg-base); border: 1px solid var(--panel-border); padding: 16px; border-radius: 8px; }
+.sleek-textarea:focus { 
+    border-color: rgba(16, 185, 129, 0.5);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+}
+.full-height { height: 100%; flex: 1; resize: none; margin-top: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 20px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.875rem;}
+.full-height:focus { border-color: var(--text-secondary); outline: none; }
 
 /* Radar */
-.monitor-controls { display: flex; align-items: center; gap: 12px; font-size: 0.85rem; color: var(--text-primary); margin: 16px 0; padding: 12px; background: rgba(0,0,0,0.02); border-radius: 8px; }
+.monitor-controls { display: flex; align-items: center; gap: 16px; font-size: 0.875rem; color: var(--text-primary); margin: 16px 0 24px 0; padding: 16px; background: var(--bg-primary); border: 1px solid var(--panel-border); border-radius: 8px; }
 .agent-list { display: flex; flex-direction: column; gap: 12px; }
 .agent-item {
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255,255,255,0.05);
-    padding: 16px;
-    border-radius: 12px;
+    background: var(--bg-primary);
+    border: 1px solid var(--panel-border);
+    padding: 20px;
+    border-radius: 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    position: relative;
-    overflow: hidden;
-}
-.agent-item::before {
-    content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: transparent; transition: background 0.3s;
+    transition: all 0.2s ease;
 }
 .agent-item:hover { 
-    border-color: rgba(212,175,55,0.4); 
-    transform: translateY(-2px); 
-    box-shadow: 0 8px 24px rgba(0,0,0,0.3); 
-    background: rgba(20, 25, 40, 0.8);
+    border-color: var(--border-hover); 
 }
-.agent-item:hover::before { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
-.agent-item.locked { border-color: var(--accent); background: rgba(212, 175, 55, 0.05); }
-.agent-info { display: flex; flex-direction: column; gap: 4px; }
-.agent-name { font-weight: 600; font-size: 0.9rem; color: var(--text-primary); }
-.agent-time { font-size: 0.75rem; color: var(--text-secondary); }
+.agent-item.locked { border-color: var(--text-primary); }
+.agent-info { display: flex; flex-direction: column; gap: 6px; }
+.agent-name { font-weight: 600; font-size: 0.95rem; color: var(--text-primary); }
+.agent-time { font-size: 0.8rem; color: var(--text-secondary); }
 
 /* Switch */
-.toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+.toggle-switch { position: relative; display: inline-block; width: 36px; height: 20px; }
 .toggle-switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--panel-border); transition: .3s; border-radius: 24px; }
-.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-input:checked + .slider { background-color: var(--accent); }
-input:checked + .slider:before { transform: translateX(20px); }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--panel-border); transition: .3s; border-radius: 20px; }
+.slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: var(--text-primary); transition: .3s; border-radius: 50%; }
+input:checked + .slider { background-color: var(--text-primary); }
+input:checked + .slider:before { transform: translateX(16px); background-color: var(--bg-primary); }
 
 /* Segmented Control */
-.segmented-control { display: flex; background: rgba(0,0,0,0.2); border-radius: 6px; padding: 4px; border: 1px solid var(--panel-border); }
+.segmented-control { display: flex; background: var(--bg-primary); border-radius: 6px; padding: 4px; border: 1px solid var(--panel-border); }
 .segmented-control input[type="radio"] { display: none; }
-.segmented-control label { flex: 1; text-align: center; padding: 8px; cursor: pointer; border-radius: 4px; font-size: 0.85rem; color: var(--text-secondary); transition: all 0.2s; }
-.segmented-control input[type="radio"]:checked + label { background: var(--panel-bg); color: var(--text-primary); box-shadow: 0 1px 3px rgba(0,0,0,0.2); font-weight: 600; border: 1px solid var(--panel-border); }
+.segmented-control label { flex: 1; text-align: center; padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 0.85rem; color: var(--text-secondary); transition: all 0.2s; font-weight: 500; }
+.segmented-control input[type="radio"]:checked + label { background: var(--panel-bg); color: var(--text-primary); box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid var(--panel-border); }
 
 /* KB Toast */
 .kb-toast {
     background: var(--panel-bg);
-    border: 1px solid var(--accent);
+    border: 1px solid var(--panel-border);
     border-radius: 8px;
-    margin: 12px;
-    padding: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    margin: 16px;
+    padding: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
     transition: all 0.3s ease;
 }
-.kb-toast.hidden {
-    display: none;
-}
+.kb-toast.hidden { display: none; }
 .kb-toast-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     font-weight: 600;
-    margin-bottom: 8px;
-    color: var(--accent);
+    margin-bottom: 12px;
+    color: var(--text-primary);
 }
 .kb-toast-body {
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     color: var(--text-secondary);
     max-height: 150px;
     overflow-y: auto;
+}
+
+/* Fix for icons and alignment */
+.nav-item svg { width: 20px; height: 20px; opacity: 0.7; }
+.nav-item:hover svg, .nav-item.active svg { opacity: 1; }
+
+
+/* === Round 1: Fluid Experience & Rich UI Components === */
+
+@keyframes slideUpFade {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.message {
+    animation: slideUpFade 0.3s ease-out forwards;
+}
+
+.message.ai-message {
+    background: rgba(39, 39, 42, 0.4);
+    border: 1px solid rgba(63, 63, 70, 0.5);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.2s ease;
+}
+
+.message.ai-message:hover {
+    border-color: rgba(63, 63, 70, 0.9);
+}
+
+.message.user-message {
+    background: transparent;
+    border-left: 3px solid #60a5fa;
+    padding-left: 12px;
+    margin-bottom: 16px;
+    font-weight: 500;
+}
+
+/* Insight Card (XML Rendered) */
+.insight-card {
+    background: linear-gradient(145deg, #18181b, #27272a);
+    border: 1px solid #3f3f46;
+    border-left: 4px solid #10b981;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 12px 0;
+    position: relative;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+.insight-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #10b981;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.insight-card-body {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #e4e4e7;
+    font-family: var(--font-ui);
+}
+
+.btn-insight-copy {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-insight-copy:hover {
+    background: rgba(16, 185, 129, 0.2);
+}
+
+/* Modern Typography */
+pre, code {
+    font-family: 'Fira Code', 'Consolas', monospace !important;
+    font-size: 0.85rem;
+}
+
+/* Glowing Scrollbars */
+::-webkit-scrollbar-thumb { 
+    background: rgba(63, 63, 70, 0.6); 
+    border-radius: 8px; 
+}
+::-webkit-scrollbar-thumb:hover { 
+    background: rgba(16, 185, 129, 0.5); 
+}
+
+
+/* === Rounds 5-8 CSS Additions === */
+
+#typing-cursor {
+    animation: blink 1s step-end infinite;
+    color: var(--success);
+    margin-left: 4px;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    opacity: 0.6;
+    animation: slideUpFade 0.5s ease-out;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    color: var(--success);
+    opacity: 0.8;
+}
+
+.status-dot.disconnected {
+    background: var(--error);
+    animation: reconnectPulse 2s infinite;
+}
+
+@keyframes reconnectPulse {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+/* User Message Markdown Overrides */
+.user-message p { margin: 0; padding: 0; }
+
+/* Round 9: Terminal Layout */
+.terminal-card {
+    max-height: 45vh;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+/* === Round 1: Mesh Gradient Background === */
+.mesh-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -2;
+    background-color: #000000;
+    overflow: hidden;
+}
+
+.mesh-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.25;
+    animation: blobAnim 20s infinite alternate ease-in-out;
+}
+
+.blob-1 {
+    width: 60vw;
+    height: 60vw;
+    background: #4f46e5;
+    top: -20%;
+    left: -10%;
+    animation-delay: 0s;
+}
+
+.blob-2 {
+    width: 50vw;
+    height: 50vw;
+    background: #0ea5e9;
+    bottom: -10%;
+    right: -10%;
+    animation-delay: -5s;
+}
+
+.blob-3 {
+    width: 40vw;
+    height: 40vw;
+    background: #10b981;
+    top: 30%;
+    left: 40%;
+    animation-delay: -10s;
+}
+
+@keyframes blobAnim {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(10%, 15%) scale(1.2); }
+    100% { transform: translate(-10%, 5%) scale(0.9); }
+}
+
+body {
+    background: transparent !important;
+}
+
+/* === Round 2: Tactile Grain Overlay === */
+.mesh-bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Base64 encoded SVG noise */
+    background-image: url('data:image/svg+xml;utf8,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%221%22/%3E%3C/svg%3E');
+    opacity: 0.05;
+    z-index: 1;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+}
+
+/* === Round 3: Precision Glass Borders === */
+.panel {
+    backdrop-filter: blur(24px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(150%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 
+        0 8px 32px 0 rgba(0, 0, 0, 0.5), 
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.1) !important;
+    background: rgba(18, 18, 20, 0.55) !important;
+}
+
+.terminal-card {
+    background: rgba(10, 10, 12, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* === Round 4: Advanced Typography === */
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "cv11" 1, "zero" 1, "liga" 1, "calt" 1;
+    font-optical-sizing: auto;
+    letter-spacing: -0.015em; /* Vercel style tight tracking */
+}
+
+h1, h2, h3, .panel-header span {
+    font-weight: 600 !important;
+    letter-spacing: -0.025em;
+}
+
+.terminal-card {
+    line-height: 1.6;
+}
+
+/* === Round 5: Spotlight Cursor Effect === */
+.panel, .terminal-card {
+    position: relative;
+    overflow: hidden; /* Important to clip the glow */
+}
+
+/* The Spotlight Overlay */
+.panel::before, .terminal-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(
+        600px circle at var(--mouse-x, -1000px) var(--mouse-y, -1000px), 
+        rgba(255, 255, 255, 0.08), 
+        transparent 40%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.panel:hover::before, .terminal-card:hover::before {
+    opacity: 1;
+}
+
+/* === Round 6: Spring Animations === */
+button, .btn-primary, .btn-insight-copy {
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important; /* Spring physics bezier */
+}
+
+button:active, .btn-primary:active, .btn-insight-copy:active {
+    transform: scale(0.92) !important;
+    opacity: 0.8;
+}
+
+/* Add a subtle intro animation for new chat messages */
+.message {
+    animation: messagePopIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-origin: bottom left;
+}
+
+@keyframes messagePopIn {
+    0% { transform: scale(0.9) translateY(10px); opacity: 0; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* === Round 7: Invisible Minimal Scrollbars === */
+/* Standard properties for modern browsers */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+/* Chrome/Edge Overlay Style Fallbacks */
+::-webkit-scrollbar {
+    width: 6px !important;
+    height: 6px !important;
+    background-color: transparent !important;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent !important;
+    margin: 4px; /* padding from edges */
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 10px !important;
+    border: 2px solid transparent !important;
+    background-clip: padding-box !important;
+    transition: background-color 0.3s ease !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+    border: 2px solid transparent !important;
+    background-clip: padding-box !important;
+}
+
+/* === Round 8: Dark Mode Calibration === */
+:root {
+    color-scheme: dark; /* Force native scrollbars/inputs to dark */
+    --text-primary: rgba(255, 255, 255, 0.92); /* Off-white for less halation */
+    --text-secondary: rgba(255, 255, 255, 0.65);
+    --selection-bg: rgba(79, 70, 229, 0.6); /* Indigo selection */
+}
+
+::selection {
+    background-color: var(--selection-bg);
+    color: #ffffff;
+    text-shadow: none;
+}
+
+/* === Round 9: Glow Stacking === */
+/* Multi-layered soft shadows for premium depth */
+.insight-card {
+    box-shadow: 
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06),
+        0 0 0 1px rgba(139, 92, 246, 0.15),
+        0 0 20px rgba(139, 92, 246, 0.1) !important;
+}
+
+.insight-card:hover {
+    box-shadow: 
+        0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -2px rgba(0, 0, 0, 0.05),
+        0 0 0 1px rgba(139, 92, 246, 0.3),
+        0 0 30px rgba(139, 92, 246, 0.2),
+        0 0 60px rgba(139, 92, 246, 0.1) !important;
+    transform: translateY(-2px);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.btn-primary:hover {
+    box-shadow: 
+        0 0 10px rgba(79, 70, 229, 0.4),
+        0 0 20px rgba(79, 70, 229, 0.2),
+        0 0 40px rgba(79, 70, 229, 0.1) !important;
+}
+
+/* === Round 10: Contrast Legibility Layer === */
+.message, .terminal-card, .panel-header {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 1px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* For code blocks, give them a slightly darker background to anchor them */
+pre, code {
+    background: rgba(0, 0, 0, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+}
+
+/* === Round 11: Liquid Input Glow === */
+.input-area textarea {
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+}
+
+.input-area:has(textarea:focus) {
+    box-shadow: 
+        0 0 0 1px rgba(139, 92, 246, 0.5),
+        0 0 20px 2px rgba(139, 92, 246, 0.2),
+        0 0 40px 10px rgba(139, 92, 246, 0.1) !important;
+    border-radius: 12px;
+}
+
+.input-area textarea:focus {
+    background: rgba(255, 255, 255, 0.08) !important;
+    outline: none !important;
+    border-color: transparent !important;
+}
+
+/* === Round 12: Micro-Layout Breathing Space === */
+html, body {
+    scroll-behavior: smooth;
+}
+
+.app-container {
+    gap: 24px !important;
+    padding: 24px !important;
+}
+
+.context-body, .chat-history {
+    display: flex;
+    flex-direction: column;
+    gap: 16px !important; /* Replaces messy margins between items */
+}
+
+/* Ensure padding at the bottom of scrollable areas */
+.chat-history::after {
+    content: '';
+    display: block;
+    min-height: 24px;
+}
+
+/* === Round 14: LED Volumetric Glow === */
+.status-dot {
+    background: #10b981 !important; /* Emerald core */
+    box-shadow: 
+        0 0 2px #fff inset, /* Inner reflection */
+        0 0 8px 1px rgba(16, 185, 129, 0.6), /* Core glow */
+        0 0 16px rgba(16, 185, 129, 0.4) !important; /* Outer diffuse */
+    animation: statusPulse 2.5s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes statusPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(0.95); }
+}
+
+/* Fix disconnected state */
+.status-dot.disconnected {
+    background: #ef4444 !important;
+    box-shadow: 
+        0 0 2px #fff inset,
+        0 0 8px 1px rgba(239, 68, 68, 0.6),
+        0 0 16px rgba(239, 68, 68, 0.4) !important;
+    animation: errorPulse 1s infinite alternate;
+}
+
+@keyframes errorPulse {
+    from { opacity: 1; }
+    to { opacity: 0.4; }
+}
+
+/* === Round 15: Spatial UI Tilt === */
+/* Wrap the grid to provide perspective */
+.context-body {
+    perspective: 1200px;
+}
+
+.terminal-card {
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease !important;
+    transform-style: preserve-3d;
+}
+
+.terminal-card:hover {
+    transform: translateY(-4px) rotateX(2deg) rotateY(-1deg) scale(1.02);
+    box-shadow: 
+        0 20px 40px -10px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.15) !important;
+    z-index: 10;
+}
+
+/* === Round 16: Asymmetric Chat Bubbles === */
+.ai-message {
+    border-radius: 4px 16px 16px 16px !important;
+    border-left: 2px solid rgba(139, 92, 246, 0.5) !important;
+}
+
+.user-message {
+    border-radius: 16px 4px 16px 16px !important;
+    border-right: 2px solid rgba(16, 185, 129, 0.5) !important;
+}
+
+/* === Round 17: Radar Scanline === */
+.mesh-bg::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.02) 50%, rgba(255,255,255,0));
+    background-size: 100% 200%;
+    animation: radarScan 8s linear infinite;
+    pointer-events: none;
+    z-index: 2;
+}
+
+@keyframes radarScan {
+    0% { background-position: 0 -100vh; }
+    100% { background-position: 0 100vh; }
+}
+
+/* === Round 18: Calm Button Spinners === */
+.btn-primary {
+    position: relative;
+    overflow: hidden;
+}
+
+.spinner {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1.2rem;
+    height: 1.2rem;
+    margin-top: -0.6rem;
+    margin-left: -0.6rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: btnSpin 0.8s linear infinite;
+}
+
+.btn-primary.is-loading {
+    color: transparent !important;
+    pointer-events: none;
+}
+
+.btn-primary.is-loading .spinner {
+    display: block;
+}
+
+@keyframes btnSpin {
+    to { transform: rotate(360deg); }
+}
+
+/* === Round 19: Sandblasted Glass Texture === */
+.panel-left::after, .panel-right::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('data:image/svg+xml;utf8,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%221%22/%3E%3C/svg%3E');
+    opacity: 0.03;
+    mix-blend-mode: color-dodge;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* === Round 20: Staggered Entrance === */
+@keyframes appFadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.panel-left {
+    animation: appFadeInUp 0.8s cubic-bezier(0.23, 1, 0.32, 1) both;
+    animation-delay: 0.1s;
+}
+
+.panel-right {
+    animation: appFadeInUp 0.8s cubic-bezier(0.23, 1, 0.32, 1) both;
+    animation-delay: 0.25s;
+}
+
+.header {
+    animation: appFadeInUp 0.8s cubic-bezier(0.23, 1, 0.32, 1) both;
+    animation-delay: 0s;
+}
+
+
+/* === New UX Round 1: Glassmorphism Message Bubbles & Typography Polish === */
+.message.ai-message {
+    background: rgba(24, 24, 27, 0.6) !important;
+    backdrop-filter: blur(16px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    border-radius: 16px !important;
+    padding: 20px 24px !important;
+    line-height: 1.7 !important;
+    letter-spacing: -0.01em !important;
+    -webkit-font-smoothing: antialiased !important;
+    color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.message.user-message {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05)) !important;
+    border-left: 4px solid #3b82f6 !important;
+    border-radius: 4px 16px 16px 4px !important;
+    padding: 16px 20px !important;
+    backdrop-filter: blur(8px) !important;
+}
+
+/* Typing Indicator Animation */
+.typing-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: #a1a1aa;
+    border-radius: 50%;
+    margin-right: 4px;
+    animation: typingBounce 1.4s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.typing-dot:nth-child(1) { animation-delay: 0s; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; margin-right: 12px; }
+
+@keyframes typingBounce {
+    0%, 100% { transform: translateY(0); opacity: 0.4; }
+    50% { transform: translateY(-4px); opacity: 1; }
+}
+
+
+/* === New UX Round 2: Deep Abyss Theme & macOS Code Headers === */
+pre {
+    background: #0d0d12 !important;
+    border: 1px solid #1f1f2e !important;
+    border-radius: 12px !important;
+    padding: 38px 16px 16px !important;
+    position: relative;
+    margin: 16px 0 !important;
+    box-shadow: 0 16px 32px rgba(0,0,0,0.4) !important;
+}
+
+pre::before {
+    content: '';
+    position: absolute;
+    top: 14px;
+    left: 16px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ff5f56;
+    box-shadow: 20px 0 0 #ffbd2e, 40px 0 0 #27c93f;
+}
+
+pre::after {
+    content: 'Terminal / Code';
+    position: absolute;
+    top: 12px;
+    left: 80px;
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+}
+
+code {
+    font-family: 'JetBrains Mono', Consolas, monospace !important;
+    font-size: 0.85rem !important;
+    line-height: 1.6 !important;
+    color: #e5e7eb !important;
+}
+
+
+
+/* === New UX Round 3: Liquid Floating Input Island === */
+.chat-input-area {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 48px);
+    max-width: 800px;
+    background: rgba(24, 24, 27, 0.7) !important;
+    backdrop-filter: blur(24px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 24px !important;
+    padding: 8px 12px !important;
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+}
+
+.chat-input {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 12px 16px !important;
+    font-size: 1rem !important;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.chat-input:focus {
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+.send-btn {
+    background: #e4e4e7 !important;
+    color: #09090b !important;
+    border-radius: 50% !important;
+    width: 40px !important;
+    height: 40px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.send-btn:hover {
+    transform: scale(1.1) !important;
+    background: #ffffff !important;
+    box-shadow: 0 0 20px rgba(255,255,255,0.4) !important;
+}
+
+
+
+/* === New UX Round 4: Damping Scrollbar & Safe Area Insets === */
+.chat-history {
+    padding-bottom: 120px !important; /* Safe area for the floating island */
+    scroll-behavior: smooth;
+    mask-image: linear-gradient(to bottom, transparent, black 5%, black 95%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 2%, black 95%, transparent);
+}
+
+/* macOS Level Scrollbar Overlay */
+.chat-history::-webkit-scrollbar {
+    width: 6px;
+    background: transparent;
+}
+
+.chat-history::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chat-history::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+}
+
+.chat-history::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+
+
+/* === New UX Round 5: Holographic Card Matrix === */
+.agent-list {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+    gap: 20px !important;
+}
+
+.agent-item {
+    background: linear-gradient(145deg, rgba(39, 39, 42, 0.4), rgba(24, 24, 27, 0.8)) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    border-radius: 16px !important;
+    padding: 24px !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.agent-item::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 50%; height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.03), transparent);
+    transform: skewX(-20deg);
+    transition: 0.5s;
+}
+
+.agent-item:hover {
+    transform: translateY(-4px) scale(1.02) !important;
+    border-color: rgba(139, 92, 246, 0.3) !important;
+    box-shadow: 0 12px 30px rgba(139, 92, 246, 0.15) !important;
+}
+
+.agent-item:hover::before {
+    left: 200%;
+}
+
+
+
+/* === New UX Round 6: Luminous Sidebar Navigation === */
+.sidebar {
+    background: rgba(9, 9, 11, 0.8) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.nav-item {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    border-radius: 12px !important;
+    position: relative;
+    margin: 4px 8px !important;
+    width: calc(100% - 16px) !important;
+}
+
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    transform: scale(1.05);
+}
+
+.nav-item.active {
+    background: rgba(59, 130, 246, 0.15) !important;
+    color: #60a5fa !important;
+}
+
+.nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 16px;
+    background: #60a5fa;
+    border-radius: 0 4px 4px 0;
+    box-shadow: 0 0 12px #60a5fa;
+}
+
+.nav-item svg {
+    transition: all 0.3s ease !important;
+}
+
+.nav-item.active svg {
+    filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.6)) !important;
+}
+
+
+
+/* === New UX Round 7: Vision Pro Depth-of-Field Modals === */
+#loginModal {
+    background: rgba(0, 0, 0, 0.4) !important;
+    backdrop-filter: blur(32px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(32px) saturate(150%) !important;
+    animation: modalFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#loginModal .panel {
+    background: linear-gradient(160deg, rgba(39, 39, 42, 0.7), rgba(9, 9, 11, 0.9)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    border-radius: 24px !important;
+    animation: modalPopUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    padding: 32px !important;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modalPopUp {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+
+
+/* === New UX Round 8: Immersive Frameless Window UI === */
+.app-container {
+    padding: 0 !important;
+    gap: 0 !important;
+}
+
+.panel {
+    border-radius: 0 !important;
+    border: none !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-shadow: none !important;
+    background: rgba(9, 9, 11, 0.5) !important;
+}
+
+/* Special panel overrides */
+.context-panel { border-right: 1px solid rgba(255, 255, 255, 0.05) !important; }
+.chat-panel { border-right: none !important; }
+
+.sidebar {
+    border-radius: 0 !important;
+    margin: 0 !important;
+}
+
+.mesh-bg {
+    opacity: 0.8; /* Make background mesh more prominent now that panels are translucent */
+}
+
+
+
+/* === New UX Round 9: Golden Ratio Kerning & Semantic Headers === */
+h1, h2, h3 {
+    font-family: var(--font-ui) !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.03em !important;
+    background: linear-gradient(to right, #ffffff, #a1a1aa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5em;
+}
+
+.panel-header, .panel-header span, .panel-header h2 {
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase;
+    color: #a1a1aa !important;
+    -webkit-text-fill-color: #a1a1aa !important;
+}
+
+.subtitle {
+    font-size: 0.9rem !important;
+    font-weight: 400 !important;
+    letter-spacing: 0.01em !important;
+    color: #71717a !important;
+    line-height: 1.5 !important;
+}
+
+.ai-message h1, .ai-message h2, .ai-message h3 {
+    margin-top: 1.5em !important;
+    margin-bottom: 0.75em !important;
+}
+
+
+
+/* === New UX Round 10: Cyber Terminal & CRT Phosphor Glow === */
+#contextDisplay {
+    background: #020617 !important; /* Deepest blue/black */
+    color: #34d399 !important; /* Emerald green phosphor */
+    text-shadow: 0 0 4px rgba(52, 211, 153, 0.4), 0 0 1px rgba(52, 211, 153, 0.2) !important;
+    border-radius: 8px;
+    padding: 24px !important;
+    font-family: 'JetBrains Mono', Consolas, monospace !important;
+    position: relative;
+    z-index: 1;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+}
+
+/* Scanlines Overlay */
+#contextDisplay::after {
+    content: ' ' !important;
+    display: block !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    right: 0 !important;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03)) !important;
+    background-size: 100% 4px, 3px 100% !important;
+    z-index: 2 !important;
+    pointer-events: none !important;
+    opacity: 0.8 !important;
+}
+
+
+
+/* === New UX Round 12: Oscillating Alert Banner === */
+#healthAlertBanner {
+    background: repeating-linear-gradient(45deg, rgba(239, 68, 68, 0.8), rgba(239, 68, 68, 0.8) 10px, rgba(220, 38, 38, 0.9) 10px, rgba(220, 38, 38, 0.9) 20px) !important;
+    background-size: 28px 28px !important;
+    color: #fca5a5 !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    padding: 10px 24px !important;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    width: auto !important;
+    min-width: 300px;
+    position: fixed !important; /* Float over everything */
+    top: 24px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 10000;
+    border-radius: 100px;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    animation: bannerSlideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1), barberpole 2s linear infinite !important;
+}
+
+@keyframes bannerSlideDown {
+    from { top: -50px; opacity: 0; }
+    to { top: 24px; opacity: 1; }
+}
+
+@keyframes barberpole {
+    from { background-position: 0 0; }
+    to { background-position: 28px 0; }
+}
+
+
+
+/* === New UX Round 13: Knowledge Base Vellum & Pro-Markdown === */
+#kbEditor {
+    background: rgba(15, 15, 18, 0.7) !important;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px) !important;
+    background-size: 20px 20px !important;
+    color: #d4d4d8 !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-radius: 12px;
+    padding: 24px !important;
+    line-height: 1.8 !important;
+    transition: all 0.3s ease;
+}
+
+#kbEditor:focus {
+    border-color: rgba(96, 165, 250, 0.5) !important;
+    box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.1) !important;
+}
+
+#kbPreview {
+    background: rgba(9, 9, 11, 0.6) !important;
+    backdrop-filter: blur(12px) !important;
+    border-radius: 12px;
+    padding: 24px !important;
+    animation: kbPreviewFade 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes kbPreviewFade {
+    from { opacity: 0; transform: perspective(1000px) rotateX(-5deg); }
+    to { opacity: 1; transform: perspective(1000px) rotateX(0); }
+}
+
+
+
+/* === New UX Round 15: Micro-Skeuomorphic Controls === */
+select.sleek-input {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 40px !important;
+    background-color: rgba(24, 24, 27, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2), 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    border-radius: 8px !important;
+    color: #f4f4f5 !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+select.sleek-input:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2), inset 0 2px 4px rgba(0,0,0,0.2) !important;
+    outline: none;
+}
+
+/* Radio Buttons Group */
+.radio-group {
+    display: flex;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.radio-group input[type="radio"] {
+    display: none;
+}
+
+.radio-group label {
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #a1a1aa;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.radio-group input[type="radio"]:checked + label {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* === New UX Round 16: Staggered Reveal Animations === */
+@keyframes staggerFadeUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.agent-item, .nav-item {
+    opacity: 0;
+    animation: staggerFadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Sidebar nav stagger */
+.nav-item:nth-child(1) { animation-delay: 0.05s; }
+.nav-item:nth-child(2) { animation-delay: 0.1s; }
+.nav-item:nth-child(3) { animation-delay: 0.15s; }
+.nav-item:nth-child(4) { animation-delay: 0.2s; }
+
+/* Agent Radar cards stagger */
+.agent-item:nth-child(1) { animation-delay: 0.1s; }
+.agent-item:nth-child(2) { animation-delay: 0.15s; }
+.agent-item:nth-child(3) { animation-delay: 0.2s; }
+.agent-item:nth-child(4) { animation-delay: 0.25s; }
+.agent-item:nth-child(5) { animation-delay: 0.3s; }
+.agent-item:nth-child(6) { animation-delay: 0.35s; }
+
+/* === New UX Round 17: iOS Glassmorphic Sticky Headers === */
+.panel-header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+    background: rgba(9, 9, 11, 0.7) !important;
+    backdrop-filter: blur(24px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    padding-top: 20px !important;
+    padding-bottom: 20px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    transition: all 0.3s ease;
+}
+
+/* Ensure parents of sticky headers allow overflow */
+.panel {
+    overflow: visible !important;
+}
+
+.panel-body, .context-body, .chat-history {
+    overflow-y: auto !important;
+    height: 100%;
+}
+
+/* === New UX Round 18: Magnetic Spotlight Tracker === */
+.panel, .agent-item, .insight-card, .chat-input-area {
+    position: relative;
+    overflow: hidden; /* Contains the glow */
+}
+
+/* The Spotlight Overlay */
+.panel::before, .agent-item::before, .insight-card::before, .chat-input-area::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+    background: radial-gradient(
+        600px circle at var(--mouse-x, -1000px) var(--mouse-y, -1000px), 
+        rgba(255, 255, 255, 0.04), 
+        transparent 40%
+    ) !important;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none !important;
+    z-index: 10;
+}
+
+.panel:hover::before, .agent-item:hover::before, .insight-card:hover::before, .chat-input-area:hover::before {
+    opacity: 1;
+}
+
+/* === New UX Round 19: 8-Point Grid Micro-Spacing === */
+.form-section {
+    padding: 32px 0 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+    margin-top: 0 !important;
+    display: flex;
+    flex-direction: column;
+    gap: 24px !important;
+}
+
+.form-section:first-of-type {
+    border-top: none !important;
+    padding-top: 16px !important;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px !important; /* 8-point rule (4, 8, 12, 16, 24...) */
+    margin-bottom: 0 !important;
+}
+
+.form-group label {
+    font-size: 0.85rem !important;
+    color: #a1a1aa !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.02em !important;
+    margin-left: 4px !important;
+}
+
+.sleek-input {
+    padding: 12px 16px !important;
+    border-radius: 8px !important;
+    font-size: 0.95rem !important;
+}
+
+/* === New UX Round 20: Parallax Kinetic Send Engine === */
+.send-btn {
+    position: relative;
+    background: #ffffff !important;
+    color: #09090b !important;
+    border-radius: 50% !important;
+    width: 44px !important;
+    height: 44px !important;
+    border: none !important;
+    outline: none !important;
+    overflow: hidden;
+    z-index: 1;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    box-shadow: 0 4px 14px rgba(255, 255, 255, 0.3) !important;
+}
+
+.send-btn::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: conic-gradient(from 0deg, transparent 0%, transparent 60%, rgba(96, 165, 250, 0.8) 80%, rgba(139, 92, 246, 1) 100%);
+    border-radius: 50%;
+    z-index: -2;
+    animation: spinGlow 2s linear infinite;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.send-btn::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    background: #ffffff;
+    border-radius: 50%;
+    z-index: -1;
+}
+
+.send-btn:hover {
+    transform: scale(1.15) translateY(-2px) !important;
+    box-shadow: 0 10px 25px rgba(139, 92, 246, 0.5), 0 4px 10px rgba(96, 165, 250, 0.4) !important;
+}
+
+.send-btn:hover::before {
+    opacity: 1;
+}
+
+.send-btn:active {
+    transform: scale(0.85) translateY(2px) !important;
+    box-shadow: 0 0 0 rgba(255, 255, 255, 0) !important;
+}
+
+@keyframes spinGlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* === ADVANCED UX Round 2: Smart Floating Context Menu === */
+#btnExplainSelection {
+    background: rgba(24, 24, 27, 0.8) !important;
+    backdrop-filter: blur(24px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    border-radius: 20px !important;
+    padding: 8px 16px !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+    color: #e4e4e7 !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    animation: contextPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+}
+
+#btnExplainSelection:hover {
+    transform: scale(1.05) translateY(-2px) !important;
+    background: rgba(39, 39, 42, 0.9) !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 16px rgba(96, 165, 250, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(96, 165, 250, 0.4) !important;
+    color: #60a5fa !important;
+}
+
+@keyframes contextPop {
+    0% { transform: scale(0.8) translateY(10px); opacity: 0; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* === ADVANCED UX Round 3: True Neumorphic Segmented Control === */
+.segmented-control {
+    position: relative;
+    display: flex;
+    background: rgba(0, 0, 0, 0.4) !important;
+    padding: 4px !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.5) !important;
+    overflow: hidden;
+    gap: 4px;
+}
+
+.segmented-control input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.segmented-control label {
+    flex: 1;
+    text-align: center;
+    padding: 10px 16px !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    color: #a1a1aa !important;
+    cursor: pointer;
+    border-radius: 8px !important;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    position: relative;
+    z-index: 1;
+}
+
+.segmented-control input[type="radio"]:checked + label {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
+    transform: scale(1.02);
+}
+
+.segmented-control input[type="radio"]:focus-visible + label {
+    outline: 2px solid #3b82f6;
+    outline-offset: -2px;
+}
+
+/* === ADVANCED UX Round 4: Mac-Style Terminal Code Blocks === */
+.chat-history pre {
+    position: relative !important;
+    padding-top: 36px !important;
+    background: #09090b !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+}
+
+/* Mac red/yellow/green dots */
+.chat-history pre::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 30px !important;
+    background: rgba(24, 24, 27, 0.95) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-shadow: 14px 14px 0 -4px #ef4444, 32px 14px 0 -4px #f59e0b, 50px 14px 0 -4px #10b981 !important;
+    z-index: 1 !important;
+}
+
+/* Language label pseudo-element trick */
+.chat-history pre::after {
+    content: "CODE" !important;
+    position: absolute !important;
+    top: 6px !important;
+    right: 14px !important;
+    color: #52525b !important;
+    font-size: 0.7rem !important;
+    font-weight: 700 !important;
+    font-family: 'Inter', sans-serif !important;
+    letter-spacing: 0.05em !important;
+    z-index: 2 !important;
+}
+
+.chat-history pre code {
+    display: block !important;
+    overflow-x: auto !important;
+    padding: 16px !important;
+    font-size: 0.9rem !important;
+    line-height: 1.6 !important;
+}
+
+/* === ADVANCED UX Round 5: Micro-Vibration Feedback === */
+.btn-insight-copy {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    transform-origin: center center;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-insight-copy:active {
+    transform: scale(0.92) !important;
+}
+
+.btn-insight-copy.success-pulse {
+    animation: successVibrate 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both !important;
+    background: rgba(16, 185, 129, 0.2) !important; /* Success Green */
+    border-color: rgba(16, 185, 129, 0.8) !important;
+    color: #10b981 !important;
+}
+
+@keyframes successVibrate {
+    0% { transform: scale(1); }
+    20% { transform: scale(1.15) rotate(-2deg); }
+    40% { transform: scale(1.15) rotate(2deg); }
+    60% { transform: scale(1.15) rotate(-2deg); }
+    80% { transform: scale(1.15) rotate(2deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+/* === ADVANCED UX Round 6: Sidebar Magnetic Hover Pill === */
+.nav-item {
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    background: transparent !important; /* Remove static background */
+    transition: color 0.3s ease !important;
+}
+
+.nav-item::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: inherit;
+    z-index: -1;
+    transform: scale(0.95);
+    opacity: 0;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-item:hover::before {
+    transform: scale(1);
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.nav-item.active::before {
+    transform: scale(1);
+    opacity: 1;
+    background: rgba(96, 165, 250, 0.15); /* Active glow */
+    border: 1px solid rgba(96, 165, 250, 0.3);
+}
+
+.nav-item:hover {
+    color: #ffffff !important;
+}
+
+.nav-item.active {
+    color: #60a5fa !important;
+    text-shadow: 0 0 10px rgba(96, 165, 250, 0.4);
+}
+
+/* === ADVANCED UX Round 7: Edge Fading Mask (Knowledge Base) === */
+.sleek-textarea, #kbPreview {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%) !important;
+    mask-image: linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%) !important;
+    /* Ensure the scrollbar doesn't get masked out by moving it to the wrapper or just letting it fade */
+}
+
+/* Customize the scrollbar for the textarea specifically to fit the dark theme */
+.sleek-textarea::-webkit-scrollbar {
+    width: 6px;
+}
+.sleek-textarea::-webkit-scrollbar-track {
+    background: transparent;
+}
+.sleek-textarea::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+.sleek-textarea::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* === ADVANCED UX Round 8: Glassmorphic Glow Matrix === */
+.btn-outline {
+    background: rgba(24, 24, 27, 0.4) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    color: #e4e4e7 !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.03em !important;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8) !important;
+}
+
+.btn-outline:hover {
+    background: rgba(39, 39, 42, 0.8) !important;
+    border-color: rgba(96, 165, 250, 0.5) !important;
+    color: #ffffff !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(96, 165, 250, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+.btn-outline:active {
+    transform: translateY(1px) scale(0.96) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* === ADVANCED UX Round 9: Holographic Data Tables === */
+.chat-history table {
+    width: 100% !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    margin: 16px 0 !important;
+    background: rgba(24, 24, 27, 0.4) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    overflow: hidden !important;
+}
+
+.chat-history th {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #e4e4e7 !important;
+    font-weight: 600 !important;
+    text-align: left !important;
+    padding: 12px 16px !important;
+    font-size: 0.85rem !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.chat-history td {
+    padding: 12px 16px !important;
+    color: #d4d4d8 !important;
+    font-size: 0.9rem !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+    transition: background 0.2s ease !important;
+}
+
+.chat-history tr:last-child td {
+    border-bottom: none !important;
+}
+
+/* Zebra Stripes */
+.chat-history tr:nth-child(even) td {
+    background: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* Hover Row Highlight */
+.chat-history tr:hover td {
+    background: rgba(96, 165, 250, 0.08) !important;
+}
+
+/* === ADVANCED UX Round 10: Floating Nano Scrollbar (Global) === */
+::-webkit-scrollbar {
+    width: 8px !important;
+    height: 8px !important;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 10px !important;
+    border: 2px solid rgba(9, 9, 11, 1) !important; /* Creates a floating gap effect against dark bg */
+    background-clip: padding-box !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+    border: 2px solid rgba(9, 9, 11, 1) !important;
+}
+
+/* Specific fix for horizontal scroll in code blocks */
+.chat-history pre code::-webkit-scrollbar {
+    height: 6px !important;
+}
+.chat-history pre code::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: none !important; /* No gap for inner block */
+}
+
+/* === ADVANCED UX Round 11: Quantum Glow Input Area === */
+.chat-input-area {
+    position: relative;
+    background: rgba(9, 9, 11, 0.85) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.chat-input-area::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 -10px 40px rgba(96, 165, 250, 0);
+    transition: box-shadow 0.4s ease;
+    z-index: 1;
+}
+
+/* Utilize the modern :has selector for container styling based on child focus */
+.chat-input-area:has(textarea:focus) {
+    background: rgba(15, 15, 20, 0.95) !important;
+    transform: translateY(-2px);
+}
+
+.chat-input-area:has(textarea:focus)::after {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 -15px 50px -10px rgba(96, 165, 250, 0.25);
+    border-top: 1px solid rgba(96, 165, 250, 0.5) !important;
+}
+
+.chat-input {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+.chat-input:focus {
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* === ADVANCED UX Round 12: Deep Grid Tunnel === */
+.context-body {
+    position: relative;
+    /* Maintain existing perspective */
+}
+
+/* Create the grid layer using pseudo-element so it doesn't affect child layouts */
+.context-body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    
+    /* Draw the grid */
+    background-size: 40px 40px;
+    background-image: 
+        linear-gradient(to right, rgba(96, 165, 250, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(96, 165, 250, 0.03) 1px, transparent 1px);
+        
+    /* Mask the grid so it fades into darkness at the edges and bottom */
+    mask-image: radial-gradient(circle at top, black 20%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at top center, black 0%, transparent 90%);
+}
+
+/* Ensure content sits above the grid */
+.context-body > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* === ADVANCED UX Round 13: Reveal-on-Hover Copy Button === */
+.btn-code-copy {
+    position: absolute;
+    top: 36px; /* Place it just below the Mac header */
+    right: 12px;
+    background: rgba(24, 24, 27, 0.6) !important;
+    backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #a1a1aa;
+    padding: 6px;
+    border-radius: 6px;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-history pre:hover .btn-code-copy {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.btn-code-copy:hover {
+    background: rgba(39, 39, 42, 0.9) !important;
+    color: #ffffff;
+    border-color: rgba(96, 165, 250, 0.4) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 8px rgba(96, 165, 250, 0.2);
+}
+
+.btn-code-copy.success-pulse {
+    animation: successVibrate 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both !important;
+    background: rgba(16, 185, 129, 0.2) !important;
+    border-color: rgba(16, 185, 129, 0.8) !important;
+    color: #10b981 !important;
+}
+
+/* === ADVANCED UX Round 14: Geek Typography & Raster Shadow === */
+
+/* Force monospaced tabular numerals everywhere to prevent jitter during live updates */
+body {
+    font-variant-numeric: tabular-nums;
+    -moz-font-feature-settings: "tnum";
+    -webkit-font-feature-settings: "tnum";
+    font-feature-settings: "tnum";
+}
+
+/* Apply Raster Text Shadow to all titles and headings */
+h1, h2, h3, h4, .subtitle, .panel-header span {
+    text-shadow: 0 2px 10px rgba(96, 165, 250, 0.15), 0 0 1px rgba(255, 255, 255, 0.1) !important;
+    letter-spacing: 0.02em !important;
+}
+
+/* Intense Raster Glow for numeric data and specific tags */
+.status-badge, .agent-item span, .chat-history td {
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Special styling for inline code (not block code) */
+p code, li code {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #a78bfa !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+    font-size: 0.85em !important;
+    text-shadow: 0 0 8px rgba(167, 139, 250, 0.3) !important;
+    border: 1px solid rgba(167, 139, 250, 0.2) !important;
+}
+
+/* === ADVANCED UX Round 15: Cyber Glitch Reveal & Skeleton Glow === */
+
+/* Skeleton Loading Glow */
+.skeleton-glow {
+    position: relative;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-radius: 8px;
+}
+
+.skeleton-glow::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    animation: skeletonShimmer 1.5s infinite;
+}
+
+@keyframes skeletonShimmer {
+    100% { left: 200%; }
+}
+
+/* Cyber Glitch Reveal for new elements (applied via JS or to specific dynamic containers) */
+.cyber-glitch-reveal {
+    animation: glitchReveal 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards !important;
+}
+
+@keyframes glitchReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(10px) skewX(10deg);
+        filter: hue-rotate(90deg) blur(4px);
+    }
+    40% {
+        opacity: 0.8;
+        transform: translateY(-2px) skewX(-5deg);
+        filter: hue-rotate(-45deg) blur(2px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) skewX(0);
+        filter: hue-rotate(0) blur(0);
+    }
+}
+
+/* === ADVANCED UX Round 16: Red Pulse Heartbeat (Critical Alerts) === */
+#healthAlertBanner {
+    background: rgba(153, 27, 27, 0.9) !important; /* Deep red with opacity */
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border-bottom: 2px solid #ef4444 !important;
+    box-shadow: 0 10px 40px rgba(220, 38, 38, 0.5), inset 0 0 20px rgba(239, 68, 68, 0.3) !important;
+    color: #fca5a5 !important;
+    font-size: 0.9rem !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase !important;
+    animation: criticalHeartbeat 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite !important;
+    z-index: 10000 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 16px !important;
+}
+
+#healthAlertBanner::before {
+    content: "⚠️ CRITICAL:" !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+}
+
+@keyframes criticalHeartbeat {
+    0% {
+        box-shadow: 0 10px 40px rgba(220, 38, 38, 0.3), inset 0 0 20px rgba(239, 68, 68, 0.1);
+        text-shadow: 0 0 4px rgba(239, 68, 68, 0.5);
+    }
+    15% {
+        box-shadow: 0 15px 50px rgba(220, 38, 38, 0.8), inset 0 0 30px rgba(239, 68, 68, 0.6);
+        text-shadow: 0 0 12px rgba(255, 255, 255, 1), 0 0 20px rgba(239, 68, 68, 0.8);
+    }
+    30% {
+        box-shadow: 0 10px 40px rgba(220, 38, 38, 0.4), inset 0 0 20px rgba(239, 68, 68, 0.2);
+        text-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
+    }
+    45% {
+        box-shadow: 0 12px 45px rgba(220, 38, 38, 0.6), inset 0 0 25px rgba(239, 68, 68, 0.4);
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.8), 0 0 15px rgba(239, 68, 68, 0.7);
+    }
+    100% {
+        box-shadow: 0 10px 40px rgba(220, 38, 38, 0.3), inset 0 0 20px rgba(239, 68, 68, 0.1);
+        text-shadow: 0 0 4px rgba(239, 68, 68, 0.5);
+    }
+}
+
+/* === ADVANCED UX Round 17: Phosphor CRT Scanline === */
+.terminal-card {
+    position: relative;
+    overflow: hidden;
+    background-color: rgba(5, 5, 5, 0.95) !important;
+}
+
+/* CRT Scanline Overlay */
+.terminal-card::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 2;
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+    animation: crtScanline 8s linear infinite;
+}
+
+/* Rolling scanline bar */
+.terminal-card::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 10%;
+    background: linear-gradient(to bottom, rgba(74, 222, 128, 0), rgba(74, 222, 128, 0.1) 50%, rgba(74, 222, 128, 0));
+    opacity: 0.3;
+    z-index: 3;
+    pointer-events: none;
+    animation: crtRoll 4s linear infinite;
+}
+
+/* Phosphor Text Glow for the terminal code */
+.terminal-card .agent-display-code {
+    color: #4ade80 !important; /* Retro Hacker Green */
+    text-shadow: 0 0 2px rgba(74, 222, 128, 0.4), 0 0 8px rgba(74, 222, 128, 0.2) !important;
+}
+
+@keyframes crtScanline {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 100%; }
+}
+
+@keyframes crtRoll {
+    0% { top: -10%; }
+    100% { top: 110%; }
+}
+
+/* === ADVANCED UX Round 18: Glassmorphic Select Dropdowns === */
+select.form-input, select#targetAgent {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    background: rgba(24, 24, 27, 0.4) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.2) !important;
+    color: #e4e4e7 !important;
+    padding: 10px 36px 10px 14px !important;
+    border-radius: 8px !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    /* Custom SVG Caret for the dropdown */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 12px center !important;
+}
+
+select.form-input:hover, select#targetAgent:hover {
+    background-color: rgba(39, 39, 42, 0.7) !important;
+    border-color: rgba(96, 165, 250, 0.4) !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 4px 12px rgba(96, 165, 250, 0.15) !important;
+}
+
+select.form-input:focus, select#targetAgent:focus {
+    outline: none !important;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3), inset 0 2px 4px rgba(0,0,0,0.5) !important;
+}
+
+/* Style the native options (only works on some modern browsers/OS in dark mode) */
+select.form-input option, select#targetAgent option {
+    background-color: #18181b !important;
+    color: #e4e4e7 !important;
+    padding: 12px !important;
+}
+
+/* === ADVANCED UX Round 19: 8-Point Grid Micro-Spacing === */
+/* Adjust all major layout boundaries to multiples of 8 (8, 16, 24, 32, 48, 64) */
+
+.panel-left, .panel-right {
+    padding: 24px !important; /* Perfect 3x8 grid */
+    gap: 16px !important;
+}
+
+.panel-header {
+    padding-bottom: 16px !important;
+    margin-bottom: 24px !important;
+}
+
+.insight-card {
+    padding: 16px !important;
+    margin-bottom: 16px !important;
+    border-radius: 16px !important; /* Visual radius matching padding */
+}
+
+.agent-item {
+    padding: 16px !important;
+    border-radius: 16px !important;
+}
+
+.chat-input-area {
+    padding: 16px 24px !important;
+    border-radius: 24px !important;
+    margin-top: 16px !important;
+}
+
+.settings-tab .form-section {
+    padding: 32px 0 !important; /* 4x8 grid */
+    gap: 16px !important;
+}
+
+/* Redefine button heights to 40px (5x8) */
+.btn-primary, .btn-outline, .btn-insight-copy {
+    height: 40px !important;
+    padding: 0 16px !important;
+    line-height: 40px !important; /* Vertically center */
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* === ADVANCED UX Round 20 (FINAL): Kinetic Energy Burst === */
+/* Adds a shockwave ripple effect to primary actionable buttons upon interaction */
+
+.btn-primary, .btn-outline {
+    position: relative;
+    overflow: visible !important; /* Allow the shockwave to escape the button bounds */
+}
+
+.btn-primary::before, .btn-outline::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: 2px solid rgba(96, 165, 250, 0.8);
+    border-radius: inherit;
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Trigger shockwave on active state release (by hooking into focus/active interplay) */
+.btn-primary:active::before, .btn-outline:active::before {
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 1;
+    transition: 0s; /* Instant reset */
+}
+
+.btn-primary:not(:active):focus::before, .btn-outline:not(:active):focus::before {
+    animation: kineticShockwave 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes kineticShockwave {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; border-width: 2px; }
+    100% { transform: translate(-50%, -50%) scale(1.4); opacity: 0; border-width: 0px; filter: blur(4px); }
+}
+
+/* === Round 1/105: Responsive Glassmorphism Modals === */
+.modern-modal-overlay {
+    position: fixed; 
+    inset: 0; 
+    background: rgba(0,0,0,0.5); 
+    backdrop-filter: blur(12px); 
+    -webkit-backdrop-filter: blur(12px); 
+    z-index: 9999; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    padding: 16px;
+}
+#feedbackPreviewModal.modern-modal-overlay { z-index: 10000; }
+.modern-modal-panel {
+    width: 100%;
+    max-width: 400px;
+    padding: 32px !important;
+    background: linear-gradient(160deg, rgba(39, 39, 42, 0.75), rgba(9, 9, 11, 0.95)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    border-radius: 24px !important;
+}
+.preview-modal-panel { max-width: 600px; }
+
+/* === Round 4/105: Knowledge Base "Hacker Glass" Aesthetics === */
+#kbEditor {
+    background: rgba(9, 9, 11, 0.4);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
+    padding: 16px;
+    font-family: 'Fira Code', 'Courier New', monospace;
+    color: #e4e4e7;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+#kbEditor:focus {
+    border-color: rgba(139, 92, 246, 0.8);
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.2), inset 0 2px 10px rgba(0, 0, 0, 0.5);
+    background: rgba(9, 9, 11, 0.6);
+}
+#kbPreview {
+    background: linear-gradient(135deg, rgba(24, 24, 27, 0.9), rgba(9, 9, 11, 0.95));
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+#kbPreview h1, #kbPreview h2, #kbPreview h3 {
+    color: var(--success);
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+    padding-bottom: 4px;
+}
+.kb-toolbar button {
+    transition: transform 0.2s, background 0.2s, border-color 0.2s;
+}
+.kb-toolbar button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* === Round 5/105: Markdown Code Block "Carbon" Terminal Aesthetics === */
+#chatHistory pre {
+    background: #0d0d0f !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 8px 16px rgba(0,0,0,0.2) !important;
+    overflow: hidden !important;
+    position: relative;
+    padding-top: 36px !important;
+}
+#chatHistory pre::before {
+    content: "Code snippet"; /* Mac window control dots */
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 28px;
+    background: #18181b;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    padding-left: 60px;
+    font-family: var(--font-ui);
+    font-size: 11px;
+    color: #a1a1aa;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+/* macOS style dots using pseudo-elements */
+#chatHistory pre::after {
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ef4444; /* red */
+    box-shadow: 18px 0 0 #eab308, 36px 0 0 #10b981; /* yellow, green */
+}
+
+/* === Round 6/105: Agent Radar Pulse Animation === */
+.agent-item {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    border: 1px solid transparent !important;
+}
+.agent-item:hover {
+    background: rgba(39, 39, 42, 0.8) !important;
+    border-color: rgba(139, 92, 246, 0.4) !important;
+    transform: translateX(4px) scale(1.02);
+    box-shadow: -4px 0 15px rgba(139, 92, 246, 0.15) !important;
+}
+.agent-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--success);
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+}
+.agent-item:hover::before {
+    transform: scaleY(1);
+}
+
+/* === Round 7/105: User Message Bubble Ergonomics === */
+#chatHistory .user-message {
+    background: linear-gradient(135deg, rgba(39, 39, 42, 0.8), rgba(24, 24, 27, 0.95)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-bottom-right-radius: 4px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+    padding: 14px 18px !important;
+    line-height: 1.5;
+    transform-origin: right bottom;
+    animation: popInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes popInRight {
+    0% { transform: scale(0.95) translateY(10px); opacity: 0; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* === Round 8/105: AI Assistant Message Bubble & Text Selection === */
+#chatHistory .ai-message {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(9, 9, 11, 0.6)) !important;
+    border: 1px solid rgba(16, 185, 129, 0.2) !important;
+    border-bottom-left-radius: 4px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    padding: 14px 18px !important;
+    line-height: 1.6;
+    transform-origin: left bottom;
+    animation: popInLeft 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes popInLeft {
+    0% { transform: scale(0.95) translateY(10px); opacity: 0; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+/* Premium text selection color */
+#chatHistory .ai-message ::selection {
+    background: rgba(16, 185, 129, 0.3);
+    color: #fff;
+}
+
+/* === Round 9/105: Terminal Feed Glowing "CRT" Aesthetics === */
+.context-body {
+    background: rgba(0, 0, 0, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 0 10px rgba(16, 185, 129, 0.05) !important;
+    font-family: 'Fira Code', 'JetBrains Mono', 'Courier New', Courier, monospace !important;
+    text-shadow: 0 0 2px rgba(16, 185, 129, 0.4);
+    position: relative;
+}
+/* Scanning line effect for the terminal */
+.context-body::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0.3;
+}
+
+/* === Round 10/105: Deep App Background Mesh Gradient Refinement === */
+body {
+    background-color: var(--bg-primary);
+    background-image: 
+        radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.03), transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.03), transparent 25%);
+    background-attachment: fixed;
+}
+.sidebar {
+    background: rgba(18, 18, 20, 0.6) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* === Rounds 14-20/105: Core System Aesthetics & Ergonomics Batch === */
+
+/* Round 14: Feedback Modal Animations */
+.modal-overlay {
+    backdrop-filter: blur(8px) brightness(0.7);
+    -webkit-backdrop-filter: blur(8px) brightness(0.7);
+    transition: opacity 0.3s ease;
+}
+.modal-panel {
+    background: linear-gradient(180deg, rgba(39, 39, 42, 0.8), rgba(24, 24, 27, 0.95)) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7) !important;
+    animation: modalDropIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes modalDropIn {
+    0% { transform: translateY(-30px) scale(0.95); opacity: 0; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* Round 15: Settings Inputs & Switches */
+.settings-group input[type="text"], .settings-group select {
+    background: rgba(0,0,0,0.3) !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    color: var(--text-primary) !important;
+    transition: all 0.2s ease !important;
+}
+.settings-group input[type="text"]:focus, .settings-group select:focus {
+    border-color: rgba(139, 92, 246, 0.8) !important;
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2) !important;
+    outline: none;
+}
+
+/* Round 16: Sidebar Navigation Glow Hover */
+.sidebar .nav-item {
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+.sidebar .nav-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-left-color: rgba(139, 92, 246, 0.5);
+}
+.sidebar .nav-item.active {
+    background: rgba(139, 92, 246, 0.1);
+    border-left-color: rgba(139, 92, 246, 1);
+    box-shadow: inset 20px 0 20px -20px rgba(139, 92, 246, 0.5);
+}
+
+/* Round 17: Toast Notification Slide-Up */
+#kbToast {
+    animation: toastSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    background: rgba(24, 24, 27, 0.95);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.5), 0 0 20px rgba(139, 92, 246, 0.1);
+}
+@keyframes toastSlideUp {
+    0% { transform: translateY(100%); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+/* Round 18: Main Chat Input Glow */
+#chatInput {
+    background: rgba(24, 24, 27, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+#chatInput:focus {
+    background: rgba(24, 24, 27, 0.9);
+    border-color: rgba(16, 185, 129, 0.5);
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+}
+#btnSend {
+    transition: transform 0.2s, background 0.2s;
+}
+#btnSend:hover {
+    transform: scale(1.05);
+    background: rgba(16, 185, 129, 0.2);
+}
+
+/* Round 19: Mobile Responsive Layout Polish */
+@media (max-width: 768px) {
+    .main-layout { flex-direction: column; }
+    .sidebar { width: 100%; height: 60px; flex-direction: row; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .nav-item { flex-direction: row; padding: 8px 12px; }
+    .nav-item span { display: none; }
+}
+
+/* Round 20: System-wide Glass Scrollbars */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    border: 2px solid rgba(24, 24, 27, 0.9);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(139, 92, 246, 0.4);
+}
+
+/* === Rounds 48-55: Multi-Agent Telemetry & Scaling Batch === */
+
+/* Round 48: Dynamic Grid Scaling */
+#contextGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 16px;
+    align-items: start;
+    width: 100%;
+}
+.agent-terminal-card {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+}
+.agent-terminal-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px -10px rgba(139, 92, 246, 0.2);
+    border-color: rgba(139, 92, 246, 0.4) !important;
+}
+
+/* Round 53: Radar Pulse Animation */
+.radar-pulse-ring {
+    position: absolute;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--success);
+    animation: radarRing 2s infinite cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes radarRing {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(3); opacity: 0; }
+}
+
+/* === Rounds 101-105: Final UI Polish === */
+::selection {
+    background: rgba(139, 92, 246, 0.4);
+    color: #ffffff;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.2);
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(139, 92, 246, 0.5);
+}
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+/* === Round 37/105: Knowledge Graph Cards === */
+.kb-rule-card {
+    background: rgba(24, 24, 27, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    position: relative;
+    overflow: hidden;
+}
+.kb-rule-card:hover {
+    background: rgba(39, 39, 42, 0.8);
+    border-color: rgba(16, 185, 129, 0.4);
+    transform: translateX(2px);
+}
+.kb-rule-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: rgba(16, 185, 129, 0.8);
+    transform: scaleY(0);
+    transition: transform 0.2s ease;
+}
+.kb-rule-card:hover::before {
+    transform: scaleY(1);
+}
+.kb-rule-date {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+    display: block;
+}
+/* === Round 6 & 7: Glassmorphism & High-End Aesthetics === */
+:root {
+    --bg-primary: #000000;
+    --panel-bg: rgba(24, 24, 27, 0.65); /* Translucent */
+    --panel-border: rgba(39, 39, 42, 0.5);
+    --border-hover: rgba(63, 63, 70, 0.8);
+    --glow-color: rgba(16, 185, 129, 0.15);
+}
+
+.panel {
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    margin: 8px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.panel:hover {
+    box-shadow: 0 8px 32px 0 var(--glow-color);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.controls {
+    background: rgba(24, 24, 27, 0.7) !important;
+    backdrop-filter: blur(10px) !important;
+    border-radius: 20px !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    padding: 8px 16px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+}
+
+button {
+    border-radius: 8px !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+/* Quick Prompts Container & Pills */
+.quick-prompts-container {
+    display: flex;
+    gap: 8px;
+    padding: 10px 16px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+    border-top: 1px solid var(--panel-border);
+    background: transparent;
+}
+.quick-prompts-container::-webkit-scrollbar {
+    display: none;
+}
+.quick-prompt-pill {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    padding: 6px 14px;
+    border-radius: 20px !important;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease !important;
+    backdrop-filter: blur(5px);
+}
+.quick-prompt-pill:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(255,255,255,0.05) !important;
 }

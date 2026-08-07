@@ -7,14 +7,22 @@
     <link rel="stylesheet" href="/static/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="vendor/purify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <!-- Premium Dynamic Mesh Background -->
+    <div class="mesh-bg">
+        <div class="mesh-blob blob-1"></div>
+        <div class="mesh-blob blob-2"></div>
+        <div class="mesh-blob blob-3"></div>
+    </div>
     
     <!-- Login Modal -->
-    <div id="loginModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center;">
-        <div class="panel" style="width: 400px; padding: 24px;">
+    <div id="loginModal" class="modern-modal-overlay" style="display: none;">
+        <div class="panel modern-modal-panel">
             <h2>Enter Security Token</h2>
             <p class="subtitle" style="margin-bottom: 16px;">Check your terminal for the generated Gabriel Token.</p>
             <input type="password" id="inputToken" class="sleek-input" placeholder="Paste token here..." style="width: 100%; margin-bottom: 16px;">
@@ -22,8 +30,8 @@
         </div>
     </div>
     <!-- Feedback Modal -->
-    <div id="feedbackModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center;">
-        <div class="panel" style="width: 400px; padding: 24px;">
+    <div id="feedbackModal" class="modern-modal-overlay" style="display: none;">
+        <div class="panel modern-modal-panel">
             <h2>Send Feedback</h2>
             <textarea id="feedbackText" class="sleek-textarea" placeholder="Describe the issue or feature request..." style="width: 100%; height:80px; margin-bottom: 16px; margin-top:8px;"></textarea>
             <div style="display: flex; justify-content: flex-end; gap: 8px;">
@@ -34,8 +42,8 @@
     </div>
 
     <!-- Feedback Preview Modal -->
-    <div id="feedbackPreviewModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center;">
-        <div class="panel" style="width: 600px; padding: 24px; border: 1px solid var(--panel-border);">
+    <div id="feedbackPreviewModal" class="modern-modal-overlay" style="display: none;">
+        <div class="panel modern-modal-panel preview-modal-panel">
             <h2>Review Feedback Submission</h2>
             <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 8px;">Please review the context being sent. You may edit or redact sensitive information below:</p>
             <textarea id="feedbackPreviewText" class="sleek-textarea" style="width: 100%; height:300px; margin-bottom: 16px; font-family: monospace; font-size: 0.85rem;"></textarea>
@@ -116,11 +124,17 @@
 
                 <div class="panel chat-panel">
                     <header class="panel-header" style="display:flex; justify-content:space-between;">
-                        <div>
+                        <div style="display:flex; align-items:center;">
                             <button id="btnToggleContext" class="icon-btn" title="Toggle Terminal View" style="margin-right:8px;">👁</button>
-                            <span data-i18n="chat_assistant">🧠 Assistant</span>
+                            <span data-i18n="chat_assistant" style="margin-right:12px;">🧠 Assistant</span>
+                            <select id="chatTargetAgent" class="sleek-input" style="padding: 4px 8px; font-size: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border); border-radius: 6px; color: var(--text-primary); max-width: 180px;">
+                                <option value="auto" data-i18n="auto_track">Auto-track Newest</option>
+                            </select>
                         </div>
                         <div>
+                            <button id="btnExportChat" class="btn-outline" style="margin-right:8px; padding:4px 8px; font-size:0.75rem;" title="Export Chat as Markdown">
+                                <span>📥 Export</span>
+                            </button>
                             <button id="btnFeedback" class="btn-outline" style="margin-right:8px; padding:4px 8px; font-size:0.75rem;">
                                 <span data-i18n="chat_feedback">Feedback</span>
                             </button>
@@ -133,7 +147,10 @@
                     <div id="kbToast" class="kb-toast hidden">
                         <div class="kb-toast-header">
                             <span>💡 <span data-i18n="kb_recommendation">Knowledge Base Recommendation</span></span>
-                            <button onclick="document.getElementById('kbToast').classList.add('hidden')" style="background:none; border:none; color:#94a3b8; cursor:pointer;">✕</button>
+                            <div>
+                                <button id="btnAskKb" class="btn-outline" style="font-size:0.7rem; padding: 2px 6px; margin-right: 8px;">Ask Gabriel</button>
+                                <button onclick="document.getElementById('kbToast').classList.add('hidden')" style="background:none; border:none; color:#94a3b8; cursor:pointer;">✕</button>
+                            </div>
                         </div>
                         <div id="kbToastContent" class="kb-toast-body ai-message"></div>
                     </div>
@@ -142,8 +159,19 @@
                             Gabriel launched. Terminal snapshot is actively tracked.
                         </div>
                     </div>
-                    <div class="chat-input-area">
-                        <textarea id="chatInput" class="sleek-textarea chat-input" placeholder="Ask Gabriel..." data-i18n-placeholder="chat_placeholder" rows="1"></textarea>
+                    
+                    <!-- Quick Prompts / Pills -->
+                    <div class="quick-prompts-container">
+                        <button class="quick-prompt-pill" onclick="document.getElementById('chatInput').value='What is it doing?'; document.getElementById('btnSend').click();">🔍 What is it doing?</button>
+                        <button class="quick-prompt-pill" onclick="document.getElementById('chatInput').value='Any errors in the terminal?'; document.getElementById('btnSend').click();">🐛 Any errors?</button>
+                        <button class="quick-prompt-pill" onclick="document.getElementById('chatInput').value='Explain this step'; document.getElementById('btnSend').click();">📖 Explain this step</button>
+                    </div>
+
+                    <div class="chat-input-area" style="position: relative;">
+                        <button id="btnClearChat" class="icon-btn" style="position: absolute; left: 8px; bottom: 8px; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2);" title="Clear Chat History">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                        <textarea id="chatInput" class="sleek-textarea chat-input" style="padding-left: 48px;" placeholder="Ask Gabriel..." data-i18n-placeholder="chat_placeholder" rows="1"></textarea>
                         <button id="btnSend" class="icon-btn send-btn">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                         </button>
@@ -188,15 +216,27 @@
 
             <!-- KNOWLEDGE BASE VIEW -->
             <section id="tab-kb" class="tab-pane hidden single-view">
-                <div class="panel" style="width:100%; max-width:1200px;">
-                    <header class="panel-header" style="justify-content: space-between;">
-                        <h2 data-i18n="kb_title">Knowledge Draft</h2>
-                        <div>
-                            <button id="btnPreviewKb" class="btn-outline" style="margin-right: 8px;"><span data-i18n="btn_preview_kb">👁 Preview</span></button>
-                            <button id="btnCopyInject" class="btn-primary" data-i18n="kb_copy">Copy Injection Command</button>
+                <div class="panel" style="width:100%; max-width:1400px; display:flex; flex-direction:row; gap:16px;">
+                    <!-- Left: Accumulated Knowledge Graph -->
+                    <div class="panel-body" style="flex:1; border-right: 1px solid rgba(255,255,255,0.05); padding-right:16px; display:flex; flex-direction:column; overflow:hidden;">
+                        <div class="panel-header" style="margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.05);">
+                            <h2 style="font-size:1.1rem; color:var(--success);">🧠 Global Knowledge Graph</h2>
+                            <button id="btnRefreshKb" class="btn-outline" style="font-size:0.8rem; padding:4px 8px;">🔄 Sync</button>
+                        </div>
+                        <div id="kbRulesList" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+                            <div style="color:var(--text-secondary); font-size:0.9rem; text-align:center; margin-top:20px;">Fetching accumulated insights...</div>
                         </div>
                     </div>
-                    <div class="panel-body" style="display:flex; flex-direction:column; height: 100%;">
+                    
+                    <!-- Right: Editor/Draft -->
+                    <div class="panel-body" style="flex:1; display:flex; flex-direction:column; height: 100%;">
+                        <div class="panel-header" style="justify-content: space-between; margin-bottom:12px; padding-bottom:8px;">
+                            <h2 data-i18n="kb_title">Knowledge Draft</h2>
+                            <div>
+                                <button id="btnPreviewKb" class="btn-outline" style="margin-right: 8px;"><span data-i18n="btn_preview_kb">👁 Preview</span></button>
+                                <button id="btnCopyInject" class="btn-primary" data-i18n="kb_copy">Copy Injection Command</button>
+                            </div>
+                        </div>
                         <p class="subtitle" data-i18n="kb_desc">Review Gabriel's insight before injecting into main CLI.</p>
                         <div style="display:flex; flex:1; gap:16px; margin-top:12px; position:relative;">
                             <textarea id="kbEditor" class="sleek-textarea" style="flex:1; height:100%; resize:none;" placeholder="Gabriel's insights will appear here..." data-i18n-placeholder="kb_placeholder"></textarea>
@@ -205,7 +245,7 @@
                         <button id="btnSaveKb" class="btn-outline" style="margin-top: 12px; align-self: flex-start;" data-i18n="kb_save">Save Draft</button>
                     </div>
                 </div>
-            </div>
+            </section>
 
             <!-- SETTINGS VIEW -->
             <div id="tab-settings" class="tab-pane hidden single-view">
