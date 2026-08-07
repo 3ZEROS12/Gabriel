@@ -1,5 +1,7 @@
 # Gabriel 优化方案 v4（供 Agent 执行）
 
+> ⚠️ **核对注记（2026-08-07，commit `9c148a0`）**：本文档的 P0（A1/A2/A3）、B1 waiting、C2 本地化、C4 onboarding、D1 parser class 化等项已全部落地；实际完成度以 `docs/OPTIMIZATION_ROADMAP_2026.md` 顶部的"最新核对状态"为准，执行前先读该节，避免重复做功。
+
 > 本文档由一次完整的代码审查 + 竞品调研 + 2026 设计趋势研究得出。执行 Agent（Gemini/Claude Code）应严格按下列顺序推进，每完成一项对照"验收标准"自检，禁止跳跃并行。
 >
 > 背景文档请先读：

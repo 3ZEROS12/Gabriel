@@ -5,6 +5,33 @@
 
 ---
 
+## ⚠️ 最新核对状态（2026-08-07，核对于 commit `9c148a0` + 本轮优化）
+
+> 本文档第 1 节"尚未完成"清单已大幅过时，以下项已逐行核验为**已落地**，请勿重复排期：
+
+| 原列缺口 | 现状 |
+|---|---|
+| C1 假遥测图死代码 | ✅ 已删（仅留注释 `Dead code telemetryChart removed in T1`） |
+| D1 后端内联 style / parser class | ✅ parser 已输出 `.log-user/.log-agent/.log-tool/.log-entry` 语义 class |
+| C3 聊天历史持久化 | ✅ SQLite `chat_history` 表（40 条上限，重启恢复） |
+| P1-1 会话历史浏览器 + 恢复 | ✅ 雷达页历史 Tab + `/api/sessions` + 只读回看（含"存在/已删"徽章） |
+| A2 收藏"百宝箱"页签 | ✅ KB 页 ⭐ 百宝箱子 Tab（`/api/kb?filter=favorite`） |
+| D4 token 泄露面 | ✅ `/api/auth/ticket` 一次性握手已接入（前端优先 ticket，fallback token） |
+| A3 错误预警卡片 | ✅ 后端 `error_warning`（≥5 错误 + 60s 冷却）+ 前端卡片（详情折叠 + ⚡ 一键诊断） |
+| 价格输入 UI | ✅ Settings 已有 input/output 单价输入 |
+
+**本轮（2026-08-07 第二批）新增落地：**
+- `estimate_cost()` 统一成本估算（chars/4 ≈ tokens，70/30 in/out 拆分，价格可配）+ 单测
+- waiting 首轮误报修复：状态仅翻转时推送（首次观测为基线，不再误发 `agent_unblocked`）
+- Settings 价格档位预设（GPT-4o / DeepSeek / Claude / Gemini，手动改价自动回"自定义"）
+- 会话历史列表补"Avg: $X/turn"列
+- i18n 全量补齐：6 种语言 × 77 键（ko 此前缺 33 键）
+- CI 触发分支 `main` → `master`（此前 CI 从未触发）
+
+**仍然成立、建议下一轮投入（按价值排序）：** P0-1 快照三层"现场/时间线/原始尾部"精细化（当前已有雏形，可加"连续重复 TOOL_RESPONSE 截断"与 KB/waiting 并入头部）、P0-2 KB 样本数加权公式与结构化四段入库、P1-3 系统通知与 3 分钟恢复、P2-2 设计 token 间距/圆角补全 + `prefers-reduced-motion`。
+
+---
+
 ## 0. 一句话结论
 
 **Gabriel 的护城河是"副脑 + 私有知识库"，这套 P0 已经做完，别再做重复功。真正没被占住的、值得投入的，是四块：①把副脑快照从"贴日志"升级成"会读现场的结构化快照"；②把知识库从"能搜到"升级成"越用越准的闭环"；③补齐竞品都有的"会话历史/账本/等待提醒"三件观察表stakes（别人有你没有的，才是缺口）；④清掉遗留的假图死代码与 token 泄露面。**

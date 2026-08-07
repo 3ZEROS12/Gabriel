@@ -340,6 +340,16 @@
                         <!-- Pricing Ledger Config (T6) -->
                         <div class="form-section">
                             <h3>Cost Ledger Pricing ($ / 1M Tokens)</h3>
+                            <div class="form-group">
+                                <label>Preset</label>
+                                <select id="pricePreset" class="sleek-input" style="padding: 8px; font-size: 0.85rem;">
+                                    <option value="custom">Custom (自定义)</option>
+                                    <option value="gpt4o">GPT-4o ($2.50 / $10.00)</option>
+                                    <option value="deepseek">DeepSeek-V3 ($0.50 / $1.50)</option>
+                                    <option value="claude">Claude 3.5 Sonnet ($3.00 / $15.00)</option>
+                                    <option value="gemini">Gemini 2.0 Flash ($1.25 / $5.00)</option>
+                                </select>
+                            </div>
                             <div style="display:flex; gap:16px;">
                                 <div class="form-group" style="flex:1;">
                                     <label>Input Price ($/1M)</label>

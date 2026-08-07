@@ -433,5 +433,20 @@ class TestGabrielControlCenter(unittest.TestCase):
         self.assertEqual(response.status_code, 401)
         print("✅ Auth enforcement test successful")
 
+    def test_estimate_cost_formula(self):
+        """Test estimate_cost: chars/4 tokens, 70/30 in/out split, configurable prices"""
+        from main import estimate_cost
+        cfg = {"price_input_per_m": 1.0, "price_output_per_m": 3.0}
+        # 4000 chars => 1000 tokens => 0.7*1000*1.0 + 0.3*1000*3.0 per 1M = 0.0016
+        self.assertAlmostEqual(estimate_cost(4000, cfg), 0.0016, places=7)
+        # Zero chars => zero cost
+        self.assertEqual(estimate_cost(0, cfg), 0.0)
+        # Missing prices fall back to defaults (1.0 / 3.0)
+        self.assertAlmostEqual(estimate_cost(4000, {}), 0.0016, places=7)
+        # Prices are per 1M tokens: 1M chars/4 = 250k tokens, all input at $1 => $0.175
+        big_cfg = {"price_input_per_m": 1.0, "price_output_per_m": 0.0}
+        self.assertAlmostEqual(estimate_cost(1_000_000, big_cfg), 0.175, places=7)
+        print("✅ Estimate cost formula test successful")
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

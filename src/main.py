@@ -498,8 +498,7 @@ def get_stats(db: sqlite3.Connection = Depends(get_db)):
                 full_text = "".join(list(cache.get('last_200_lines', [])))
                 total_chars += len(full_text)
                 total_turns += len(re.findall(r'(?i)(assistant|agent|planner_response|claude)', full_text))
-            price_in = config.get("price_input_per_m", 1.0)
-            total_cost = (total_chars / 4) * price_in / 1e6
+            total_cost = estimate_cost(total_chars)
             
         return JSONResponse({
             "turns": total_turns,
@@ -1065,6 +1064,18 @@ def check_active_kb(text: str):
         conn.close()
     return None
 
+def estimate_cost(chars: int, config_ref=None) -> float:
+    """Coarse per-session cost estimate: chars/4 ≈ tokens, 70/30 input/output split.
+
+    Explicitly an estimate — full token-level billing is a Non-Goal.
+    """
+    cfg = config_ref if config_ref is not None else config
+    # NB: no `or default` fallback here — an explicit 0.0 price (e.g. free output)
+    # is a valid value and must not be coerced back to the default.
+    price_in = cfg.get("price_input_per_m", 1.0)
+    price_out = cfg.get("price_output_per_m", 3.0)
+    return (chars / 4) * (0.7 * price_in + 0.3 * price_out) / 1e6
+
 def check_waiting_status(lines: list) -> bool:
     if not lines:
         return False
@@ -1147,8 +1158,7 @@ async def async_log_tailer():
                     if last_lines:
                         file_chars = os.path.getsize(target_file) if os.path.exists(target_file) else len("".join(last_lines))
                         file_turns = sum(1 for line in last_lines if re.search(r'(?i)(assistant|agent|planner_response|user)', line))
-                        price_in = config.get("price_input_per_m", 1.0)
-                        file_cost = (file_chars / 4) * price_in / 1e6
+                        file_cost = estimate_cost(file_chars)
                         
                         def update_session_stats():
                             try:
@@ -1190,8 +1200,10 @@ async def async_log_tailer():
                     if last_lines:
                         is_waiting = check_waiting_status(list(last_lines))
                         prev_waiting = last_wait_state.get(target_file)
-                        
-                        if is_waiting != prev_waiting:
+
+                        # Only announce state *flips*; the first observation is the
+                        # baseline, not an event (avoids a spurious agent_unblocked).
+                        if prev_waiting is not None and is_waiting != prev_waiting:
                             last_wait_state[target_file] = is_waiting
                             if is_waiting:
                                 now = time.time()
