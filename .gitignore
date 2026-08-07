@@ -5,6 +5,10 @@ env/
 __pycache__/
 *.pyc
 
+# Local tooling / runtime state
+.claude/
+data/
+
 # Database and Data files
 knowledge.db
 config.json
@@ -23,3 +27,11 @@ build/
 Gabriel_Codebase_For_Claude.txt
 Gabriel_Insight.md
 Gabriel_Export_*.md
+
+# Node/JS
+node_modules/
+package-lock.json
+test_jsdom.js
+
+# Python Package
+*.egg-info/

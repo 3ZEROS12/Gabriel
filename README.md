@@ -1,60 +1,125 @@
-# Gabriel
+# Gabriel 👼
 
-![demo](docs/demo.gif)
-A lightweight, non-intrusive GUI sidecar for CLI-based AI agents (e.g., Antigravity, Claude Code, Cursor). 
+A lightweight, **zero-intrusion GUI sidecar** for CLI-based AI agents (Antigravity, Claude Code, Cursor).
 
-Gabriel runs independently alongside your terminal, tailing agent logs in real-time to provide a dedicated dashboard for state monitoring, API configuration, and knowledge base management without blocking your CLI workflow.
+Gabriel runs independently alongside your terminal, tailing agent transcripts in real time to provide a dedicated dashboard for state monitoring, side-brain Q&A, session statistics, and knowledge base management — without ever blocking or hooking into your main CLI workflow.
+
+## ✨ Features
+
+- **Zero-Intrusion Tailing** — Watches only known agent transcript paths (e.g. `~/.gemini/antigravity-cli/brain/**/logs/transcript.jsonl`, `~/.claude/projects/**/*.jsonl`, `~/.cursor/logs/*.log`). No PTY / STDOUT / terminal hooks, so it physically cannot crash your main agent. Byte-offset incremental reads keep tailing cheap even on huge transcripts.
+- **Real-time WebSocket Dashboard** — Parsed log lines are broadcast to the browser over a single WebSocket with a bounded non-blocking queue (slow clients drop frames instead of stalling the broker).
+- **Mission Control Grid** — Multiple active agent sessions side by side in a CSS Grid dashboard, each with its own live terminal card, scroll-lock, and one-click Markdown export.
+- **Side-brain Chat** — Ask "what is it doing?", "any errors?", or debug a stack trace without polluting the main agent's context. Optional terminal-snapshot attachment, streaming markdown responses, and SQLite-persisted chat history (40 turns per agent).
+- **Active Knowledge Base (FTS5)** — SQLite full-text search with keyword extraction and *proactive* toast recommendations when a similar error appears again. Weighted ranking + feedback demotion (`/api/kb/feedback`), one-click "Merge to KB" from the chat.
+- **Session Analytics** — `/api/stats` aggregates turns / characters / estimated cost per session; `/api/sessions` and `/api/sessions/{id}/transcript` expose full history.
+- **MCP Server** — A stdio MCP endpoint (`src/mcp_server.py`) lets Claude Code / Cursor query the knowledge base directly.
+- **Local-first & Secure** — Token auth on every API route and the WebSocket (constant-time comparison); all frontend libs (DOMPurify, marked, highlight.js) vendored locally — **zero CDN dependencies**, fully offline; API key lives only in `.env`, never persisted to `config.json`.
 
 ## 🚀 Quickstart
 
 **Prerequisites:** Python 3.10+
 
-1. **Clone & Install**
-   ```bash
-   git clone https://github.com/your-username/gabriel.git
-   cd gabriel
-   pip install -e .
-   ```
+```bash
+git clone https://github.com/3ZEROS12/Gabriel.git
+cd Gabriel
+python -m venv venv
 
-2. **Configure Environment**
-   Copy the example environment file and optionally set a secure token:
-   ```bash
-   cp .env.example .env
-   ```
+# Windows
+venv\Scripts\activate
+# macOS / Linux
+source venv/bin/activate
 
-3. **Run the Server**
-   ```bash
-   gabriel
-   ```
-   *The server will generate a session token (if not set in `.env`) and print a local URL (e.g., `http://127.0.0.1:8080`). Enter the token in the dashboard to connect.*
+pip install -e .
+```
 
-4. **Connect**
-   Start your CLI agent in a separate terminal. Gabriel will automatically detect the newest log file and begin tailing.
+Configure environment:
 
-## ✨ Core Capabilities
+```bash
+cp .env.example .env
+# Optional: set GABRIEL_TOKEN (otherwise a random session token is generated)
+# Optional: set OPENAI_API_KEY (preferred over the Settings UI — never written to disk config)
+```
 
-*   **Zero-Intrusion Tailing:** Automatically detects and tails the most recent `.jsonl` or `.log` transcripts from supported agents.
-    *   **Privacy & Boundary Note:** Gabriel *only* scans for specific agent transcript files (e.g., inside `.gemini/antigravity-cli/brain/` or `.cursor/logs/`). All data processing is strictly local.
-*   **Mission Control (Multi-Agent Grid):** Concurrently monitor multiple active agent sessions in a unified, interference-free CSS Grid dashboard.
-*   **Active Knowledge Base (FTS5):** Integrated SQLite with Full-Text Search (FTS5). The engine extracts context keywords and *proactively* recommends historical solutions via toast notifications when you encounter similar errors.
-*   **Secure Local Architecture:** Enforces token-based authentication on all API and WebSocket endpoints. Frontend rendering falls back safely to text content if DOMPurify is unavailable, preventing XSS.
+Run the server:
+
+```bash
+gabriel          # or: python -m src.main --port 8080
+```
+
+Open `http://127.0.0.1:8080` in your browser and paste the security token printed in the terminal. Start your CLI agent in another terminal — Gabriel auto-detects the newest transcript and begins tailing.
+
+> **Desktop mode (optional):** `python src/run.py` launches the same UI inside a pywebview window instead of a browser tab.
+
+## 🖥️ Dashboard
+
+| View | What it does |
+|---|---|
+| 💬 Control Center | Split view: live agent terminal cards (grid) + side-brain chat with quick prompts, model switch, attach-snapshot / keep-history toggles, KB merge & export |
+| 📡 Agent Radar | Agent list with lock-to-agent, sortable by activity / volume, real stats-driven telemetry |
+| 📖 Knowledge Base | Global insight graph (click a card to load the draft) + editor with markdown preview and "Copy Injection Command" |
+| ⚙️ Settings | OpenAI-compatible endpoint config, merge strategy, language, token management |
+
+## 📡 API Overview
+
+All `/api/*` endpoints require the token via the `X-Gabriel-Token` header; the WebSocket uses `?token=` (both compared constant-time).
+
+| Endpoint | Description |
+|---|---|
+| `GET /api/ping` · `GET /api/health` | Liveness & tailer heartbeat |
+| `GET/POST /api/config` | Read / atomically update provider settings |
+| `POST /api/auth/ticket` | One-time WS auth ticket |
+| `GET /api/agents` | Active agent sessions (path, mtime, steps) |
+| `GET /api/knowledge` · `GET/POST /api/kb` | Knowledge base listing / CRUD |
+| `POST /api/kb/feedback` | Weighted re-ranking of KB entries |
+| `GET /api/stats` | Per-session turns / chars / est. cost |
+| `GET /api/sessions` · `GET /api/sessions/{id}/transcript` | Session history |
+| `POST /api/feedback` | User feedback (secrets redacted, stored locally) |
+| `WS /ws` | Log stream, chat, KB merge, insight injection |
+
+**MCP:** run `python -m src.mcp_server` as an stdio MCP server — exposes the `read_gabriel_kb` tool to external agents.
+
+## 📁 Project Structure
+
+```
+Gabriel/
+├── src/
+│   ├── main.py            # FastAPI backend: REST + WebSocket + log tailer + FTS5 KB
+│   ├── mcp_server.py      # stdio MCP server for external agents
+│   └── run.py             # optional pywebview desktop wrapper
+├── static/
+│   ├── index.html         # dashboard UI (4 views + token login)
+│   ├── script.js          # frontend logic (WS client, sanitized rendering, i18n)
+│   ├── style.css          # cyber-dark theme (parser CSS classes)
+│   ├── splash.html        # boot splash
+│   └── vendor/            # local copies of DOMPurify / marked / highlight.js — no CDN
+├── tests/
+│   └── test_gabriel.py    # 15 unit tests (auth, parsers, KB, WS, sessions, stats)
+├── docs/                  # architecture, API reference, optimization plans
+├── scripts/               # Windows autostart, snapshot generator
+├── requirements.txt
+├── setup.py               # `pip install -e .` → `gabriel` command
+└── .env.example           # GABRIEL_TOKEN / OPENAI_API_KEY
+```
 
 ## 🛠️ Development
 
-Please see [CONTRIBUTING.md](CONTRIBUTING.md) for detailed setup and contribution guidelines.
-
-### Running Tests
-The test suite covers configuration, database operations, and authentication.
 ```bash
-python -m unittest discover tests -v
+# Run the full test suite (auth, parsers, knowledge base, WebSocket, sessions)
+venv\Scripts\python.exe -m unittest discover tests -v
+
+# Frontend syntax check
+node --check static/script.js
 ```
 
-## 📄 License
-This project is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0) - see the [LICENSE](LICENSE) file for details.
-## Security Verification Table
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines and [docs/](docs/) for the architecture & API reference.
 
-| README 声明 | 对应代码位置 | 当前是否属实 | 处理方式 |
-|---|---|---|---|
-| DOMPurify 不可用时降级为纯文本 | static/script.js renderAgentContent | 是的，已经完全属实。 | 实现了 enderAgentContent 方法，使用了更严格的标签白名单配置。同时我们已经将 DOMPurify 替换为本地 vendor，从源头杜绝了 CDN 被劫持。 |
-| 所有 API/WS 端点强制 token 鉴权 | src/main.py 各路由 | 是的，已经完全属实。 | pi_router = APIRouter(prefix="/api", dependencies=[Depends(verify_token)]) 统一接管了所有非公开路由。WebSocket 在 websocket.accept() 前进行 if token != API_KEY: 判断拦截并关闭（1008）。测试用例 	est_auth_enforcement 已证实 401 拦截有效。 |
-| 数据处理完全本地，无外部上报 | 全局网络请求扫描 | 是的，已经完全属实。 | 全局搜索仅发现在 script.js 和 continuous_agent.py 存在对 /api/... 本地端点的 etch 和 equests，无任何向外发送数据的操作。外部引用包含 Google Fonts 和 Chart.js，并未做数据上报。 |
+## 🔒 Security Notes
+
+- Every API route is behind the `verify_token` dependency; the WebSocket rejects bad tokens with code 1008 before accepting.
+- All log/chat content is sanitized with a locally vendored DOMPurify before touching `innerHTML` (fallback: plain text).
+- Runtime artifacts (`knowledge.db`, `config.json`, `Gabriel_Insight.md`, logs, `.env`) are git-ignored; API keys are kept in the environment only.
+- No telemetry, no external calls — everything runs strictly local.
+
+## 📄 License
+
+AGPL-3.0 — see [LICENSE](LICENSE).
