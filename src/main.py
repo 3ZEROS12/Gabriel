@@ -1,8 +1,17 @@
 import os
+import sys
 import uvicorn
 import asyncio
 import glob
 import time
+
+# Windows consoles default to cp1252 and choke on the emoji startup banner /
+# test output. Keep stdout/stderr UTF-8 when the runtime supports reconfiguring.
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except Exception:
+    pass
 import sqlite3
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, HTTPException, status, Depends
 from contextlib import asynccontextmanager
@@ -1115,14 +1124,19 @@ def extract_keywords(text: str, max_words=4) -> str:
     # Escape quotes and wrap in quotes for robust FTS5 MATCH
     return " OR ".join(f'"{w}"' for w in most_common if w) if most_common else ""
 
+def _is_tool_response(line: str) -> bool:
+    """Consecutive tool outputs are the noisiest timeline entries — detect them
+    (Antigravity `"type": "TOOL_RESPONSE"` or plain-text `TOOL_RESPONSE` prefix)."""
+    return '"TOOL_RESPONSE"' in line or line.startswith("TOOL_RESPONSE")
+
 def _compress_lines(lines: list, max_events: int = 40) -> list:
     if not lines:
         return []
-    
+
     compressed = []
     prev_clean = None
     count = 0
-    
+
     for raw_line in lines:
         stripped = raw_line.strip()
         if not stripped:
@@ -1138,14 +1152,32 @@ def _compress_lines(lines: list, max_events: int = 40) -> list:
                     compressed.append(prev_clean)
             prev_clean = truncated
             count = 1
-            
+
     if prev_clean is not None:
         if count > 1:
             compressed.append(f"{prev_clean} (×{count})")
         else:
             compressed.append(prev_clean)
-            
-    return compressed[-max_events:]
+
+    # Fold consecutive (different-content) tool outputs down to the first one —
+    # a run of TOOL_RESPONSE events usually just repeats output noise.
+    folded = []
+    i = 0
+    n = len(compressed)
+    while i < n:
+        line = compressed[i]
+        if _is_tool_response(line):
+            j = i + 1
+            while j < n and _is_tool_response(compressed[j]):
+                j += 1
+            run = j - i
+            folded.append(f"{line} (×{run} tool outputs)" if run > 1 else line)
+            i = j
+        else:
+            folded.append(line)
+            i += 1
+
+    return folded[-max_events:]
 
 def build_snapshot(path: str, user_prompt: str) -> str:
     entry = _transcript_cache.get(path)

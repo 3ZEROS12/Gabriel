@@ -246,6 +246,31 @@ class TestGabrielControlCenter(unittest.TestCase):
         finally:
             _transcript_cache.pop(test_path, None)
 
+    def test_snapshot_tool_output_folding(self):
+        """Consecutive different-content TOOL_RESPONSE lines fold to first (×N)"""
+        from main import _compress_lines, build_snapshot, _transcript_cache
+
+        lines = [
+            '{"type": "TOOL_RESPONSE", "content": "stdout line 1"}\n',
+            '{"type": "TOOL_RESPONSE", "content": "stdout line 2"}\n',
+            '{"type": "TOOL_RESPONSE", "content": "stdout line 3"}\n',
+            '{"type": "user", "content": "continue"}\n',
+        ]
+        comp = _compress_lines(lines)
+        self.assertEqual(len(comp), 2)
+        self.assertIn("×3 tool outputs", comp[0])
+
+        # Snapshot timeline carries the folded entry, not the raw run
+        test_path = "mock_tool_fold.jsonl"
+        _transcript_cache[test_path] = {"last_200_lines": lines}
+        try:
+            snap = build_snapshot(test_path, "status")
+            self.assertIn("×3 tool outputs", snap)
+            self.assertNotIn("stdout line 2", snap)
+        finally:
+            _transcript_cache.pop(test_path, None)
+        print("✅ Snapshot tool output folding test successful")
+
     def test_ws_ticket_auth(self):
         """Test WS single-use ticket authentication (T2)"""
         # 1. Unauthenticated WS fails with 1008

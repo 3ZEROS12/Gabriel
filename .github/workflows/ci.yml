@@ -23,8 +23,10 @@ jobs:
         pip install -r requirements.txt
         
     - name: Run Test Suite
+      env:
+        PYTHONUTF8: "1"
       run: |
-        python -m unittest discover tests -v
+        python -m pytest tests/ -q
 
   build-windows:
     needs: test
