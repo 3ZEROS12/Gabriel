@@ -20,6 +20,12 @@
 | A3 错误预警卡片 | ✅ 后端 `error_warning`（阈值/冷却可配）+ 前端卡片（详情折叠 + ⚡ 一键诊断） |
 | 价格输入 UI | ✅ Settings 已有 input/output 单价输入 |
 
+**最新落地（2026-08-08 v7 方案）：**
+- **P0 双向 MCP 生态接口** (`src/mcp_server.py` 扩展为 4 工具：`read_gabriel_kb`, `add_gabriel_insight`, `report_agent_stuck`, `get_session_summary`) + **收敛 KB 写入为单一共享函数 `save_insight()`**
+- **P1-1 死循环/震荡检测** (滑动窗口 `_tool_signature` 与 `detect_loop` 自动识别工具重复与死循环并复用 error_warning 预警)
+- **P1-2 Session 复盘报告** (`get_session_transcript` 增加 `?raw=1` 端点，前端回看弹窗支持一键 Markdown 导出含 cost/tokens/文件/错误摘要的复盘报告)
+- **基线与测试全绿** (29/29 pytest 测试全部通过，ruff 0 lint errors，node 语法检查 100% clean)
+
 **最新落地（2026-08-08 v6 方案）：**
 - **P0 向量+关键词 RRF 混合检索** (`sqlite-vec` + `fastembed` BAAI/bge-small-zh-v1.5) + FTS5 离线优雅降级
 - **P0 jieba 中文分词与 4 段结构化 JSON 入库** (`{problem, cause, solution, tags}`) + Tag Chips

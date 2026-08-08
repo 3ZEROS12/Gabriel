@@ -134,10 +134,10 @@ node --check static/script.js                      # 期望无输出
 
 | 任务 | 状态 | commit | 真实测试输出 | 备注 |
 |---|---|---|---|---|
-| 基线核对（pytest 26 + ruff + node） | | | | |
-| P0 双向 MCP（save_insight 收敛 + 3 工具） | | | | |
-| P1-1 死循环检测 | | | | |
-| P1-2 Session 复盘报告 | | | | |
+| 基线核对（pytest 26 + ruff + node） | ✅ 已通过 | `cf7726b` | 26 passed, 0 ruff errors, node clean | 基础健全 |
+| P0 双向 MCP（save_insight 收敛 + 3 工具） | ✅ 已通过 | `927d080` | 27 passed, 0 ruff errors | 收敛 KB 写入为单一 save_insight，扩展 MCP 4 工具全绿 |
+| P1-1 死循环检测 | ✅ 已通过 | `bd1cc95` | 28 passed, 0 ruff errors | 滑动窗口 tool signature 检测死循环与工具震荡 |
+| P1-2 Session 复盘报告 | ✅ 已通过 | `c63a532` | 29 passed, 0 ruff errors, node clean | 支持 ?raw=1 端点与前端一键生成 Markdown 复盘 |
 
 ## 5. 执行节奏
 
