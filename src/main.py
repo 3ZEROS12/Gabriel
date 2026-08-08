@@ -813,10 +813,14 @@ def get_sessions(db: sqlite3.Connection = Depends(get_db)):
         return JSONResponse([])
 
 @api_router.get("/sessions/{session_id}/transcript")
-def get_session_transcript(session_id: int, db: sqlite3.Connection = Depends(get_db)):
+def get_session_transcript(session_id: int, raw: int = 0, db: sqlite3.Connection = Depends(get_db)):
     try:
         cursor = db.cursor()
-        cursor.execute("SELECT path, agent_name, ts FROM session_meta WHERE id = ?", (session_id,))
+        cursor.execute(
+            "SELECT path, agent_name, ts, turns, chars, est_cost, input_tokens, output_tokens, "
+            "cache_read_tokens, cache_creation_tokens FROM session_meta WHERE id = ?",
+            (session_id,)
+        )
         row = cursor.fetchone()
         if not row:
             return JSONResponse({"status": "error", "message": "Session not found"}, status_code=404)
@@ -826,6 +830,32 @@ def get_session_transcript(session_id: int, db: sqlite3.Connection = Depends(get
             return JSONResponse({"status": "error", "message": f"Log file at {path} no longer exists"}, status_code=404)
             
         rendered_html, raw_lines, _ = _format_transcript_sync(path, is_initial=True)
+        raw_lines_list = list(raw_lines) if raw_lines else []
+
+        if raw == 1:
+            last_200_raw = raw_lines_list[-200:]
+            touched = extract_touched_files("".join(raw_lines_list)[-2000:])
+            row_keys = row.keys() if hasattr(row, "keys") else []
+            stats = {
+                "turns": row["turns"] if "turns" in row_keys and row["turns"] is not None else 0,
+                "chars": row["chars"] if "chars" in row_keys and row["chars"] is not None else 0,
+                "est_cost": float(row["est_cost"]) if "est_cost" in row_keys and row["est_cost"] is not None else 0.0,
+                "input_tokens": row["input_tokens"] if "input_tokens" in row_keys and row["input_tokens"] is not None else 0,
+                "output_tokens": row["output_tokens"] if "output_tokens" in row_keys and row["output_tokens"] is not None else 0,
+                "cache_read_tokens": row["cache_read_tokens"] if "cache_read_tokens" in row_keys and row["cache_read_tokens"] is not None else 0,
+                "cache_creation_tokens": row["cache_creation_tokens"] if "cache_creation_tokens" in row_keys and row["cache_creation_tokens"] is not None else 0,
+            }
+            return JSONResponse({
+                "status": "success",
+                "id": session_id,
+                "agent": row["agent_name"],
+                "path": path,
+                "ts": str(row["ts"]),
+                "lines": last_200_raw,
+                "touched_files": touched,
+                "stats": stats
+            })
+
         return JSONResponse({
             "status": "success",
             "id": session_id,
@@ -833,7 +863,7 @@ def get_session_transcript(session_id: int, db: sqlite3.Connection = Depends(get
             "path": path,
             "ts": str(row["ts"]),
             "html": rendered_html,
-            "total_lines": len(raw_lines)
+            "total_lines": len(raw_lines_list)
         })
     except Exception as e:
         logger.error(f"Get Session Transcript Error: {e}")

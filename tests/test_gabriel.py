@@ -738,5 +738,44 @@ class TestGabrielControlCenter(unittest.TestCase):
         self.assertEqual(cfg.loop_detection_cooldown, 120)
         print("✅ P1-1 loop detection test successful")
 
+    def test_p1_2_session_report_raw_endpoint(self):
+        """Test P1-2: GET /api/sessions/{id}/transcript?raw=1 response structure"""
+        import tempfile
+        import sqlite3
+        from unittest.mock import patch
+        from main import init_schema
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            test_log = os.path.join(tmpdir, "test_agent.jsonl")
+            with open(test_log, "w", encoding="utf-8") as f:
+                f.write('{"type": "USER_INPUT", "content": "hello"}\n')
+                f.write('{"type": "PLANNER_RESPONSE", "content": "editing file src/main.py"}\n')
+                f.write('Error: test exception occurred\n')
+
+            test_db = os.path.join(tmpdir, "knowledge.db")
+            conn = sqlite3.connect(test_db)
+            init_schema(conn)
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT INTO session_meta (agent_name, path, turns, chars, est_cost, input_tokens, output_tokens) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                ("antigravity", test_log, 5, 200, 0.005, 500, 100)
+            )
+            sess_id = cursor.lastrowid
+            conn.commit()
+            conn.close()
+
+            with patch('main.ROOT_DIR', tmpdir):
+                res = client.get(f"/api/sessions/{sess_id}/transcript?raw=1", headers={"X-Gabriel-Token": API_KEY})
+                self.assertEqual(res.status_code, 200)
+                data = res.json()
+                self.assertEqual(data["status"], "success")
+                self.assertIn("lines", data)
+                self.assertIn("touched_files", data)
+                self.assertIn("stats", data)
+                self.assertEqual(data["stats"]["turns"], 5)
+                self.assertEqual(data["stats"]["input_tokens"], 500)
+                self.assertIn("main.py", data["touched_files"])
+        print("✅ P1-2 session review raw transcript endpoint test successful")
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)
