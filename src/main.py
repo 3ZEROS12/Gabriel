@@ -92,10 +92,13 @@ def store_insight_vector(insight_id: int, content: str):
         if embeddings:
             vec_blob = sqlite_vec.serialize_float32(embeddings[0])
             db_path = os.path.join(ROOT_DIR, "knowledge.db")
-            with sqlite3.connect(db_path) as conn:
+            conn = sqlite3.connect(db_path)
+            try:
                 load_sqlite_vec(conn)
                 conn.execute("INSERT OR REPLACE INTO insights_vec (insight_id, embedding) VALUES (?, ?)", (insight_id, vec_blob))
                 conn.commit()
+            finally:
+                conn.close()
     except Exception as e:
         logger.warning(f"Failed to store vector for insight {insight_id}: {e}")
 
@@ -208,6 +211,13 @@ def init_schema(conn: sqlite3.Connection):
         cursor.execute("CREATE VIRTUAL TABLE IF NOT EXISTS insights_fts USING fts5(content, timestamp)")
     except Exception:
         pass
+
+    load_sqlite_vec(conn)
+    try:
+        cursor.execute("CREATE VIRTUAL TABLE IF NOT EXISTS insights_vec USING vec0(insight_id INTEGER PRIMARY KEY, embedding FLOAT[512])")
+    except Exception as e:
+        logger.warning(f"Failed to create vec0 table: {e}")
+
     cursor.execute("CREATE TABLE IF NOT EXISTS kb_feedback (id INTEGER PRIMARY KEY, insight_id INTEGER, action TEXT, ts DATETIME DEFAULT CURRENT_TIMESTAMP)")
     cursor.execute("CREATE TABLE IF NOT EXISTS session_meta (id INTEGER PRIMARY KEY, agent_name TEXT, path TEXT, ts DATETIME DEFAULT CURRENT_TIMESTAMP, turns INTEGER DEFAULT 0, chars INTEGER DEFAULT 0, est_cost REAL DEFAULT 0.0)")
     cursor.execute("CREATE TABLE IF NOT EXISTS chat_history (id INTEGER PRIMARY KEY, agent_path TEXT, role TEXT, content TEXT, ts DATETIME DEFAULT CURRENT_TIMESTAMP)")
@@ -245,9 +255,27 @@ def init_schema(conn: sqlite3.Connection):
                 tok = tokenize_for_fts(r_content or "")
                 cursor.execute("INSERT INTO insights_fts (rowid, content, timestamp) VALUES (?, ?, ?)", (r_id, tok, r_ts))
             cursor.execute("INSERT OR REPLACE INTO kb_meta (key, value) VALUES ('schema_version', '2')")
+            ver = 2
         except Exception as e:
             logger.error(f"FTS5 migration failed: {e}")
-            
+
+    # Migration to schema_version 3 (vector embeddings backfill)
+    if ver < 3:
+        embedder = get_embedder()
+        if embedder:
+            try:
+                cursor.execute("SELECT id, content FROM insights")
+                rows = cursor.fetchall()
+                for r_id, r_content in rows:
+                    if r_content:
+                        embeddings = list(embedder.embed([r_content]))
+                        if embeddings:
+                            vec_blob = sqlite_vec.serialize_float32(embeddings[0])
+                            cursor.execute("INSERT OR REPLACE INTO insights_vec (insight_id, embedding) VALUES (?, ?)", (r_id, vec_blob))
+                cursor.execute("INSERT OR REPLACE INTO kb_meta (key, value) VALUES ('schema_version', '3')")
+            except Exception as e:
+                logger.warning(f"Vector backfill failed: {e}")
+
     conn.commit()
 
 def init_db():
@@ -1227,7 +1255,7 @@ def check_active_kb(text: str):
             if embeddings:
                 query_blob = sqlite_vec.serialize_float32(embeddings[0])
                 cursor.execute(
-                    "SELECT v.insight_id, i.content FROM insights_vec v JOIN insights i ON v.insight_id = i.id WHERE v.embedding MATCH ? ORDER BY distance LIMIT 5",
+                    "SELECT v.insight_id, i.content FROM insights_vec v JOIN insights i ON v.insight_id = i.id WHERE v.embedding MATCH ? AND k = 5",
                     (query_blob,)
                 )
                 vec_rows = cursor.fetchall()

@@ -587,5 +587,37 @@ class TestGabrielControlCenter(unittest.TestCase):
         self.assertEqual(cfg.error_alert_cooldown, 30)
         print("✅ P1.2 Configurable error alert threshold test successful")
 
+    def test_vector_search_end_to_end_synonyms(self):
+        """End-to-end vector search test: verifies that synonyms with 0 keyword overlap hit via vector search"""
+        import tempfile
+        import sqlite3
+        from unittest.mock import patch
+        from main import init_schema, store_insight_vector, check_active_kb, get_embedder
+
+        embedder = get_embedder()
+        if not embedder:
+            self.skipTest("Fastembed model not initialized")
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            test_db = os.path.join(tmpdir, "knowledge.db")
+            conn = sqlite3.connect(test_db)
+            init_schema(conn)
+            cursor = conn.cursor()
+            
+            content = "网络抓包日志显示 TCP 连接握手失败及重试"
+            cursor.execute("INSERT INTO insights (content) VALUES (?)", (content,))
+            insight_id = cursor.lastrowid
+            conn.commit()
+            conn.close()
+
+            with patch('main.ROOT_DIR', tmpdir):
+                store_insight_vector(insight_id, content)
+                query = "连不上网掉包怎么办"
+                res = check_active_kb(query)
+                self.assertIsNotNone(res)
+                self.assertEqual(res["id"], insight_id)
+                self.assertEqual(res["content"], content)
+        print("✅ P0 End-to-end vector semantic search test successful")
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)
