@@ -886,5 +886,40 @@ class TestGabrielControlCenter(unittest.TestCase):
                 self.assertNotIn(id2, demoted_ids)
         print("✅ P1 V8 search_kb pipeline & feedback re-ranking test successful")
 
+    def test_startup_find_free_port_avoids_busy_port(self):
+        """端口避让：起始端口被占时返回下一个可用端口（T4 双击即用）"""
+        import socket
+        from main import _find_free_port
+
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.bind(("127.0.0.1", 0))
+            busy = s.getsockname()[1]
+            s.listen(1)
+            free = _find_free_port(start=busy, attempts=5)
+            self.assertEqual(free, busy + 1)
+            # 返回的端口必须真的可 bind（探测后已释放）
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as c:
+                c.bind(("127.0.0.1", free))
+        print("✅ 端口避让：busy 起始端口 → 下一可用端口")
+
+    def test_startup_find_free_port_returns_start_when_free(self):
+        """端口避让：起始端口空闲时原样返回（不无谓跳跃）"""
+        import socket
+        from main import _find_free_port
+
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.bind(("127.0.0.1", 0))
+            free = s.getsockname()[1]
+        port = _find_free_port(start=free, attempts=5)
+        self.assertEqual(port, free)
+        print("✅ 端口避让：空闲起始端口原样返回")
+
+    def test_startup_single_instance_guard_disabled_in_source_mode(self):
+        """单实例锁：源码模式必须放行（开发多开不受影响）"""
+        from main import _single_instance_guard
+
+        self.assertTrue(_single_instance_guard(9999))
+        print("✅ 单实例锁：源码模式放行")
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

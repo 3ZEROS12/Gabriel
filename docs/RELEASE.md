@@ -62,24 +62,37 @@ twine upload dist/*
 
 ---
 
-## 3. 路径 B：Windows 桌面独立应用打包 (PyInstaller)
+## 3. 路径 B：Windows 独立应用打包 (PyInstaller onedir)
 
-### 3.1 运行 PyInstaller 打包命令
+> v4.0.0 起：onedir 解压即用 + 数据/代码分离。`Gabriel.spec` 是构建配置（已被 `.gitignore` 忽略，不提交），构建与参数策略见 `docs/OPTIMIZATION_ROADMAP_2026.md`「双击即用」一节。
 
-使用根目录下的 `Gabriel.spec` 或命令行一键构建：
+### 3.1 构建
 
 ```bash
-pyinstaller --noconfirm --onedir --windowed --add-data "static;static" --add-data "src;src" src/main.py --name "Gabriel_Agent_OS"
+venv\Scripts\python.exe -m PyInstaller Gabriel.spec --noconfirm --clean
 ```
 
-产物生成目录：`dist/Gabriel_Agent_OS/`
+产物目录：`dist/Gabriel/`（`Gabriel.exe` + `_internal/`）。发行包：
 
-### 3.2 桌面二进制冒烟验证
+```bash
+# 清掉冒烟产生的数据文件后打包
+rm -rf dist/Gabriel/knowledge.db dist/Gabriel/config.json dist/Gabriel/logs dist/Gabriel/.gabriel.lock
+cd dist && Compress-Archive -Path Gabriel -DestinationPath Gabriel-v4.0.0-win64.zip
+```
 
-1. 进入 `dist/Gabriel_Agent_OS/` 目录。
-2. 双击运行 `Gabriel_Agent_OS.exe`。
-3. 观察控制台/通知栏输出，在浏览器打开 `http://127.0.0.1:8080`。
-4. 确认 Web UI 正常加载，样式与静态资源无 404，控制台打印 Security Token 登录成功。
+### 3.2 双击即用行为（v4.0.0）
+
+1. 双击 `Gabriel.exe`：控制台显示 token 与日志（关窗即停）；就绪后自动打开默认浏览器（带一次性 token 直达）。
+2. 端口自动避让：8080 被占 → 8081/8082…（最多 20 次）；`--port` 可指定。
+3. 单实例：重复双击 → 打开已有实例页面并退出；`--no-browser` 可关闭自动开浏览器。
+4. **数据分离**：`knowledge.db` / `config.json` / `logs/` 写 exe 旁（`%cd%` 即数据目录），static 只读区在 `_internal/`——升级替换 exe 文件夹不会丢库。
+
+### 3.3 冒烟验证
+
+1. 进入 `dist/Gabriel/`，运行 `Gabriel.exe --no-browser`。
+2. `curl -H "X-Gabriel-Token: <控制台 token>" http://127.0.0.1:8080/api/stats` → 200。
+3. `curl -X POST http://127.0.0.1:8080/api/kb -H "X-Gabriel-Token: <token>" -H "Content-Type: application/json" -d '{"content":"冒烟测试"}'` → 写入成功。
+4. 重复运行 `Gabriel.exe` → 第二实例秒退，浏览器指向已有实例。
 
 ---
 

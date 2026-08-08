@@ -294,15 +294,6 @@ def save_insight(
 import traceback
 from logging.handlers import RotatingFileHandler
 
-os.makedirs("logs", exist_ok=True)
-logger = logging.getLogger("gabriel")
-logger.setLevel(logging.INFO)
-handler = RotatingFileHandler(
-    "logs/gabriel.log", maxBytes=5 * 1024 * 1024, backupCount=3, encoding="utf-8"
-)
-handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
-logger.addHandler(handler)
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await broker.start()
@@ -337,8 +328,30 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-app.mount("/static", StaticFiles(directory=os.path.join(ROOT_DIR, "static")), name="static")
+# --- Paths: code vs data separation ---
+# 源码模式：代码与数据同在仓库根。
+# frozen（PyInstaller）模式：静态资源在打包的只读区（_MEIPASS），
+# 而数据库/配置/日志等数据必须落在 exe 旁的持久目录（否则重启即丢）。
+if getattr(sys, 'frozen', False):
+    DATA_DIR = os.path.dirname(os.path.abspath(sys.executable))  # exe 所在目录（可写）
+    CODE_DIR = getattr(sys, '_MEIPASS', DATA_DIR)               # 打包内容（只读）
+else:
+    DATA_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    CODE_DIR = DATA_DIR
+ROOT_DIR = DATA_DIR  # 历史引用保持（knowledge.db / config.json / .model_cache / logs）
+STATIC_DIR = os.path.join(CODE_DIR, "static")  # 页面模板只读区（frozen 下为打包内容）
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+# --- Logging: 数据目录基准（frozen 下为 exe 旁，双击启动时 CWD 不可靠）---
+LOG_DIR = os.path.join(ROOT_DIR, "logs")
+os.makedirs(LOG_DIR, exist_ok=True)
+logger = logging.getLogger("gabriel")
+logger.setLevel(logging.INFO)
+handler = RotatingFileHandler(
+    os.path.join(LOG_DIR, "gabriel.log"), maxBytes=5 * 1024 * 1024, backupCount=3, encoding="utf-8"
+)
+handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
+logger.addHandler(handler)
 
 CONFIG_FILE = os.path.join(ROOT_DIR, "config.json")
 DEFAULT_CONFIG = {
@@ -1878,13 +1891,13 @@ app.include_router(api_router)
 
 @app.get("/", response_class=HTMLResponse)
 async def get_ui():
-    index_path = os.path.join(ROOT_DIR, "static", "index.html")
+    index_path = os.path.join(STATIC_DIR, "index.html")
     with open(index_path, "r", encoding="utf-8") as f:
         return f.read()
 
 @app.get("/splash", response_class=HTMLResponse)
 async def get_splash():
-    splash_path = os.path.join(ROOT_DIR, "static", "splash.html")
+    splash_path = os.path.join(STATIC_DIR, "splash.html")
     with open(splash_path, "r", encoding="utf-8") as f:
         return f.read()
 
@@ -2146,12 +2159,92 @@ async def websocket_endpoint(websocket: WebSocket, token: str = None, ticket: st
         await broker.unsubscribe(wrapper)
         wrapper.cancel()
             
+def _find_free_port(start: int = 8080, attempts: int = 20) -> int:
+    """端口自动避让：从 start 起探测可用端口（bind 探测后立即释放）。"""
+    import socket as _socket
+    for port in range(start, start + attempts):
+        with _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM) as s:
+            try:
+                s.bind(("127.0.0.1", port))
+                return port
+            except OSError:
+                continue
+    raise SystemExit(f"Error: ports {start}-{start + attempts - 1} are all in use. "
+                     "Close other applications or pass --port manually.")
+
+
+def _single_instance_guard(port: int) -> bool:
+    """frozen 模式单实例锁：已有实例存活则打开其页面并返回 False（本进程退出）。
+
+    锁文件记录端口；启动时若该端口仍可连接，视为已有实例在跑（不做 PID 误杀），
+    否则接管（stale 锁自然失效）。源码模式不启用，方便开发多开。
+    """
+    if not getattr(sys, "frozen", False):
+        return True
+    lock = os.path.join(ROOT_DIR, ".gabriel.lock")
+    if os.path.exists(lock):
+        try:
+            with open(lock, "r", encoding="utf-8") as f:
+                old_port = int(f.read().strip())
+            import socket as _socket
+            with _socket.create_connection(("127.0.0.1", old_port), timeout=0.5):
+                # webbrowser.open 可能在非交互会话挂起——放守护线程，主进程立即退出
+                import threading
+                import webbrowser
+                threading.Thread(
+                    target=webbrowser.open,
+                    args=(f"http://127.0.0.1:{old_port}/",),
+                    daemon=True,
+                ).start()
+                return False
+        except (OSError, ValueError):
+            pass  # 旧实例已死或锁损坏 → 接管
+    try:
+        with open(lock, "w", encoding="utf-8") as f:
+            f.write(str(port))
+    except OSError:
+        pass  # 数据目录不可写时锁失败不阻塞启动
+    return True
+
+
+def _open_browser_when_ready(url: str, timeout: float = 8.0):
+    """后台轮询就绪（GET / 返回 2xx）后打开默认浏览器，避免 CONNECTION_REFUSED。"""
+    import threading
+    import urllib.request
+    import webbrowser
+
+    def _wait_and_open():
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            try:
+                with urllib.request.urlopen(url, timeout=0.5) as r:
+                    if r.status < 400:
+                        webbrowser.open(url)
+                        return
+            except Exception:
+                pass
+            time.sleep(0.25)
+
+    threading.Thread(target=_wait_and_open, daemon=True).start()
+
+
 def main():
     import argparse
     parser = argparse.ArgumentParser(description="Gabriel Control Center")
-    parser.add_argument("--port", type=int, default=8080)
+    parser.add_argument("--port", type=int, default=8080, help="preferred port (auto-advances if busy)")
+    parser.add_argument("--no-browser", action="store_true", help="do not auto-open the browser")
     args = parser.parse_args()
-    uvicorn.run(app, host="127.0.0.1", port=args.port, log_level="critical")
+
+    port = _find_free_port(args.port)
+    if not _single_instance_guard(port):
+        return  # 已有实例在运行，本进程退出
+
+    print(f"Gabriel is running at http://127.0.0.1:{port}")
+    if not args.no_browser:
+        _open_browser_when_ready(f"http://127.0.0.1:{port}/?token={API_KEY}")
+
+    uvicorn.run(app, host="127.0.0.1", port=port, log_level="critical")
+
 
 if __name__ == "__main__":
     main()
