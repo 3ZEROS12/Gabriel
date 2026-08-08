@@ -156,10 +156,10 @@ node --check static/script.js                      # 期望无输出
 
 | 任务 | 状态 | commit | 真实测试输出 | 备注 |
 |---|---|---|---|---|
-| 基线核对（pytest 29 + ruff + node） | | | | |
-| P0 卡点雷达（API + 保留策略 + 即时闭环 + 前端 Tab） | | | | |
-| P1 检索管道收口（search_kb + 双入口收敛 + 清裸建表） | | | | |
-| P2 稳定与分发（stability 脚本 + CI 加固 + RELEASE.md） | | | | |
+| 基线核对（pytest 29 + ruff + node） | ✅ 已完成 | `9e030ad` | `29 passed in 9.98s`, `ruff check All checks passed!`, `node --check` 干净 | 全量通过 |
+| P0 卡点雷达（API + 保留策略 + 即时闭环 + 前端 Tab） | ✅ 已完成 | `5927f81` | `30 passed in 9.92s`, `ruff check All checks passed!`, `node --check` 干净 | 增加 /api/stuck, /api/stuck/stats, /api/kb/search, Retention 保留策略与前端 🛟 卡点雷达 Sub-Tab |
+| P1 检索管道收口（search_kb + 双入口收敛 + 清裸建表） | ✅ 已完成 | `d109061` | `31 passed in 10.15s`, `ruff check All checks passed!`, `node --check` 干净 | 抽象 search_kb 统一检索管道，反馈加权重排双入口收敛，清除裸建表 |
+| P2 稳定与分发（stability 脚本 + CI 加固 + RELEASE.md） | ✅ 已完成 | `e4fe063` | `31 passed in 10.06s`, `stability_run.py PASS`, `twine check PASSED` | 新增 stability_run.py, CI 接入 ruff & stability-smoke, 新增 RELEASE.md 与 pyproject.toml build-system |
 
 ## 5. 执行节奏
 

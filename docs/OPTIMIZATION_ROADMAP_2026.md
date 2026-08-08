@@ -20,6 +20,12 @@
 | A3 错误预警卡片 | ✅ 后端 `error_warning`（阈值/冷却可配）+ 前端卡片（详情折叠 + ⚡ 一键诊断） |
 | 价格输入 UI | ✅ Settings 已有 input/output 单价输入 |
 
+**最新落地（2026-08-08 v8 方案）：**
+- **P0 卡点雷达闭环** (`stuck_reports` 表开放 `/api/stuck` 与 `/api/stuck/stats` 消费端，添加 `stuck_retention_max` 保留策略，MCP `report_agent_stuck` 关联历史方案即时闭环，前端新增 `🛟 卡点雷达` Sub-Tab 支持一键检索 KB 方案与复制)
+- **P1 检索管道收口** (抽象 `search_kb` 统一检索管道，反馈加权重排收敛为共享逻辑且无反馈时 100% 保持 v7 顺序，清除 `check_active_kb` 内裸建表，MCP `read_gabriel_kb` 享受相同检索加权质量)
+- **P2 稳定与分发** (新增 `scripts/stability_run.py` 自动化长跑与内存泄漏断言，CI 接入 `ruff check` 与 `stability-smoke` 15分钟冒烟，新增 `docs/RELEASE.md` 完整覆盖 PyPI sdist/wheel 与 PyInstaller 打包流程，`pyproject.toml` 补全 `build-system`)
+- **测试全绿** (31/31 pytest 测试全绿，ruff check 0 错误，node --check 干净，stability_run 与 twine check 均验证通过)
+
 **最新落地（2026-08-08 v7 方案）：**
 - **P0 双向 MCP 生态接口** (`src/mcp_server.py` 扩展为 4 工具：`read_gabriel_kb`, `add_gabriel_insight`, `report_agent_stuck`, `get_session_summary`) + **收敛 KB 写入为单一共享函数 `save_insight()`**
 - **P1-1 死循环/震荡检测** (滑动窗口 `_tool_signature` 与 `detect_loop` 自动识别工具重复与死循环并复用 error_warning 预警)
