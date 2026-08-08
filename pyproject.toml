@@ -7,3 +7,7 @@ target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E9", "F7", "F8", "F401"]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"

@@ -187,7 +187,7 @@ def store_insight_vector(insight_id: int, content: str):
             db_path = os.path.join(ROOT_DIR, "knowledge.db")
             conn = sqlite3.connect(db_path)
             try:
-                load_sqlite_vec(conn)
+                init_schema(conn)
                 conn.execute("INSERT OR REPLACE INTO insights_vec (insight_id, embedding) VALUES (?, ?)", (insight_id, vec_blob))
                 conn.commit()
             finally:
