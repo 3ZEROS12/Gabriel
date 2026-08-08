@@ -451,8 +451,8 @@ async function fetchAgents() {
                 div.className = `agent-item ${isLocked ? 'locked' : ''}`;
                 div.innerHTML = `
                     <div class="agent-info">
-                        <span class="agent-name">${a.name} ${isLocked ? '🔒' : ''}</span>
-                        <span class="agent-time">⏱ ${dict[currentLang].agent_last_active || "Last Active:"} ${date} &nbsp;|&nbsp; 📊 ${dict[currentLang].agent_volume || "Volume:"} ${a.steps || 0} ${dict[currentLang].agent_steps || "steps"}</span>
+                        <span class="agent-name">${a.name} ${isLocked ? ICONS.lock : ''}</span>
+                        <span class="agent-time">${ICONS.clock} ${dict[currentLang].agent_last_active || "Last Active:"} ${date} &nbsp;|&nbsp; ${ICONS.activity} ${dict[currentLang].agent_volume || "Volume:"} ${a.steps || 0} ${dict[currentLang].agent_steps || "steps"}</span>
                     </div>
                     ${!isLocked ? `<button class="btn-outline btn-outline-sm" onclick="lockAgent('${a.path.replace(/\\/g, '\\\\')}')">${dict[currentLang].btn_lock || 'Lock'}</button>` : ''}
                 `;
@@ -755,7 +755,7 @@ async function connectWebSocket() {
                     if (msg.context_percent > 85) {
                         bar.style.background = 'var(--error)';
                         if (!warningMsg) {
-                            header.insertAdjacentHTML('beforeend', '<div class="context-warning">⚠️ 上下文剩余量低，建议重开或 /compact</div>');
+                            header.insertAdjacentHTML('beforeend', '<div class="context-warning">' + ICONS['triangle-alert'] + ' 上下文剩余量低，建议重开或 /compact</div>');
                         }
                     } else {
                         bar.style.background = msg.context_percent > 70 ? 'var(--warn)' : 'var(--indigo)';
@@ -768,7 +768,7 @@ async function connectWebSocket() {
                 if (!headerStatus) {
                     headerStatus = document.createElement('span');
                     headerStatus.className = 'scroll-lock-status';
-                    headerStatus.innerText = '⏸ Scroll Locked';
+                    headerStatus.innerHTML = ICONS.pause + ' Scroll Locked';
                     displayCard.querySelector('div').insertBefore(headerStatus, displayCard.querySelector('button'));
                 }
 
@@ -846,7 +846,7 @@ async function connectWebSocket() {
                 card.classList.add('waiting-state');
                 let header = card.querySelector('.agent-card-header');
                 if (header && !header.querySelector('.waiting-banner')) {
-                    header.insertAdjacentHTML('beforeend', '<div class="waiting-banner">⚠️ 需要你处理</div>');
+                    header.insertAdjacentHTML('beforeend', '<div class="waiting-banner">' + ICONS['triangle-alert'] + ' 需要你处理</div>');
                 }
             }
         } else if (msg.type === "agent_unblocked") {
@@ -884,12 +884,12 @@ async function connectWebSocket() {
                 
                 toastContent.innerHTML = `
                     <div class="insight-card-header">
-                        <span>⚡ Agent Instruction / Insight</span>
+                        <span>${ICONS.zap} Agent Instruction / Insight</span>
                         <div>
-                            <button class="btn-insight-copy vote-useful" onclick="fetch('/api/kb/feedback', {method:'POST', headers:{'Content-Type': 'application/json', 'X-Gabriel-Token': '${localToken}'}, body: JSON.stringify({insight_id: ${insightId}, action: 'useful'})}); this.innerText='👍'; this.disabled=true;" title="Useful (用过)">👍</button>
-                            <button class="btn-insight-copy vote-useless" onclick="fetch('/api/kb/feedback', {method:'POST', headers:{'Content-Type': 'application/json', 'X-Gabriel-Token': '${localToken}'}, body: JSON.stringify({insight_id: ${insightId}, action: 'useless'})}); this.innerText='👎'; this.disabled=true;" title="Useless (没用)">👎</button>
-                            <button class="btn-insight-copy vote-fav" onclick="fetch('/api/kb/feedback', {method:'POST', headers:{'Content-Type': 'application/json', 'X-Gabriel-Token': '${localToken}'}, body: JSON.stringify({insight_id: ${insightId}, action: 'favorite'})}); this.innerText='⭐'; this.disabled=true;" title="Favorite (收藏)">⭐</button>
-                            <button class="btn-insight-copy vote-inject" onclick="ws.send(JSON.stringify({type: 'inject_insight', content: decodeURIComponent('${encodedText}')})); this.classList.add('success-pulse'); this.innerText='Injected!'; setTimeout(() => { this.classList.remove('success-pulse'); this.innerText='⚡ Inject'; }, 2000);">⚡ Add to KB</button>
+                            <button class="btn-insight-copy vote-useful" onclick="fetch('/api/kb/feedback', {method:'POST', headers:{'Content-Type': 'application/json', 'X-Gabriel-Token': '${localToken}'}, body: JSON.stringify({insight_id: ${insightId}, action: 'useful'})}); this.innerHTML=ICONS.check; this.disabled=true;" title="Useful (用过)">${ICONS['thumbs-up']}</button>
+                            <button class="btn-insight-copy vote-useless" onclick="fetch('/api/kb/feedback', {method:'POST', headers:{'Content-Type': 'application/json', 'X-Gabriel-Token': '${localToken}'}, body: JSON.stringify({insight_id: ${insightId}, action: 'useless'})}); this.innerHTML=ICONS.check; this.disabled=true;" title="Useless (没用)">${ICONS['thumbs-down']}</button>
+                            <button class="btn-insight-copy vote-fav" onclick="fetch('/api/kb/feedback', {method:'POST', headers:{'Content-Type': 'application/json', 'X-Gabriel-Token': '${localToken}'}, body: JSON.stringify({insight_id: ${insightId}, action: 'favorite'})}); this.innerHTML=ICONS.check; this.disabled=true;" title="Favorite (收藏)">${ICONS.star}</button>
+                            <button class="btn-insight-copy vote-inject" onclick="ws.send(JSON.stringify({type: 'inject_insight', content: decodeURIComponent('${encodedText}')})); this.classList.add('success-pulse'); this.innerText='Injected!'; setTimeout(() => { this.classList.remove('success-pulse'); this.innerHTML=ICONS.zap+' Inject'; }, 2000);">${ICONS.zap} Add to KB</button>
                             <button class="btn-insight-copy" onclick="navigator.clipboard.writeText(decodeURIComponent('${encodedText}')); this.classList.add('success-pulse'); this.innerText='Copied!'; setTimeout(() => { this.classList.remove('success-pulse'); this.innerText='Copy'; }, 2000);">Copy</button>
                         </div>
                     </div>
@@ -917,7 +917,7 @@ async function connectWebSocket() {
 
             warningDiv.innerHTML = `
                 <div class="err-head">
-                    <strong>⚠️ 疑似卡点预警 (${msg.agent || 'Agent'})</strong>
+                    <strong>${ICONS['triangle-alert']} 疑似卡点预警 (${msg.agent || 'Agent'})</strong>
                     <div>
                         <button onclick="document.getElementById('${errId}').style.display = document.getElementById('${errId}').style.display === 'none' ? 'block' : 'none'" class="err-toggle-btn">详情</button>
                         <button onclick="ws.send(JSON.stringify({type: 'chat', content: decodeURIComponent('${promptContent}'), mode: getChatMode()}))" class="err-diagnose-btn">⚡ 一键诊断</button>
@@ -1265,7 +1265,7 @@ async function fetchKbRules() {
 
                 div.innerHTML = `
                     <div class="fav-item-head">
-                        <span class="kb-rule-date">🕒 ${rule.timestamp}</span>
+                        <span class="kb-rule-date">${ICONS.clock} ${rule.timestamp}</span>
                         <div class="btn-group">
                             <button class="btn-outline btn-unfav btn-danger-sm">取消收藏</button>
                         </div>
@@ -1340,7 +1340,7 @@ async function fetchKbRules() {
             }
 
             div.innerHTML = `
-                <span class="kb-rule-date">🕒 ${date}</span>
+                <span class="kb-rule-date">${ICONS.clock} ${date}</span>
                 <div class="fav-content">${parsed}</div>
                 ${tagsHtml}
             `;
@@ -1409,11 +1409,11 @@ async function fetchSessionHistory() {
             const avgCost = (sess.turns && sess.turns > 0) ? (sess.est_cost / sess.turns).toFixed(4) : '--';
             item.innerHTML = `
                 <div class="agent-info">
-                    <span class="agent-name">📜 ${sess.agent} ${existsBadge}</span>
+                    <span class="agent-name">${ICONS['file-text']} ${sess.agent} ${existsBadge}</span>
                     <span class="agent-path">${sess.path}</span>
                 </div>
                 <div class="session-meta-row">
-                    <div>🕒 ${sess.ts}</div>
+                    <div>${ICONS.clock} ${sess.ts}</div>
                     <div class="session-meta-accent">Turns: ${sess.turns || '--'} | Cost: $${(sess.est_cost || 0).toFixed(4)} | Avg: $${avgCost}/turn</div>
                     <div class="session-meta-sub">⚡ ${fmtTokens(sess.input_tokens || 0)} in / ${fmtTokens(sess.output_tokens || 0)} out${(sess.cache_read_tokens || 0) ? ' | cache ' + fmtTokens(sess.cache_read_tokens) + 'r / ' + fmtTokens(sess.cache_creation_tokens || 0) + 'w' : ''}</div>
                 </div>
@@ -1440,7 +1440,7 @@ async function openSessionReview(id, agent, path) {
     const bodyEl = document.getElementById('sessionReviewBody');
     if (!modal || !bodyEl) return;
     
-    titleEl.innerText = `📜 回看会话: ${agent}`;
+    titleEl.innerHTML = `${ICONS['file-text']} 回看会话: ${agent}`;
     bodyEl.innerHTML = '<div class="list-empty-pad">加载日志文本中...</div>';
     modal.style.display = 'flex';
 
@@ -1539,7 +1539,7 @@ async function fetchStuckReports() {
 
             const searchBtn = document.createElement('button');
             searchBtn.className = 'btn-outline btn-outline-sm';
-            searchBtn.innerText = '🔍 检索历史方案';
+            searchBtn.innerHTML = ICONS.search + ' 检索历史方案';
 
             header.appendChild(title);
             header.appendChild(searchBtn);
@@ -1552,7 +1552,7 @@ async function fetchStuckReports() {
             hitsContainer.className = 'stuck-hits';
 
             searchBtn.addEventListener('click', async () => {
-                searchBtn.innerText = '检索中...';
+                searchBtn.innerHTML = ICONS['loader-circle'] + ' 检索中...';
                 try {
                     const res = await fetch('/api/kb/search', {
                         method: 'POST',
@@ -1563,7 +1563,7 @@ async function fetchStuckReports() {
                         body: JSON.stringify({ text: rpt.context })
                     });
                     const data = await res.json();
-                    searchBtn.innerText = '🔍 检索历史方案';
+                    searchBtn.innerHTML = ICONS.search + ' 检索历史方案';
                     hitsContainer.style.display = 'flex';
                     hitsContainer.innerHTML = '';
                     if (data.hits && data.hits.length > 0) {
@@ -1577,11 +1577,11 @@ async function fetchStuckReports() {
 
                             const copyBtn = document.createElement('button');
                             copyBtn.className = 'btn-outline btn-outline-sm';
-                            copyBtn.innerText = '📋 复制';
+                            copyBtn.innerHTML = ICONS.copy + ' 复制';
                             copyBtn.addEventListener('click', () => {
                                 navigator.clipboard.writeText(hit.content);
-                                copyBtn.innerText = '✅ 已复制';
-                                setTimeout(() => copyBtn.innerText = '📋 复制', 2000);
+                                copyBtn.innerHTML = ICONS.check + ' 已复制';
+                                setTimeout(() => copyBtn.innerHTML = ICONS.copy + ' 复制', 2000);
                             });
 
                             hitCard.appendChild(textDiv);
@@ -1592,7 +1592,7 @@ async function fetchStuckReports() {
                         hitsContainer.innerHTML = '<div class="hits-empty">未匹配到相关历史 KB 方案</div>';
                     }
                 } catch(e) {
-                    searchBtn.innerText = '🔍 检索历史方案';
+                    searchBtn.innerHTML = ICONS.search + ' 检索历史方案';
                     hitsContainer.style.display = 'flex';
                     hitsContainer.innerHTML = `<div class="hits-error">检索失败: ${e.message}</div>`;
                 }
