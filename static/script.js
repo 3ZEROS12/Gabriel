@@ -16,7 +16,7 @@ const dict = {
         "mode_manual": "Manual (Geek)", "mode_auto": "Automatic",
         "chat_mode_title": "Side-brain Mode", "mode_light": "💨 Quick (Snapshot + Save)", "mode_private": "🔒 Private (Snapshot, no save)", "mode_audit": "🔬 Deep Audit (Full + Save)", "mode_onedive": "⚡ One-shot Deep (Full, no save)",
         "settings_ui": "UI Preferences", "settings_lang": "Language", "lang_en": "English", "lang_zh": "中文 (Chinese)",
-        "copied": "Copied to Clipboard!", "saved": "Saved", "scanning": "Scanning...","radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 3.1.0 (Cyber-Dark Edition)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "👼 Gabriel",
+        "copied": "Copied to Clipboard!", "saved": "Saved", "scanning": "Scanning...","radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 4.0.0 (Light Indigo)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "👼 Gabriel",
         "chat_feedback": "Feedback", "kb_recommendation": "Knowledge Base Recommendation"
     },
     "zh": {
@@ -36,7 +36,7 @@ const dict = {
         "mode_manual": "手动提取 (极客)", "mode_auto": "全自动注入",
         "chat_mode_title": "副脑模式", "mode_light": "💨 轻量助手（快照+保存）", "mode_private": "🔒 私密问答（快照+不保存）", "mode_audit": "🔬 深潜审计（完整上下文+保存）", "mode_onedive": "⚡ 一次性深潜（完整+不保存）",
         "settings_ui": "界面偏好", "settings_lang": "显示语言",
-        "copied": "已复制到剪贴板！", "saved": "已保存", "scanning": "正在扫描...", "radar_target": "目标 Agent", "radar_scanning": "正在扫描 Agent...", "settings_about": "关于 Gabriel", "radar_empty": "未发现活跃 Agent", "radar_no_agents_hint": "在终端启动 Agent 后会显示在这里", "agent_last_active": "最后活跃:", "agent_volume": "体量:", "agent_steps": "步", "btn_lock": "锁定", "err_fetching_agents": "获取 Agent 列表失败。", "btn_edit": "✏️ 编辑", "btn_preview": "👁 预览", "status_connected": "已连接", "status_disconnected": "已断开", "gen_draft": "⏳ 正在生成解决方案草稿...", "saving": "保存中...", "title_minimize": "最小化", "title_close": "关闭", "title_control_center": "控制中心", "title_agent_radar": "Agent 雷达", "title_knowledge_base": "知识库", "title_settings": "设置", "btn_preview_kb": "👁 预览", "about_version": "版本 3.1.0（Cyber-Dark 版）", "about_created": "作者", "about_subtitle": "\"自主智能体缺失的视觉副驾\"", "auto_track": "自动追踪最新", "status_wait": "等待中...", "gabriel_logo": "👼 Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "反馈", "kb_recommendation": "知识库推荐",
+        "copied": "已复制到剪贴板！", "saved": "已保存", "scanning": "正在扫描...", "radar_target": "目标 Agent", "radar_scanning": "正在扫描 Agent...", "settings_about": "关于 Gabriel", "radar_empty": "未发现活跃 Agent", "radar_no_agents_hint": "在终端启动 Agent 后会显示在这里", "agent_last_active": "最后活跃:", "agent_volume": "体量:", "agent_steps": "步", "btn_lock": "锁定", "err_fetching_agents": "获取 Agent 列表失败。", "btn_edit": "✏️ 编辑", "btn_preview": "👁 预览", "status_connected": "已连接", "status_disconnected": "已断开", "gen_draft": "⏳ 正在生成解决方案草稿...", "saving": "保存中...", "title_minimize": "最小化", "title_close": "关闭", "title_control_center": "控制中心", "title_agent_radar": "Agent 雷达", "title_knowledge_base": "知识库", "title_settings": "设置", "btn_preview_kb": "👁 预览", "about_version": "版本 4.0.0（Light Indigo）", "about_created": "作者", "about_subtitle": "\"自主智能体缺失的视觉副驾\"", "auto_track": "自动追踪最新", "status_wait": "等待中...", "gabriel_logo": "👼 Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "反馈", "kb_recommendation": "知识库推荐",
         
     },
     "ja": {
@@ -56,7 +56,7 @@ const dict = {
         "mode_manual": "手動抽出", "mode_auto": "自動注入",
         "chat_mode_title": "サイドブレインモード", "mode_light": "💨 クイック（スナップショット+保存）", "mode_private": "🔒 プライベート（スナップショット、保存なし）", "mode_audit": "🔬 ディープ監査（全文脈+保存）", "mode_onedive": "⚡ ワンショット（全文脈、保存なし）",
         "settings_ui": "UI 設定", "settings_lang": "表示言語",
-        "copied": "コピーしました！", "saved": "保存しました", "scanning": "スキャン中...", "radar_target": "対象エージェント", "radar_scanning": "エージェントをスキャン中...", "settings_about": "Gabriel について", "radar_empty": "アクティブなエージェントなし", "radar_no_agents_hint": "ターミナルでエージェントを起動するとここに表示されます", "agent_last_active": "最終アクティブ:", "agent_volume": "ボリューム:", "agent_steps": "ステップ", "btn_lock": "ロック", "err_fetching_agents": "エージェントの取得に失敗", "btn_edit": "✏️ 編集", "btn_preview": "👁 プレビュー", "status_connected": "接続済み", "status_disconnected": "切断済み", "gen_draft": "⏳ ソリューション草案を生成中...", "saving": "保存中...", "title_minimize": "最小化", "title_close": "閉じる", "title_control_center": "コントロールセンター", "title_agent_radar": "エージェントレーダー", "title_knowledge_base": "ナレッジベース", "title_settings": "設定", "btn_preview_kb": "👁 プレビュー", "about_version": "バージョン 3.1.0（Cyber-Dark 版）", "about_created": "作成者", "about_subtitle": "\"自律エージェントに欠けたビジュアルサイドカー\"", "auto_track": "最新を自動追跡", "status_wait": "待機中...", "gabriel_logo": "👼 Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "フィードバック", "kb_recommendation": "ナレッジベースのおすすめ",
+        "copied": "コピーしました！", "saved": "保存しました", "scanning": "スキャン中...", "radar_target": "対象エージェント", "radar_scanning": "エージェントをスキャン中...", "settings_about": "Gabriel について", "radar_empty": "アクティブなエージェントなし", "radar_no_agents_hint": "ターミナルでエージェントを起動するとここに表示されます", "agent_last_active": "最終アクティブ:", "agent_volume": "ボリューム:", "agent_steps": "ステップ", "btn_lock": "ロック", "err_fetching_agents": "エージェントの取得に失敗", "btn_edit": "✏️ 編集", "btn_preview": "👁 プレビュー", "status_connected": "接続済み", "status_disconnected": "切断済み", "gen_draft": "⏳ ソリューション草案を生成中...", "saving": "保存中...", "title_minimize": "最小化", "title_close": "閉じる", "title_control_center": "コントロールセンター", "title_agent_radar": "エージェントレーダー", "title_knowledge_base": "ナレッジベース", "title_settings": "設定", "btn_preview_kb": "👁 プレビュー", "about_version": "バージョン 4.0.0（Light Indigo）", "about_created": "作成者", "about_subtitle": "\"自律エージェントに欠けたビジュアルサイドカー\"", "auto_track": "最新を自動追跡", "status_wait": "待機中...", "gabriel_logo": "👼 Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "フィードバック", "kb_recommendation": "ナレッジベースのおすすめ",
         
     },
     "zh-TW": {
@@ -76,7 +76,7 @@ const dict = {
         "mode_manual": "手動提取 (極客)", "mode_auto": "全自動注入",
         "chat_mode_title": "副腦模式", "mode_light": "💨 輕量助手（快照+保存）", "mode_private": "🔒 私密問答（快照+不保存）", "mode_audit": "🔬 深潛審計（完整上下文+保存）", "mode_onedive": "⚡ 一次性深潛（完整+不保存）",
         "settings_ui": "介面偏好", "settings_lang": "顯示語言",
-        "copied": "已複製到剪貼簿！", "saved": "已保存", "scanning": "正在掃描...", "radar_target": "目標 Agent", "radar_scanning": "正在掃描 Agent...", "settings_about": "關於 Gabriel", "radar_empty": "未發現活躍 Agent", "radar_no_agents_hint": "在終端啟動 Agent 後會顯示在這裡", "agent_last_active": "最後活躍:", "agent_volume": "體量:", "agent_steps": "步", "btn_lock": "鎖定", "err_fetching_agents": "獲取 Agent 列表失敗。", "btn_edit": "✏️ 編輯", "btn_preview": "👁 預覽", "status_connected": "已連線", "status_disconnected": "已斷線", "gen_draft": "⏳ 正在生成解決方案草稿...", "saving": "儲存中...", "title_minimize": "最小化", "title_close": "關閉", "title_control_center": "控制中心", "title_agent_radar": "Agent 雷達", "title_knowledge_base": "知識庫", "title_settings": "設定", "btn_preview_kb": "👁 預覽", "about_version": "版本 3.1.0（Cyber-Dark 版）", "about_created": "作者", "about_subtitle": "\"自主智能體缺失的視覺副駕\"", "auto_track": "自動追蹤最新", "status_wait": "等待中...", "gabriel_logo": "👼 Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "回饋", "kb_recommendation": "知識庫推薦",
+        "copied": "已複製到剪貼簿！", "saved": "已保存", "scanning": "正在掃描...", "radar_target": "目標 Agent", "radar_scanning": "正在掃描 Agent...", "settings_about": "關於 Gabriel", "radar_empty": "未發現活躍 Agent", "radar_no_agents_hint": "在終端啟動 Agent 後會顯示在這裡", "agent_last_active": "最後活躍:", "agent_volume": "體量:", "agent_steps": "步", "btn_lock": "鎖定", "err_fetching_agents": "獲取 Agent 列表失敗。", "btn_edit": "✏️ 編輯", "btn_preview": "👁 預覽", "status_connected": "已連線", "status_disconnected": "已斷線", "gen_draft": "⏳ 正在生成解決方案草稿...", "saving": "儲存中...", "title_minimize": "最小化", "title_close": "關閉", "title_control_center": "控制中心", "title_agent_radar": "Agent 雷達", "title_knowledge_base": "知識庫", "title_settings": "設定", "btn_preview_kb": "👁 預覽", "about_version": "版本 4.0.0（Light Indigo）", "about_created": "作者", "about_subtitle": "\"自主智能體缺失的視覺副駕\"", "auto_track": "自動追蹤最新", "status_wait": "等待中...", "gabriel_logo": "👼 Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "回饋", "kb_recommendation": "知識庫推薦",
         
     },
     "fr": {
@@ -96,7 +96,7 @@ const dict = {
         "mode_manual": "Manuel (Geek)", "mode_auto": "Automatique",
         "chat_mode_title": "Mode second cerveau", "mode_light": "💨 Rapide (Snapshot + Sauvegarde)", "mode_private": "🔒 Privé (Snapshot, sans sauvegarde)", "mode_audit": "🔬 Audit profond (Contexte complet + Sauvegarde)", "mode_onedive": "⚡ Plongée unique (Complet, sans sauvegarde)",
         "settings_ui": "Préférences UI", "settings_lang": "Langue",
-        "copied": "Copié !", "saved": "Enregistré", "scanning": "Analyse...", "radar_target": "Agent cible", "radar_scanning": "Analyse des agents...", "settings_about": "À propos de Gabriel", "radar_empty": "Aucun agent actif", "radar_no_agents_hint": "Démarrez un agent dans votre terminal pour le voir ici", "agent_last_active": "Dernière activité :", "agent_volume": "Volume :", "agent_steps": "étapes", "btn_lock": "Verrouiller", "err_fetching_agents": "Erreur lors du chargement des agents.", "btn_edit": "✏️ Éditer", "btn_preview": "👁 Aperçu", "status_connected": "Connecté", "status_disconnected": "Déconnecté", "gen_draft": "⏳ Génération du brouillon...", "saving": "Enregistrement...", "title_minimize": "Réduire", "title_close": "Fermer", "title_control_center": "Centre de contrôle", "title_agent_radar": "Radar d'agents", "title_knowledge_base": "Base de connaissances", "title_settings": "Paramètres", "btn_preview_kb": "👁 Aperçu", "about_version": "Version 3.1.0 (Cyber-Dark)", "about_created": "Créé par", "about_subtitle": "\"Le sidecar visuel manquant pour les agents autonomes\"", "auto_track": "Suivi auto du plus récent", "status_wait": "Attente...", "gabriel_logo": "👼 Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "Commentaires", "kb_recommendation": "Recommandation de la base",
+        "copied": "Copié !", "saved": "Enregistré", "scanning": "Analyse...", "radar_target": "Agent cible", "radar_scanning": "Analyse des agents...", "settings_about": "À propos de Gabriel", "radar_empty": "Aucun agent actif", "radar_no_agents_hint": "Démarrez un agent dans votre terminal pour le voir ici", "agent_last_active": "Dernière activité :", "agent_volume": "Volume :", "agent_steps": "étapes", "btn_lock": "Verrouiller", "err_fetching_agents": "Erreur lors du chargement des agents.", "btn_edit": "✏️ Éditer", "btn_preview": "👁 Aperçu", "status_connected": "Connecté", "status_disconnected": "Déconnecté", "gen_draft": "⏳ Génération du brouillon...", "saving": "Enregistrement...", "title_minimize": "Réduire", "title_close": "Fermer", "title_control_center": "Centre de contrôle", "title_agent_radar": "Radar d'agents", "title_knowledge_base": "Base de connaissances", "title_settings": "Paramètres", "btn_preview_kb": "👁 Aperçu", "about_version": "Version 4.0.0 (Light Indigo)", "about_created": "Créé par", "about_subtitle": "\"Le sidecar visuel manquant pour les agents autonomes\"", "auto_track": "Suivi auto du plus récent", "status_wait": "Attente...", "gabriel_logo": "👼 Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "Commentaires", "kb_recommendation": "Recommandation de la base",
         
     },
     "es": {
@@ -136,7 +136,7 @@ const dict = {
         "mode_manual": "수동", "mode_auto": "자동",
         "chat_mode_title": "보조 뇌 모드", "mode_light": "💨 빠른 (스냅샷+저장)", "mode_private": "🔒 비공개 (스냅샷, 저장 안 함)", "mode_audit": "🔬 딥 감사 (전체 컨텍스트+저장)", "mode_onedive": "⚡ 원샷 딥 (전체, 저장 안 함)",
         "settings_ui": "UI 환경설정", "settings_lang": "언어",
-        "copied": "복사 완료!", "saved": "저장됨", "scanning": "스캔 중...", "radar_target": "대상 에이전트", "radar_scanning": "에이전트 검색 중...", "settings_about": "Gabriel 정보", "radar_empty": "활성 에이전트 없음", "radar_no_agents_hint": "터미널에서 에이전트를 시작하면 여기에 표시됩니다", "agent_last_active": "최근 활동:", "agent_volume": "볼륨:", "agent_steps": "단계", "btn_lock": "잠금", "err_fetching_agents": "에이전트를 불러오는 중 오류", "btn_edit": "✏️ 편집", "btn_preview": "👁 미리보기", "status_connected": "연결됨", "status_disconnected": "연결 끊김", "gen_draft": "⏳ 솔루션 초안 생성 중...", "saving": "저장 중...", "title_minimize": "최소화", "title_close": "닫기", "title_control_center": "컨트롤 센터", "title_agent_radar": "에이전트 레이더", "title_knowledge_base": "지식 베이스", "title_settings": "설정", "btn_preview_kb": "👁 미리보기", "about_version": "버전 3.1.0 (Cyber-Dark Edition)", "about_created": "만든 사람", "about_subtitle": "\"자율 에이전트를 위한 시각 사이드카\"", "auto_track": "최신 자동 추적", "status_wait": "대기 중...", "gabriel_logo": "👼 Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "피드백", "kb_recommendation": "지식 베이스 추천"
+        "copied": "복사 완료!", "saved": "저장됨", "scanning": "스캔 중...", "radar_target": "대상 에이전트", "radar_scanning": "에이전트 검색 중...", "settings_about": "Gabriel 정보", "radar_empty": "활성 에이전트 없음", "radar_no_agents_hint": "터미널에서 에이전트를 시작하면 여기에 표시됩니다", "agent_last_active": "최근 활동:", "agent_volume": "볼륨:", "agent_steps": "단계", "btn_lock": "잠금", "err_fetching_agents": "에이전트를 불러오는 중 오류", "btn_edit": "✏️ 편집", "btn_preview": "👁 미리보기", "status_connected": "연결됨", "status_disconnected": "연결 끊김", "gen_draft": "⏳ 솔루션 초안 생성 중...", "saving": "저장 중...", "title_minimize": "최소화", "title_close": "닫기", "title_control_center": "컨트롤 센터", "title_agent_radar": "에이전트 레이더", "title_knowledge_base": "지식 베이스", "title_settings": "설정", "btn_preview_kb": "👁 미리보기", "about_version": "버전 4.0.0 (Light Indigo)", "about_created": "만든 사람", "about_subtitle": "\"자율 에이전트를 위한 시각 사이드카\"", "auto_track": "최신 자동 추적", "status_wait": "대기 중...", "gabriel_logo": "👼 Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "피드백", "kb_recommendation": "지식 베이스 추천"
     }
 };
 
@@ -287,7 +287,9 @@ let currentTargetAgent = "auto";
 
 async function loadConfig() {
     try {
-        const res = await fetch('/api/config');
+        const res = await fetch('/api/config', {
+            headers: { 'X-Gabriel-Token': localToken }
+        });
         const data = await res.json();
         if(data.base_url) cfgBaseUrl.value = data.base_url;
         if(data.api_key) cfgApiKey.value = data.api_key;
@@ -378,20 +380,33 @@ if (toggleAutoCursorEl) {
     });
 }
 
+// Token 失效统一处理：清凭据并重新弹登录（供 fetch/WS 401 调用）
+function handleAuthFailure() {
+    sessionStorage.removeItem('gabriel_token');
+    localStorage.removeItem('gabriel_token');
+    localToken = null;
+    const loginModal = document.getElementById('loginModal');
+    if (loginModal) loginModal.style.display = 'flex';
+}
+
 async function fetchAgents() {
     const list = document.getElementById('agentList');
     list.innerHTML = `<div class="agent-item">${dict[currentLang].scanning}</div>`;
     try {
-        await fetch('/api/agents', {
+        const res = await fetch('/api/agents', {
             headers: { 'X-Gabriel-Token': localToken }
-        })
-        .then(r => r.json())
-        .then(agents => {
+        });
+        if (!res.ok) {
+            if (res.status === 401) { handleAuthFailure(); return; }
+            throw new Error('HTTP ' + res.status);
+        }
+        const agents = await res.json();
+        {
             // Sorting Logic
             const sortSelect = document.getElementById('agentSortSelect');
             const sortMode = sortSelect ? sortSelect.value : 'mtime_desc';
             const [sortKey, sortDir] = sortMode.split('_');
-            
+
             agents.sort((a, b) => {
                 let valA = a[sortKey] || 0;
                 let valB = b[sortKey] || 0;
@@ -452,7 +467,7 @@ async function fetchAgents() {
                 radarSelect.innerHTML = optionsHTML;
                 radarSelect.value = currentTargetAgent;
             }
-        });
+        }
     } catch(e) {
         list.innerHTML = `<div class="agent-item">${dict[currentLang].err_fetching_agents || "Error fetching agents."}</div>`;
     }
@@ -616,7 +631,15 @@ async function connectWebSocket() {
     
     ws.onclose = (e) => {
         if (window.pingInterval) clearInterval(window.pingInterval);
-        
+
+        // 1008 = token 被拒：停止重连，引导重新登录（网络断线仍走正常重连）
+        if (e.code === 1008) {
+            handleAuthFailure();
+            const wsStatusEl = document.getElementById('wsStatus');
+            if (wsStatusEl) wsStatusEl.innerHTML = 'Offline. Auth required.';
+            return;
+        }
+
         const wsStatus = document.getElementById('wsStatus');
         if (wsStatus) {
             wsStatus.classList.remove('connected');
