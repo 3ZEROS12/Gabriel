@@ -16,7 +16,7 @@ import sqlite3
 import time
 
 from mcp.server import MCPServer
-from src.main import save_insight, init_schema, check_active_kb, ROOT_DIR
+from src.main import save_insight, init_schema, check_active_kb, search_kb, ROOT_DIR
 
 DB_PATH = os.path.join(ROOT_DIR, "knowledge.db")
 
@@ -32,38 +32,27 @@ mcp = MCPServer(
     name="read_gabriel_kb",
     description=(
         "Search Gabriel's knowledge base for insights matching a query. "
-        "Returns up to 5 most relevant entries, or the 5 latest if no query is given. "
-        "Use this to recall previously solved problems and their fixes."
+        "Returns up to 5 most relevant entries using FTS5 + Vector RRF search + feedback re-ranking, "
+        "or the 5 latest if no query is given. Use this to recall previously solved problems and their fixes."
     ),
 )
 def read_gabriel_kb(query: str = "") -> str:
-    """Read the latest or query-matched insights from Gabriel's Knowledge Base (FTS5)."""
+    """Read the latest or query-matched insights from Gabriel's Knowledge Base."""
     try:
+        if query and query.strip():
+            hits = search_kb(query.strip(), limit=5)
+            if hits:
+                return "\n\n".join(h[1] for h in hits)
+            return "No insights found."
+
         conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        try:
-            if query and query.strip():
-                # Wrap in double quotes to neutralize FTS5 special characters.
-                safe_query = f'"{query.strip().replace(chr(34), chr(34) * 2)}"'
-                cursor.execute(
-                    "SELECT content FROM insights_fts WHERE insights_fts MATCH ? "
-                    "ORDER BY rank LIMIT 5",
-                    (safe_query,),
-                )
-            else:
-                cursor.execute(
-                    "SELECT content FROM insights_fts ORDER BY timestamp DESC LIMIT 5"
-                )
-        except sqlite3.OperationalError:
-            # FTS syntax still failed (e.g. CJK tokenization): fall back to latest.
-            cursor.execute(
-                "SELECT content FROM insights_fts ORDER BY timestamp DESC LIMIT 5"
-            )
+        cursor.execute("SELECT content FROM insights ORDER BY timestamp DESC LIMIT 5")
         rows = cursor.fetchall()
         conn.close()
         return "\n\n".join(r["content"] for r in rows) if rows else "No insights found."
-    except Exception as e:  # pragma: no cover - defensive for DB unavailability
+    except Exception as e:
         return f"Error reading Gabriel knowledge base: {e}"
 
 

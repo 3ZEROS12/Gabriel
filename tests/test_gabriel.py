@@ -839,5 +839,52 @@ class TestGabrielControlCenter(unittest.TestCase):
 
         print("✅ P0 V8 Stuck Radar endpoints & KB search test successful")
 
+    def test_p1_v8_search_kb_convergence_and_feedback_reranking(self):
+        """Test P1 V8: search_kb convergence, RRF feedback re-ranking, and MCP read_gabriel_kb consistency"""
+        import tempfile
+        import sqlite3
+        from unittest.mock import patch
+        from main import init_schema, save_insight, search_kb
+        from mcp_server import read_gabriel_kb
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            test_db = os.path.join(tmpdir, "knowledge.db")
+            conn = sqlite3.connect(test_db)
+            init_schema(conn)
+            conn.close()
+
+            with patch('main.ROOT_DIR', tmpdir), patch('src.main.ROOT_DIR', tmpdir), patch('mcp_server.DB_PATH', test_db):
+                save_insight("数据库 超时 连接池配置指南")
+                id2 = save_insight("数据库 慢日志 索引优化技巧")
+
+                # 1. Without feedback: search_kb returns candidates
+                hits_initial = search_kb("数据库 超时", limit=5)
+                self.assertGreater(len(hits_initial), 0)
+
+                # MCP read_gabriel_kb consistency with search_kb
+                mcp_out = read_gabriel_kb("数据库 超时")
+                self.assertIn(hits_initial[0][1], mcp_out)
+
+                # 2. Useful feedback boosts ranking
+                conn = sqlite3.connect(test_db)
+                conn.execute("INSERT INTO kb_feedback (insight_id, action) VALUES (?, 'useful')", (id2,))
+                conn.commit()
+                conn.close()
+
+                hits_boosted = search_kb("数据库", limit=5)
+                self.assertEqual(hits_boosted[0][0], id2)
+
+                # 3. Useless >= 2 demotes item
+                conn = sqlite3.connect(test_db)
+                conn.execute("INSERT INTO kb_feedback (insight_id, action) VALUES (?, 'useless')", (id2,))
+                conn.execute("INSERT INTO kb_feedback (insight_id, action) VALUES (?, 'useless')", (id2,))
+                conn.commit()
+                conn.close()
+
+                hits_demoted = search_kb("数据库", limit=5)
+                demoted_ids = [h[0] for h in hits_demoted]
+                self.assertNotIn(id2, demoted_ids)
+        print("✅ P1 V8 search_kb pipeline & feedback re-ranking test successful")
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

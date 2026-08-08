@@ -85,6 +85,90 @@ def rrf_fuse(fts_rows: list, vec_rows: list, k: int = 60) -> list:
     sorted_ids = sorted(scores.keys(), key=lambda x: scores[x], reverse=True)
     return [(iid, content_map[iid], scores[iid]) for iid in sorted_ids]
 
+def search_kb(text: str, limit: int = 5) -> list:
+    """统一检索管道：FTS5(分词) + sqlite-vec + RRF 融合 + 反馈加权重排。
+    返回 [(insight_id, content, score)]，按 score 降序；无反馈时与纯 RRF 输出一致。
+    复用：extract_keywords / tokenize_for_fts / get_embedder / store_insight_vector 同源工具。"""
+    if not text or not text.strip():
+        return []
+
+    kw = extract_keywords(text)
+    db_path = os.path.join(ROOT_DIR, "knowledge.db")
+    conn = sqlite3.connect(db_path)
+    load_sqlite_vec(conn)
+    cursor = conn.cursor()
+
+    fts_rows = []
+    if kw:
+        try:
+            cursor.execute(
+                "SELECT rowid, content FROM insights_fts WHERE insights_fts MATCH ? ORDER BY rank LIMIT 5",
+                (kw,)
+            )
+            fts_rows = cursor.fetchall()
+        except Exception as e:
+            logger.warning(f"FTS Search error: {e}")
+
+    vec_rows = []
+    embedder = get_embedder()
+    if embedder and text:
+        try:
+            embeddings = list(embedder.embed([text]))
+            if embeddings:
+                query_blob = sqlite_vec.serialize_float32(embeddings[0])
+                cursor.execute(
+                    "SELECT v.insight_id, i.content FROM insights_vec v JOIN insights i ON v.insight_id = i.id WHERE v.embedding MATCH ? AND k = 5",
+                    (query_blob,)
+                )
+                vec_rows = cursor.fetchall()
+        except Exception as e:
+            logger.warning(f"Vector search error: {e}")
+
+    candidates = rrf_fuse(fts_rows, vec_rows)
+    if not candidates:
+        conn.close()
+        return []
+
+    try:
+        cursor.execute("SELECT insight_id, action, COUNT(*) as cnt FROM kb_feedback GROUP BY insight_id, action")
+        feedback_rows = cursor.fetchall()
+        
+        fb_map = {}
+        for r in feedback_rows:
+            iid = r[0] if isinstance(r, (tuple, list)) else r["insight_id"]
+            action = r[1] if isinstance(r, (tuple, list)) else r["action"]
+            cnt = r[2] if isinstance(r, (tuple, list)) else r["cnt"]
+            fb_map.setdefault(iid, {})[action] = cnt
+
+        res = []
+        for rowid, content, rrf_score in candidates:
+            fb = fb_map.get(rowid, {})
+            useful_count = fb.get("useful", 0)
+            useless_count = fb.get("useless", 0)
+            favorite_count = fb.get("favorite", 0)
+            unfavorite_count = fb.get("unfavorite", 0)
+
+            effective_favorite = max(0, favorite_count - unfavorite_count)
+            total_votes = useful_count + useless_count + effective_favorite
+
+            if useless_count >= 2:
+                score = -10.0
+            else:
+                base = rrf_score
+                delta = (useful_count - 0.8 * useless_count + 1.5 * effective_favorite) / max(1, total_votes) if total_votes > 0 else 0.0
+                score = base + delta
+
+            if score > -5.0:
+                res.append((rowid, content, score))
+
+        res.sort(key=lambda x: x[2], reverse=True)
+        return res[:limit]
+    except Exception as e:
+        logger.error(f"search_kb error: {e}")
+        return [(c[0], c[1], c[2]) for c in candidates[:limit]]
+    finally:
+        conn.close()
+
 def load_sqlite_vec(conn: sqlite3.Connection):
     try:
         conn.enable_load_extension(True)
@@ -803,9 +887,8 @@ def get_stuck_stats(db: sqlite3.Connection = Depends(get_db)):
 @api_router.post("/kb/search")
 def search_kb_endpoint(data: KBSearchModel, db: sqlite3.Connection = Depends(get_db)):
     try:
-        hit = check_active_kb(data.text)
-        hits = [{"id": hit["id"], "content": hit["content"]}] if hit else []
-        return JSONResponse({"status": "success", "hits": hits})
+        hits = search_kb(data.text, limit=5)
+        return JSONResponse({"status": "success", "hits": [{"id": h[0], "content": h[1]} for h in hits]})
     except Exception as e:
         logger.error(f"Search KB Error: {e}")
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
@@ -1502,74 +1585,9 @@ def build_prompt_content(mode: dict, contexts: dict, user_prompt: str) -> str:
 
 
 def check_active_kb(text: str):
-    kw = extract_keywords(text)
-    db_path = os.path.join(ROOT_DIR, "knowledge.db")
-    conn = sqlite3.connect(db_path)
-    load_sqlite_vec(conn)
-    cursor = conn.cursor()
-
-    fts_rows = []
-    if kw:
-        try:
-            cursor.execute("SELECT rowid, content FROM insights_fts WHERE insights_fts MATCH ? ORDER BY rank LIMIT 5", (kw,))
-            fts_rows = cursor.fetchall()
-        except Exception as e:
-            logger.warning(f"FTS Search error: {e}")
-
-    vec_rows = []
-    embedder = get_embedder()
-    if embedder and text:
-        try:
-            embeddings = list(embedder.embed([text]))
-            if embeddings:
-                query_blob = sqlite_vec.serialize_float32(embeddings[0])
-                cursor.execute(
-                    "SELECT v.insight_id, i.content FROM insights_vec v JOIN insights i ON v.insight_id = i.id WHERE v.embedding MATCH ? AND k = 5",
-                    (query_blob,)
-                )
-                vec_rows = cursor.fetchall()
-        except Exception as e:
-            logger.warning(f"Vector search error: {e}")
-
-    candidates = rrf_fuse(fts_rows, vec_rows)
-    if not candidates:
-        conn.close()
-        return None
-
-    try:
-        cursor.execute("CREATE TABLE IF NOT EXISTS kb_feedback (id INTEGER PRIMARY KEY, insight_id INTEGER, action TEXT, ts DATETIME DEFAULT CURRENT_TIMESTAMP)")
-        best_row = None
-        best_score = -9999
-        
-        for rowid, content, rrf_score in candidates:
-            cursor.execute("SELECT action FROM kb_feedback WHERE insight_id = ?", (rowid,))
-            feedbacks = cursor.fetchall()
-            
-            useful_count = sum(1 for (a,) in feedbacks if a == "useful")
-            useless_count = sum(1 for (a,) in feedbacks if a == "useless")
-            favorite_count = sum(1 for (a,) in feedbacks if a == "favorite")
-            unfavorite_count = sum(1 for (a,) in feedbacks if a == "unfavorite")
-            
-            effective_favorite = max(0, favorite_count - unfavorite_count)
-            total_votes = useful_count + useless_count + effective_favorite
-            
-            if useless_count >= 2:
-                score = -10.0
-            else:
-                base = rrf_score
-                delta = (useful_count - 0.8 * useless_count + 1.5 * effective_favorite) / max(1, total_votes) if total_votes > 0 else 0
-                score = base + delta
-            
-            if score > best_score and score > -5.0:
-                best_score = score
-                best_row = (rowid, content)
-                
-        if best_row:
-            return {"id": best_row[0], "content": best_row[1]}
-    except Exception as e:
-        logger.error(f"KB Search error: {e}")
-    finally:
-        conn.close()
+    hits = search_kb(text, limit=5)
+    if hits:
+        return {"id": hits[0][0], "content": hits[0][1]}
     return None
 
 def estimate_cost(chars: int, config_ref=None) -> float:
