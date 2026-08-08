@@ -21,8 +21,8 @@
 - **启动链路**：端口自动避让（8080 被占 → 递增，最多 20 次）、单实例锁（`.gabriel.lock` 记录端口，重复双击打开已有实例并退出；源码模式不启用）、就绪探测后自动开浏览器（`?token=` 直达）、`--no-browser`/`--port` 可覆盖；控制台可见 token 与日志，关窗即停
 - **依赖策略**：`onedir` + `--noupx`（启动快）；`collect_data_files('jieba', excludes=['lac_small'])` 裁掉 LAC 词法模型（只用 TF-IDF 提取）；`collect_dynamic_libs('sqlite_vec')` 收 native DLL；Anaconda MSVC 运行库显式收集；排除 `fastembed`/`onnxruntime`（FTS5 降级路径已支持）+ `PIL`/`pygments`（仅 rich 可选导入，exe 用不到）+ 测试/桌面壳
 - **不可裁项（实测）**：`numpy` 由 `sqlite_vec` 顶层导入（排除即启动崩）；`jieba.posseg` 数据被 `jieba.analyse`→textrank 链在导入期加载
-- **验收**：34 passed / ruff clean；frozen 冒烟——knowledge.db 落 exe 旁、static 200、token 鉴权、KB 写读搜全通、重复实例秒退；产物 `dist/Gabriel/`（~135MB）→ `Gabriel-v4.0.0-win64.zip`
-- 注：早期 ~50MB 估算是乐观值，实测地板 ~135MB（python313 + numpy/openblas 27MB 不可裁）
+- **验收**：34 passed / ruff clean；frozen 冒烟——knowledge.db 落 exe 旁、static 200、token 鉴权、KB 写读搜全通、重复实例秒退；产物 `dist/Gabriel/`（113MB）→ `Gabriel-v4.0.0-win64.zip`（压缩 65MB）
+- 注：早期 ~50MB 估算是乐观值，实测地板 ~113MB（python313 + numpy/openblas 27MB 由 sqlite_vec 顶层导入，不可裁）
 
 ## ⚠️ 最新核对状态（2026-08-08，核对于 v6 优化方案完成）
 
