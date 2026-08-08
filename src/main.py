@@ -147,6 +147,66 @@ def parse_structured_insight(raw: str) -> dict:
             pass
     return {}
 
+def save_insight(
+    content: str,
+    problem: str = "",
+    cause: str = "",
+    solution: str = "",
+    tags: str = "",
+    agent_path: str = "",
+    db: sqlite3.Connection | None = None
+) -> int:
+    """单一 KB 写入入口：insights + insights_fts(分词) + insights_vec(向量)。
+    返回新 insight id；任何单步失败不得影响主流程（向量失败仅 warning）。"""
+    parsed = parse_structured_insight(content)
+    prob = problem or parsed.get("problem", "")
+    cs = cause or parsed.get("cause", "")
+    sol = solution or parsed.get("solution", "")
+
+    if tags:
+        tags_str = json.dumps(tags, ensure_ascii=False) if isinstance(tags, (list, dict)) else str(tags)
+    else:
+        tags_raw = parsed.get("tags", [])
+        tags_str = json.dumps(tags_raw, ensure_ascii=False) if isinstance(tags_raw, (list, dict)) else str(tags_raw)
+
+    close_db = False
+    if db is None:
+        db_path = os.path.join(ROOT_DIR, "knowledge.db")
+        db = sqlite3.connect(db_path)
+        close_db = True
+
+    try:
+        cursor = db.cursor()
+        init_schema(db)
+        cursor.execute(
+            "INSERT INTO insights (content, problem, cause, solution, tags) VALUES (?, ?, ?, ?, ?)",
+            (content, prob, cs, sol, tags_str)
+        )
+        insight_id = cursor.lastrowid
+        tok_content = tokenize_for_fts(content)
+        cursor.execute(
+            "INSERT INTO insights_fts (rowid, content, timestamp) VALUES (?, ?, CURRENT_TIMESTAMP)",
+            (insight_id, tok_content)
+        )
+        db.commit()
+
+        kb_path = os.path.join(ROOT_DIR, "Gabriel_Insight.md")
+        try:
+            with open(kb_path, "a", encoding="utf-8") as f:
+                f.write(f"\n\n---\n## Insight ({time.strftime('%Y-%m-%d %H:%M:%S')})\n{content}")
+        except Exception as f_err:
+            logger.warning(f"Failed to append to Gabriel_Insight.md: {f_err}")
+
+        store_insight_vector(insight_id, content)
+
+        return insight_id
+    except Exception as e:
+        logger.error(f"save_insight Error: {e}")
+        raise e
+    finally:
+        if close_db:
+            db.close()
+
 import traceback
 from logging.handlers import RotatingFileHandler
 
@@ -227,6 +287,7 @@ def init_schema(conn: sqlite3.Connection):
     except Exception as e:
         logger.warning(f"Failed to create vec0 table: {e}")
 
+    cursor.execute("CREATE TABLE IF NOT EXISTS stuck_reports (id INTEGER PRIMARY KEY AUTOINCREMENT, agent TEXT, context TEXT, ts REAL)")
     cursor.execute("CREATE TABLE IF NOT EXISTS kb_feedback (id INTEGER PRIMARY KEY, insight_id INTEGER, action TEXT, ts DATETIME DEFAULT CURRENT_TIMESTAMP)")
     cursor.execute("CREATE TABLE IF NOT EXISTS session_meta (id INTEGER PRIMARY KEY, agent_name TEXT, path TEXT, ts DATETIME DEFAULT CURRENT_TIMESTAMP, turns INTEGER DEFAULT 0, chars INTEGER DEFAULT 0, est_cost REAL DEFAULT 0.0)")
     cursor.execute("CREATE TABLE IF NOT EXISTS chat_history (id INTEGER PRIMARY KEY, agent_path TEXT, role TEXT, content TEXT, ts DATETIME DEFAULT CURRENT_TIMESTAMP)")
@@ -638,27 +699,8 @@ def get_knowledge(db: sqlite3.Connection = Depends(get_db)):
 @api_router.post("/kb")
 def update_kb(data: KBModel, db: sqlite3.Connection = Depends(get_db)):
     try:
-        cursor = db.cursor()
-        parsed = parse_structured_insight(data.content)
-        prob = parsed.get("problem", "")
-        cause = parsed.get("cause", "")
-        sol = parsed.get("solution", "")
-        tags_raw = parsed.get("tags", [])
-        tags_str = json.dumps(tags_raw, ensure_ascii=False) if isinstance(tags_raw, list) else str(tags_raw)
-
-        cursor.execute(
-            "INSERT INTO insights (content, problem, cause, solution, tags) VALUES (?, ?, ?, ?, ?)",
-            (data.content, prob, cause, sol, tags_str)
-        )
-        tok_content = tokenize_for_fts(data.content)
-        cursor.execute("INSERT INTO insights_fts (content, timestamp) VALUES (?, CURRENT_TIMESTAMP)", (tok_content,))
-        db.commit()
-        
-        kb_path = os.path.join(ROOT_DIR, "Gabriel_Insight.md")
-        with open(kb_path, "a", encoding="utf-8") as f:
-            f.write(f"\n\n---\n## Insight ({time.strftime('%Y-%m-%d %H:%M:%S')})\n{data.content}")
-            
-        return {"status": "ok"}
+        insight_id = save_insight(data.content, db=db)
+        return {"status": "ok", "id": insight_id}
     except Exception as e:
         logger.error(f"KB Post Error: {e}")
         return {"status": "error", "message": str(e)}
@@ -1818,28 +1860,7 @@ async def websocket_endpoint(websocket: WebSocket, token: str = None, ticket: st
                     else:
                         insight_content = raw_content
 
-                    # Also write to file for legacy/UI reasons
-                    kb_path = os.path.join(ROOT_DIR, "Gabriel_Insight.md")
-                    with open(kb_path, "a", encoding="utf-8") as f:
-                        f.write(f"\n\n---\n## Insight ({time.strftime('%Y-%m-%d %H:%M:%S')})\n{insight_content}")
-                        
-                    # Save to DB for FTS5 indexing with jieba tokenization
-                    db_path = os.path.join(ROOT_DIR, "knowledge.db")
-                    conn = sqlite3.connect(db_path)
-                    try:
-                        cursor = conn.cursor()
-                        init_schema(conn)
-                        cursor.execute(
-                            "INSERT INTO insights (content, problem, cause, solution, tags) VALUES (?, ?, ?, ?, ?)",
-                            (insight_content, prob, cause, sol, tags_str)
-                        )
-                        tok = tokenize_for_fts(insight_content)
-                        cursor.execute("INSERT INTO insights_fts (content, timestamp) VALUES (?, CURRENT_TIMESTAMP)", (tok,))
-                        conn.commit()
-                    except Exception as db_err:
-                        logger.error(f"Failed to insert into FTS5: {db_err}")
-                    finally:
-                        conn.close()
+                    save_insight(insight_content, problem=prob, cause=cause, solution=sol, tags=tags_raw)
                         
                     await wrapper.send_text(json.dumps({
                         "type": "kb_toast",
@@ -1857,33 +1878,7 @@ async def websocket_endpoint(websocket: WebSocket, token: str = None, ticket: st
                     }))
             elif msg["type"] == "inject_insight":
                 insight_content = msg.get("content", "")
-                parsed = parse_structured_insight(insight_content)
-                prob = parsed.get("problem", "")
-                cause = parsed.get("cause", "")
-                sol = parsed.get("solution", "")
-                tags_raw = parsed.get("tags", [])
-                tags_str = json.dumps(tags_raw, ensure_ascii=False) if isinstance(tags_raw, list) else str(tags_raw)
-
-                db_path = os.path.join(ROOT_DIR, "knowledge.db")
-                conn = sqlite3.connect(db_path)
-                try:
-                    cursor = conn.cursor()
-                    init_schema(conn)
-                    cursor.execute(
-                        "INSERT INTO insights (content, problem, cause, solution, tags) VALUES (?, ?, ?, ?, ?)",
-                        (insight_content, prob, cause, sol, tags_str)
-                    )
-                    tok = tokenize_for_fts(insight_content)
-                    cursor.execute("INSERT INTO insights_fts (content, timestamp) VALUES (?, CURRENT_TIMESTAMP)", (tok,))
-                    conn.commit()
-                except Exception as db_err:
-                    logger.error(f"Failed to insert into FTS5: {db_err}")
-                finally:
-                    conn.close()
-                    
-                kb_path = os.path.join(ROOT_DIR, "Gabriel_Insight.md")
-                with open(kb_path, "a", encoding="utf-8") as f:
-                    f.write(f"\n\n---\n## Insight ({time.strftime('%Y-%m-%d %H:%M:%S')})\n{insight_content}")
+                save_insight(insight_content)
                 await wrapper.send_text(json.dumps({
                     "type": "sys_message",
                     "content": "✅ 已注入结构化知识库草稿！(Injected into KB)"

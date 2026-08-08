@@ -644,5 +644,59 @@ class TestGabrielControlCenter(unittest.TestCase):
                 self.assertEqual(res["content"], content)
         print("✅ P0 End-to-end vector semantic search test successful")
 
+    def test_p0_save_insight_and_mcp_tools(self):
+        """Test P0: save_insight convergence, add_gabriel_insight, report_agent_stuck, and get_session_summary"""
+        import tempfile
+        import sqlite3
+        from unittest.mock import patch
+        from main import save_insight, init_schema
+        from mcp_server import add_gabriel_insight, report_agent_stuck, get_session_summary
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with patch('main.ROOT_DIR', tmpdir), patch('mcp_server.DB_PATH', os.path.join(tmpdir, "knowledge.db")):
+                # 1. Test save_insight direct call
+                insight_id = save_insight("```json\n{\"problem\": \"DB connection lost\", \"cause\": \"Timeout\", \"solution\": \"Increase pool size\", \"tags\": [\"db\"]}\n```")
+                self.assertIsInstance(insight_id, int)
+                self.assertGreater(insight_id, 0)
+
+                # Verify read via /api/kb
+                kb_res = client.get("/api/kb", headers={"X-Gabriel-Token": API_KEY})
+                self.assertEqual(kb_res.status_code, 200)
+
+                # 2. Test add_gabriel_insight MCP tool
+                add_res = add_gabriel_insight("```json\n{\"problem\": \"Out of memory\", \"cause\": \"Leak\", \"solution\": \"Restart container\", \"tags\": [\"mem\"]}\n```")
+                self.assertIn("已入库 insight #", add_res)
+
+                # 3. Test report_agent_stuck MCP tool
+                stuck_res = report_agent_stuck("claude-code", "Infinite loop detected in shell tool")
+                self.assertIn("Reported stuck status for agent 'claude-code'", stuck_res)
+
+                # Verify database table stuck_reports
+                conn = sqlite3.connect(os.path.join(tmpdir, "knowledge.db"))
+                cursor = conn.cursor()
+                cursor.execute("SELECT agent, context FROM stuck_reports WHERE agent='claude-code'")
+                row = cursor.fetchone()
+                self.assertIsNotNone(row)
+                self.assertEqual(row[0], "claude-code")
+                self.assertEqual(row[1], "Infinite loop detected in shell tool")
+                conn.close()
+
+                # 4. Test get_session_summary MCP tool
+                conn = sqlite3.connect(os.path.join(tmpdir, "knowledge.db"))
+                init_schema(conn)
+                conn.execute(
+                    "INSERT INTO session_meta (agent_name, path, turns, chars, est_cost, input_tokens, output_tokens) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    ("antigravity", "/tmp/test.jsonl", 10, 5000, 0.015, 1200, 300)
+                )
+                conn.commit()
+                conn.close()
+
+                summary_res = get_session_summary()
+                self.assertIn("Agent: antigravity", summary_res)
+                self.assertIn("Est Cost: $0.015000", summary_res)
+                self.assertIn("Input Tokens: 1200", summary_res)
+                self.assertIn("Output Tokens: 300", summary_res)
+        print("✅ P0 save_insight and MCP tools test successful")
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)
