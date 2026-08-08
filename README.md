@@ -92,7 +92,7 @@ Gabriel/
 ├── static/
 │   ├── index.html         # dashboard UI (4 views + token login)
 │   ├── script.js          # frontend logic (WS client, sanitized rendering, i18n)
-│   ├── style.css          # cyber-dark theme (parser CSS classes)
+│   ├── style.css          # Light Indigo theme (design tokens, parser CSS classes)
 │   ├── splash.html        # boot splash
 │   └── vendor/            # local copies of DOMPurify / marked / highlight.js — no CDN
 ├── tests/

@@ -148,8 +148,8 @@ if (window.marked && window.hljs) {
         const validLang = hljs.getLanguage(language) ? language : 'plaintext';
         const highlighted = hljs.highlight(code, { language: validLang }).value;
         const encodedCode = encodeURIComponent(code);
-        return `<div class="code-block-wrapper" style="position: relative; margin-bottom: 1em;">
-            <button class="code-copy-btn" onclick="navigator.clipboard.writeText(decodeURIComponent('${encodedCode}')); this.innerText='Copied!'; setTimeout(() => this.innerText='Copy', 2000);" style="position: absolute; right: 8px; top: 8px; padding: 4px 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: #fff; font-size: 12px; cursor: pointer; z-index: 10;">Copy</button>
+        return `<div class="code-block-wrapper">
+            <button class="code-copy-btn" onclick="navigator.clipboard.writeText(decodeURIComponent('${encodedCode}')); this.innerText='Copied!'; setTimeout(() => this.innerText='Copy', 2000);">Copy</button>
             <pre><code class="hljs ${validLang}">${highlighted}</code></pre>
         </div>`;
     };
@@ -231,6 +231,14 @@ navItems.forEach(item => {
         if(item.dataset.tab === 'tab-kb') loadKb();
     });
 });
+
+// URL ?tab= 深链支持（截图验收/书签用）— 读顶部缓存的 urlParams（replaceState 已清 search）
+(function() {
+    const wanted = urlParams.get('tab');
+    if (wanted && document.querySelector('.nav-item[data-tab="tab-' + wanted + '"]')) {
+        document.querySelector('.nav-item[data-tab="tab-' + wanted + '"]').click();
+    }
+})();
 
 // --- Toggle Context Panel ---
 const contextPanel = document.getElementById('contextPanel');
@@ -400,10 +408,10 @@ async function fetchAgents() {
                 if(chatSelect) { chatSelect.innerHTML = optionsHTML; chatSelect.value = "auto"; }
                 if(radarSelect) { radarSelect.innerHTML = optionsHTML; radarSelect.value = "auto"; }
                 list.innerHTML = `
-                    <div class="agent-item" style="justify-content: center; opacity: 0.5; flex-direction: column; padding: 32px 16px;">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:12px; color:var(--text-secondary);"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4m0 4h.01"></path></svg>
-                        <div class="agent-name" style="color:var(--text-secondary);" data-i18n="radar_empty">No Active Agents Found</div>
-                        <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:8px; text-align:center;" data-i18n="radar_no_agents_hint">Start an agent in your terminal to see it here</div>
+                    <div class="agent-item radar-empty-card">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4m0 4h.01"></path></svg>
+                        <div class="agent-name" data-i18n="radar_empty">No Active Agents Found</div>
+                        <div class="radar-empty-hint" data-i18n="radar_no_agents_hint">Start an agent in your terminal to see it here</div>
                     </div>
                 `;
                 applyLang();
@@ -431,7 +439,7 @@ async function fetchAgents() {
                         <span class="agent-name">${a.name} ${isLocked ? '🔒' : ''}</span>
                         <span class="agent-time">⏱ ${dict[currentLang].agent_last_active || "Last Active:"} ${date} &nbsp;|&nbsp; 📊 ${dict[currentLang].agent_volume || "Volume:"} ${a.steps || 0} ${dict[currentLang].agent_steps || "steps"}</span>
                     </div>
-                    ${!isLocked ? `<button class="btn-outline" style="padding:4px 8px; font-size:0.75rem;" onclick="lockAgent('${a.path.replace(/\\/g, '\\\\')}')">${dict[currentLang].btn_lock || 'Lock'}</button>` : ''}
+                    ${!isLocked ? `<button class="btn-outline btn-outline-sm" onclick="lockAgent('${a.path.replace(/\\/g, '\\\\')}')">${dict[currentLang].btn_lock || 'Lock'}</button>` : ''}
                 `;
                 list.appendChild(div);
             });
@@ -670,15 +678,15 @@ async function connectWebSocket() {
                     displayCard = document.createElement('div');
                     displayCard.id = agentId;
                     displayCard.className = 'agent-terminal-card';
-                    displayCard.style.cssText = 'background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; display: flex; flex-direction: column; height: 400px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.3); transition: all 0.3s;';
+                    displayCard.style.cssText = 'height: 400px;';
                     displayCard.innerHTML = `
-                        <div class="agent-card-header" style="background: rgba(0,0,0,0.4); padding: 6px 12px; border-bottom: 1px solid var(--panel-border); font-size: 0.8rem; font-weight: bold; color: var(--accent); display:flex; flex-direction:column;">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span>🖥️ ${msg.agent}</span>
-                                <button onclick="exportAgentLog('${msg.agent}', '${agentId}')" style="background:none; border:1px solid rgba(255,255,255,0.1); color:#a1a1aa; border-radius:4px; padding:2px 6px; font-size:0.7rem; cursor:pointer;" onmouseover="this.style.color='#fff'; this.style.borderColor='#8b5cf6'" onmouseout="this.style.color='#a1a1aa'; this.style.borderColor='rgba(255,255,255,0.1)'">💾 Export MD</button>
+                        <div class="agent-card-header">
+                            <div class="card-title-row">
+                                <span class="agent-title-text">${msg.agent}</span>
+                                <button class="card-export-btn" onclick="exportAgentLog('${msg.agent}', '${agentId}')">Export MD</button>
                             </div>
                         </div>
-                        <pre style="margin:0; padding:12px; height:calc(100% - 30px); overflow-y:auto; white-space:pre-wrap; word-wrap:break-word;"><code class="agent-display-code"></code></pre>
+                        <pre class="agent-display-pane"><code class="agent-display-code"></code></pre>
                     `;
                     grid.appendChild(displayCard);
                 }
@@ -714,24 +722,20 @@ async function connectWebSocket() {
                     if (!gauge) {
                         gauge = document.createElement('div');
                         gauge.className = 'context-gauge';
-                        gauge.style.height = '3px';
-                        gauge.style.background = 'rgba(255,255,255,0.1)';
-                        gauge.style.marginTop = '6px';
-                        gauge.style.borderRadius = '2px';
-                        gauge.innerHTML = '<div class="context-gauge-bar" style="height:100%; width:0%; background:#10b981; transition:width 0.3s; border-radius:2px;"></div>';
+                        gauge.innerHTML = '<div class="context-gauge-bar"></div>';
                         header.appendChild(gauge);
                     }
                     let bar = gauge.querySelector('.context-gauge-bar');
                     bar.style.width = Math.min(100, msg.context_percent) + '%';
-                    
+
                     let warningMsg = header.querySelector('.context-warning');
                     if (msg.context_percent > 85) {
-                        bar.style.background = '#ef4444';
+                        bar.style.background = 'var(--error)';
                         if (!warningMsg) {
-                            header.insertAdjacentHTML('beforeend', '<div class="context-warning" style="color:#ef4444; font-size:0.75rem; margin-top:2px;">⚠️ 上下文剩余量低，建议重开或 /compact</div>');
+                            header.insertAdjacentHTML('beforeend', '<div class="context-warning">⚠️ 上下文剩余量低，建议重开或 /compact</div>');
                         }
                     } else {
-                        bar.style.background = msg.context_percent > 70 ? '#f59e0b' : '#10b981';
+                        bar.style.background = msg.context_percent > 70 ? 'var(--warn)' : 'var(--indigo)';
                         if (warningMsg) warningMsg.remove();
                     }
                 }
@@ -741,7 +745,6 @@ async function connectWebSocket() {
                 if (!headerStatus) {
                     headerStatus = document.createElement('span');
                     headerStatus.className = 'scroll-lock-status';
-                    headerStatus.style.cssText = 'color: var(--warning); font-size: 0.7rem; margin-left: auto; margin-right: 8px; display: none;';
                     headerStatus.innerText = '⏸ Scroll Locked';
                     displayCard.querySelector('div').insertBefore(headerStatus, displayCard.querySelector('button'));
                 }
@@ -749,10 +752,10 @@ async function connectWebSocket() {
                 if (isAtBottom) {
                     parent.scrollTop = parent.scrollHeight;
                     headerStatus.style.display = 'none';
-                    parent.style.borderBottom = 'none';
+                    parent.classList.remove('scroll-detached');
                 } else {
                     headerStatus.style.display = 'inline-block';
-                    parent.style.borderBottom = '2px solid var(--warning)';
+                    parent.classList.add('scroll-detached');
                 }
             } else if (msg.path === "all") {
                 // Handle initial loading sync
@@ -766,10 +769,8 @@ async function connectWebSocket() {
             const pulse = document.getElementById('telemetryPulse');
             if (pulse) {
                 pulse.style.background = 'var(--success)';
-                pulse.style.boxShadow = '0 0 10px var(--success)';
                 setTimeout(() => {
-                    pulse.style.background = 'transparent';
-                    pulse.style.boxShadow = 'none';
+                    pulse.style.background = '';
                 }, 150);
             }
             
@@ -781,7 +782,7 @@ async function connectWebSocket() {
                     let headerSpan = displayCard.querySelector('div span');
                     if (headerSpan) {
                         let filesStr = msg.touched_files.map(f => f.split(/[\\/]/).pop()).join(', ');
-                        headerSpan.innerHTML = `🖥️ ${msg.agent} <span style="color:#a1a1aa; font-size:0.7rem; margin-left:8px;">(Touches: ${filesStr})</span>`;
+                        headerSpan.innerHTML = `${msg.agent}<span class="card-title-sub">(Touches: ${filesStr})</span>`;
                     }
                 }
             }
@@ -796,8 +797,8 @@ async function connectWebSocket() {
                     el.className = 'agent-item';
                     el.innerHTML = `
                         <div class="status-indicator"></div>
-                        <span style="flex:1;">${msg.agent}</span>
-                        <span style="font-size:0.7rem; color:var(--success);">ACTIVE</span>
+                        <span class="agent-item-main">${msg.agent}</span>
+                        <span class="agent-active-badge">ACTIVE</span>
                     `;
                     radarList.appendChild(el);
                 }
@@ -820,11 +821,9 @@ async function connectWebSocket() {
             let card = document.getElementById(cardId);
             if (card && !card.classList.contains('waiting-state')) {
                 card.classList.add('waiting-state');
-                card.style.borderColor = '#f59e0b';
-                card.style.boxShadow = '0 0 10px rgba(245, 158, 11, 0.4)';
                 let header = card.querySelector('.agent-card-header');
                 if (header && !header.querySelector('.waiting-banner')) {
-                    header.insertAdjacentHTML('beforeend', '<div class="waiting-banner" style="color:#f59e0b; font-size:0.8em; font-weight:bold; animation:pulse 2s infinite; margin-left:8px;">⚠️ 需要你处理</div>');
+                    header.insertAdjacentHTML('beforeend', '<div class="waiting-banner">⚠️ 需要你处理</div>');
                 }
             }
         } else if (msg.type === "agent_unblocked") {
@@ -864,11 +863,10 @@ async function connectWebSocket() {
                     <div class="insight-card-header">
                         <span>⚡ Agent Instruction / Insight</span>
                         <div>
-                            <button class="btn-insight-copy" style="border-color:#10b981; color:#10b981; background:rgba(16, 185, 129, 0.1); margin-right:4px;" onclick="fetch('/api/kb/feedback', {method:'POST', headers:{'Content-Type': 'application/json', 'X-Gabriel-Token': '${localToken}'}, body: JSON.stringify({insight_id: ${insightId}, action: 'useful'})}); this.innerText='👍'; this.disabled=true;" title="Useful (用过)">👍</button>
-                            <button class="btn-insight-copy" style="border-color:#ef4444; color:#ef4444; background:rgba(239, 68, 68, 0.1); margin-right:4px;" onclick="fetch('/api/kb/feedback', {method:'POST', headers:{'Content-Type': 'application/json', 'X-Gabriel-Token': '${localToken}'}, body: JSON.stringify({insight_id: ${insightId}, action: 'useless'})}); this.innerText='👎'; this.disabled=true;" title="Useless (没用)">👎</button>
-                            <button class="btn-insight-copy" style="border-color:#f59e0b; color:#f59e0b; background:rgba(245, 158, 11, 0.1); margin-right:4px;" onclick="fetch('/api/kb/feedback', {method:'POST', headers:{'Content-Type': 'application/json', 'X-Gabriel-Token': '${localToken}'}, body: JSON.stringify({insight_id: ${insightId}, action: 'favorite'})}); this.innerText='⭐'; this.disabled=true;" title="Favorite (收藏)">⭐</button>
-                            
-                            <button class="btn-insight-copy" style="border-color:#8b5cf6; color:#8b5cf6; background:rgba(139, 92, 246, 0.1); margin-right:4px;" onclick="ws.send(JSON.stringify({type: 'inject_insight', content: decodeURIComponent('${encodedText}')})); this.classList.add('success-pulse'); this.innerText='Injected!'; setTimeout(() => { this.classList.remove('success-pulse'); this.innerText='⚡ Inject'; }, 2000);">⚡ Add to KB</button>
+                            <button class="btn-insight-copy vote-useful" onclick="fetch('/api/kb/feedback', {method:'POST', headers:{'Content-Type': 'application/json', 'X-Gabriel-Token': '${localToken}'}, body: JSON.stringify({insight_id: ${insightId}, action: 'useful'})}); this.innerText='👍'; this.disabled=true;" title="Useful (用过)">👍</button>
+                            <button class="btn-insight-copy vote-useless" onclick="fetch('/api/kb/feedback', {method:'POST', headers:{'Content-Type': 'application/json', 'X-Gabriel-Token': '${localToken}'}, body: JSON.stringify({insight_id: ${insightId}, action: 'useless'})}); this.innerText='👎'; this.disabled=true;" title="Useless (没用)">👎</button>
+                            <button class="btn-insight-copy vote-fav" onclick="fetch('/api/kb/feedback', {method:'POST', headers:{'Content-Type': 'application/json', 'X-Gabriel-Token': '${localToken}'}, body: JSON.stringify({insight_id: ${insightId}, action: 'favorite'})}); this.innerText='⭐'; this.disabled=true;" title="Favorite (收藏)">⭐</button>
+                            <button class="btn-insight-copy vote-inject" onclick="ws.send(JSON.stringify({type: 'inject_insight', content: decodeURIComponent('${encodedText}')})); this.classList.add('success-pulse'); this.innerText='Injected!'; setTimeout(() => { this.classList.remove('success-pulse'); this.innerText='⚡ Inject'; }, 2000);">⚡ Add to KB</button>
                             <button class="btn-insight-copy" onclick="navigator.clipboard.writeText(decodeURIComponent('${encodedText}')); this.classList.add('success-pulse'); this.innerText='Copied!'; setTimeout(() => { this.classList.remove('success-pulse'); this.innerText='Copy'; }, 2000);">Copy</button>
                         </div>
                     </div>
@@ -889,23 +887,20 @@ async function connectWebSocket() {
             }
         } else if (msg.type === "error_warning") {
             const warningDiv = document.createElement('div');
-            warningDiv.className = 'message sys-message';
-            warningDiv.style.border = '1px solid rgba(239, 68, 68, 0.4)';
-            warningDiv.style.background = 'rgba(239, 68, 68, 0.1)';
-            warningDiv.style.color = '#fca5a5';
-            
+            warningDiv.className = 'message sys-message warning-message';
+
             const errId = 'err_' + Math.random().toString(36).substr(2, 9);
             const promptContent = encodeURIComponent(`检测到连续异常，请诊断：\n\n\`\`\`\n${msg.content}\n\`\`\``);
-            
+
             warningDiv.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="err-head">
                     <strong>⚠️ 疑似卡点预警 (${msg.agent || 'Agent'})</strong>
                     <div>
-                        <button onclick="document.getElementById('${errId}').style.display = document.getElementById('${errId}').style.display === 'none' ? 'block' : 'none'" style="background:transparent; border:1px solid #fca5a5; color:#fca5a5; padding:2px 8px; border-radius:4px; cursor:pointer; margin-right:4px;">详情</button>
-                        <button onclick="ws.send(JSON.stringify({type: 'chat', content: decodeURIComponent('${promptContent}'), mode: getChatMode()}))" style="background:#ef4444; border:none; color:white; padding:2px 8px; border-radius:4px; cursor:pointer;">⚡ 一键诊断</button>
+                        <button onclick="document.getElementById('${errId}').style.display = document.getElementById('${errId}').style.display === 'none' ? 'block' : 'none'" class="err-toggle-btn">详情</button>
+                        <button onclick="ws.send(JSON.stringify({type: 'chat', content: decodeURIComponent('${promptContent}'), mode: getChatMode()}))" class="err-diagnose-btn">⚡ 一键诊断</button>
                     </div>
                 </div>
-                <div id="${errId}" style="display:none; margin-top:8px; font-family:monospace; font-size:0.8em; white-space:pre-wrap; max-height:200px; overflow-y:auto; background:rgba(0,0,0,0.2); padding:8px; border-radius:4px;"></div>
+                <div id="${errId}" class="err-detail"></div>
             `;
             const contentDiv = warningDiv.querySelector('#' + errId);
             if (window.DOMPurify) contentDiv.innerHTML = DOMPurify.sanitize(msg.content);
@@ -1223,7 +1218,7 @@ async function fetchKbRules() {
     if (!listEl) return;
     
     try {
-        listEl.innerHTML = '<div style="color:var(--text-secondary); font-size:0.9rem; text-align:center; margin-top:20px;">Fetching...</div>';
+        listEl.innerHTML = '<div class="list-empty">Fetching...</div>';
         
         if (currentKbSubTab === 'fav') {
             const res = await fetch('/api/kb?filter=favorite', {
@@ -1233,27 +1228,26 @@ async function fetchKbRules() {
             const favs = json.favorites || [];
             
             if (favs.length === 0) {
-                listEl.innerHTML = '<div style="color:var(--text-secondary); font-size:0.9rem; text-align:center; margin-top:20px;">百宝箱为空，点击 ⭐ 可收藏常用 Insight。</div>';
+                listEl.innerHTML = '<div class="list-empty">百宝箱为空，点击 ⭐ 可收藏常用 Insight。</div>';
                 return;
             }
-            
+
             listEl.innerHTML = '';
             favs.forEach(rule => {
                 const div = document.createElement('div');
                 div.className = 'kb-rule-card';
-                div.style.position = 'relative';
-                
+
                 const displayContent = rule.content.length > 150 ? rule.content.substring(0, 150) + '...' : rule.content;
                 const parsed = window.DOMPurify && window.marked ? DOMPurify.sanitize(marked.parse(displayContent)) : displayContent;
-                
+
                 div.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <div class="fav-item-head">
                         <span class="kb-rule-date">🕒 ${rule.timestamp}</span>
-                        <div style="display:flex; gap:4px;">
-                            <button class="btn-outline btn-unfav" style="font-size:0.75rem; padding:2px 6px; color:#ef4444; border-color:rgba(239,68,68,0.3);">取消收藏</button>
+                        <div class="btn-group">
+                            <button class="btn-outline btn-unfav btn-danger-sm">取消收藏</button>
                         </div>
                     </div>
-                    <div style="font-family:var(--font-ui);">${parsed}</div>
+                    <div class="fav-content">${parsed}</div>
                 `;
                 
                 const btnUnfav = div.querySelector('.btn-unfav');
@@ -1289,20 +1283,20 @@ async function fetchKbRules() {
         const rules = json.items || json.rules || json.data || [];
         
         if (rules.length === 0) {
-            listEl.innerHTML = '<div style="color:var(--text-secondary); font-size:0.9rem; text-align:center; margin-top:20px;">No insights found yet.</div>';
+            listEl.innerHTML = '<div class="list-empty">No insights found yet.</div>';
             return;
         }
-        
+
         listEl.innerHTML = '';
         rules.forEach(rule => {
             const date = rule.timestamp ? rule.timestamp : 'Just now';
             const div = document.createElement('div');
             div.className = 'kb-rule-card';
-            
+
             // Format content: truncate if too long
             const displayContent = rule.content.length > 150 ? rule.content.substring(0, 150) + '...' : rule.content;
             const parsed = window.DOMPurify && window.marked ? DOMPurify.sanitize(marked.parse(displayContent)) : displayContent;
-            
+
             let tagsHtml = '';
             if (rule.tags) {
                 let parsedTags = [];
@@ -1312,11 +1306,11 @@ async function fetchKbRules() {
                     if (typeof rule.tags === 'string') parsedTags = rule.tags.split(',');
                 }
                 if (Array.isArray(parsedTags) && parsedTags.length > 0) {
-                    tagsHtml = '<div style="margin-top:6px; display:flex; gap:4px; flex-wrap:wrap;">' +
+                    tagsHtml = '<div class="kb-tags-row">' +
                         parsedTags.map(t => {
                             const cleanT = String(t).trim().replace(/^#/, '');
                             const safeT = window.DOMPurify ? DOMPurify.sanitize(cleanT) : cleanT;
-                            return `<span class="kb-tag-chip" style="background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); font-size:0.75rem; padding:2px 6px; border-radius:4px;">#${safeT}</span>`;
+                            return `<span class="kb-tag-chip">#${safeT}</span>`;
                         }).join('') +
                         '</div>';
                 }
@@ -1324,7 +1318,7 @@ async function fetchKbRules() {
 
             div.innerHTML = `
                 <span class="kb-rule-date">🕒 ${date}</span>
-                <div style="font-family:var(--font-ui);">${parsed}</div>
+                <div class="fav-content">${parsed}</div>
                 ${tagsHtml}
             `;
             
@@ -1340,7 +1334,7 @@ async function fetchKbRules() {
             listEl.appendChild(div);
         });
     } catch (e) {
-        listEl.innerHTML = `<div style="color:var(--error); font-size:0.9rem; text-align:center; margin-top:20px;">Error loading KB: ${e.message}</div>`;
+        listEl.innerHTML = `<div class="list-error">Error loading KB: ${e.message}</div>`;
     }
 }
 
@@ -1374,43 +1368,42 @@ async function fetchSessionHistory() {
     const listEl = document.getElementById('sessionHistoryList');
     if (!listEl) return;
     try {
-        listEl.innerHTML = '<div style="color:var(--text-secondary); text-align:center; padding:20px;">加载中...</div>';
+        listEl.innerHTML = '<div class="list-empty-pad">加载中...</div>';
         const res = await fetch('/api/sessions', {
             headers: { 'X-Gabriel-Token': localToken }
         });
         const sessions = await res.json();
         if (!sessions || sessions.length === 0) {
-            listEl.innerHTML = '<div style="color:var(--text-secondary); text-align:center; padding:20px;">尚无历史会话记录。</div>';
+            listEl.innerHTML = '<div class="list-empty-pad">尚无历史会话记录。</div>';
             return;
         }
         listEl.innerHTML = '';
         sessions.forEach(sess => {
             const item = document.createElement('div');
-            item.className = 'agent-item';
+            item.className = 'agent-item session-item';
             item.style.cursor = 'pointer';
-            item.style.justifyContent = 'space-between';
-            const existsBadge = sess.exists ? '<span style="color:#10b981; font-size:0.75rem;">(存在)</span>' : '<span style="color:#ef4444; font-size:0.75rem;">(已删)</span>';
+            const existsBadge = sess.exists ? '<span class="exists-badge">(存在)</span>' : '<span class="gone-badge">(已删)</span>';
             const avgCost = (sess.turns && sess.turns > 0) ? (sess.est_cost / sess.turns).toFixed(4) : '--';
             item.innerHTML = `
                 <div class="agent-info">
                     <span class="agent-name">📜 ${sess.agent} ${existsBadge}</span>
-                    <span class="agent-path" style="font-size:0.75rem; color:var(--text-secondary);">${sess.path}</span>
+                    <span class="agent-path">${sess.path}</span>
                 </div>
-                <div style="text-align:right; font-size:0.8rem; color:var(--text-secondary);">
+                <div class="session-meta-row">
                     <div>🕒 ${sess.ts}</div>
-                    <div style="font-size:0.75rem; color:var(--accent);">Turns: ${sess.turns || '--'} | Cost: $${(sess.est_cost || 0).toFixed(4)} | Avg: $${avgCost}/turn</div>
-                    <div style="font-size:0.7rem; color:#94a3b8;">⚡ ${fmtTokens(sess.input_tokens || 0)} in / ${fmtTokens(sess.output_tokens || 0)} out${(sess.cache_read_tokens || 0) ? ' | cache ' + fmtTokens(sess.cache_read_tokens) + 'r / ' + fmtTokens(sess.cache_creation_tokens || 0) + 'w' : ''}</div>
+                    <div class="session-meta-accent">Turns: ${sess.turns || '--'} | Cost: $${(sess.est_cost || 0).toFixed(4)} | Avg: $${avgCost}/turn</div>
+                    <div class="session-meta-sub">⚡ ${fmtTokens(sess.input_tokens || 0)} in / ${fmtTokens(sess.output_tokens || 0)} out${(sess.cache_read_tokens || 0) ? ' | cache ' + fmtTokens(sess.cache_read_tokens) + 'r / ' + fmtTokens(sess.cache_creation_tokens || 0) + 'w' : ''}</div>
                 </div>
             `;
             if (sess.exists) {
                 item.addEventListener('click', () => openSessionReview(sess.id, sess.agent, sess.path));
             } else {
-                item.style.opacity = '0.5';
+                item.classList.add('session-dead');
             }
             listEl.appendChild(item);
         });
     } catch (e) {
-        listEl.innerHTML = `<div style="color:var(--error); text-align:center; padding:20px;">加载历史失败: ${e.message}</div>`;
+        listEl.innerHTML = `<div class="list-error-pad">加载历史失败: ${e.message}</div>`;
     }
 }
 
@@ -1425,9 +1418,9 @@ async function openSessionReview(id, agent, path) {
     if (!modal || !bodyEl) return;
     
     titleEl.innerText = `📜 回看会话: ${agent}`;
-    bodyEl.innerHTML = '<div style="color:var(--text-secondary); text-align:center;">加载日志文本中...</div>';
+    bodyEl.innerHTML = '<div class="list-empty-pad">加载日志文本中...</div>';
     modal.style.display = 'flex';
-    
+
     try {
         const res = await fetch(`/api/sessions/${id}/transcript`, {
             headers: { 'X-Gabriel-Token': localToken }
@@ -1437,10 +1430,10 @@ async function openSessionReview(id, agent, path) {
             const sanitized = window.DOMPurify ? DOMPurify.sanitize(data.html) : data.html;
             bodyEl.innerHTML = sanitized;
         } else {
-            bodyEl.innerHTML = `<div style="color:var(--error);">${data.message || '无法获取会话内容'}</div>`;
+            bodyEl.innerHTML = `<div class="list-error-pad">${data.message || '无法获取会话内容'}</div>`;
         }
     } catch(e) {
-        bodyEl.innerHTML = `<div style="color:var(--error);">请求报错: ${e.message}</div>`;
+        bodyEl.innerHTML = `<div class="list-error-pad">请求报错: ${e.message}</div>`;
     }
 }
 
@@ -1495,70 +1488,45 @@ async function fetchStuckReports() {
         }
 
         if (dataReports.status !== 'success' || !dataReports.reports || dataReports.reports.length === 0) {
-            listEl.innerHTML = '<div style="color:var(--text-secondary); text-align:center; padding:20px;">暂无卡点报告</div>';
+            listEl.innerHTML = '<div class="list-empty-pad">暂无卡点报告</div>';
             return;
         }
 
         listEl.innerHTML = '';
         dataReports.reports.forEach(rpt => {
             const item = document.createElement('div');
-            item.className = 'agent-item';
-            item.style.flexDirection = 'column';
-            item.style.alignItems = 'stretch';
-            item.style.gap = '8px';
-            item.style.padding = '12px';
+            item.className = 'agent-item stuck-item';
 
             const header = document.createElement('div');
-            header.style.display = 'flex';
-            header.style.justifyContent = 'space-between';
-            header.style.alignItems = 'center';
+            header.className = 'stuck-head';
 
             const title = document.createElement('div');
-            title.style.display = 'flex';
-            title.style.gap = '8px';
-            title.style.alignItems = 'center';
+            title.className = 'stuck-title';
 
             const badge = document.createElement('span');
-            badge.style.background = 'rgba(239, 68, 68, 0.2)';
-            badge.style.color = '#ef4444';
-            badge.style.padding = '2px 8px';
-            badge.style.borderRadius = '4px';
-            badge.style.fontSize = '0.75rem';
-            badge.style.fontWeight = 'bold';
+            badge.className = 'stuck-agent-badge';
             badge.innerText = rpt.agent;
 
             const timeSpan = document.createElement('span');
-            timeSpan.style.color = 'var(--text-secondary)';
-            timeSpan.style.fontSize = '0.8rem';
+            timeSpan.className = 'stuck-time';
             timeSpan.innerText = rpt.ts_human;
 
             title.appendChild(badge);
             title.appendChild(timeSpan);
 
             const searchBtn = document.createElement('button');
-            searchBtn.className = 'btn-outline';
-            searchBtn.style.fontSize = '0.75rem';
-            searchBtn.style.padding = '3px 8px';
+            searchBtn.className = 'btn-outline btn-outline-sm';
             searchBtn.innerText = '🔍 检索历史方案';
 
             header.appendChild(title);
             header.appendChild(searchBtn);
 
             const ctxBox = document.createElement('div');
-            ctxBox.style.background = 'rgba(0,0,0,0.3)';
-            ctxBox.style.padding = '8px 12px';
-            ctxBox.style.borderRadius = '4px';
-            ctxBox.style.fontFamily = 'var(--font-mono)';
-            ctxBox.style.fontSize = '0.82rem';
-            ctxBox.style.whiteSpace = 'pre-wrap';
-            ctxBox.style.color = '#e2e8f0';
+            ctxBox.className = 'stuck-context';
             ctxBox.innerText = rpt.context;
 
             const hitsContainer = document.createElement('div');
-            hitsContainer.style.display = 'none';
-            hitsContainer.style.flexDirection = 'column';
-            hitsContainer.style.gap = '6px';
-            hitsContainer.style.marginTop = '6px';
+            hitsContainer.className = 'stuck-hits';
 
             searchBtn.addEventListener('click', async () => {
                 searchBtn.innerText = '检索中...';
@@ -1578,25 +1546,14 @@ async function fetchStuckReports() {
                     if (data.hits && data.hits.length > 0) {
                         data.hits.forEach(hit => {
                             const hitCard = document.createElement('div');
-                            hitCard.style.background = 'rgba(16, 185, 129, 0.1)';
-                            hitCard.style.border = '1px solid rgba(16, 185, 129, 0.3)';
-                            hitCard.style.borderRadius = '6px';
-                            hitCard.style.padding = '8px 12px';
-                            hitCard.style.fontSize = '0.82rem';
-                            hitCard.style.display = 'flex';
-                            hitCard.style.justifyContent = 'space-between';
-                            hitCard.style.alignItems = 'center';
+                            hitCard.className = 'hit-card';
 
                             const textDiv = document.createElement('div');
-                            textDiv.style.flex = '1';
-                            textDiv.style.marginRight = '8px';
-                            textDiv.style.whiteSpace = 'pre-wrap';
+                            textDiv.className = 'hit-text';
                             textDiv.innerText = hit.content;
 
                             const copyBtn = document.createElement('button');
-                            copyBtn.className = 'btn-outline';
-                            copyBtn.style.fontSize = '0.75rem';
-                            copyBtn.style.padding = '2px 6px';
+                            copyBtn.className = 'btn-outline btn-outline-sm';
                             copyBtn.innerText = '📋 复制';
                             copyBtn.addEventListener('click', () => {
                                 navigator.clipboard.writeText(hit.content);
@@ -1609,12 +1566,12 @@ async function fetchStuckReports() {
                             hitsContainer.appendChild(hitCard);
                         });
                     } else {
-                        hitsContainer.innerHTML = '<div style="color:var(--text-secondary); font-size:0.8rem;">未匹配到相关历史 KB 方案</div>';
+                        hitsContainer.innerHTML = '<div class="hits-empty">未匹配到相关历史 KB 方案</div>';
                     }
                 } catch(e) {
                     searchBtn.innerText = '🔍 检索历史方案';
                     hitsContainer.style.display = 'flex';
-                    hitsContainer.innerHTML = `<div style="color:var(--error); font-size:0.8rem;">检索失败: ${e.message}</div>`;
+                    hitsContainer.innerHTML = `<div class="hits-error">检索失败: ${e.message}</div>`;
                 }
             });
 
@@ -1624,7 +1581,7 @@ async function fetchStuckReports() {
             listEl.appendChild(item);
         });
     } catch(e) {
-        listEl.innerHTML = `<div style="color:var(--error); text-align:center; padding:20px;">加载卡点失败: ${e.message}</div>`;
+        listEl.innerHTML = `<div class="list-error-pad">加载卡点失败: ${e.message}</div>`;
     }
 }
 
@@ -1846,7 +1803,7 @@ setInterval(fetchStats, 5000);
 // ==========================================
 // C5 Onboarding & Ergonomics
 // ==========================================
-if (!localStorage.getItem('gb_has_run')) {
+if (!localStorage.getItem('gb_has_run') && !urlParams.get('skip_onboard')) {
     const ob = document.getElementById('onboardingModal');
     if (ob) ob.style.display = 'flex';
 }
