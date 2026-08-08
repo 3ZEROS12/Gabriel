@@ -1446,20 +1446,186 @@ async function openSessionReview(id, agent, path) {
 
 const btnRadarSubLive = document.getElementById('btnRadarSubLive');
 const btnRadarSubHistory = document.getElementById('btnRadarSubHistory');
-if (btnRadarSubLive && btnRadarSubHistory) {
+const btnRadarSubStuck = document.getElementById('btnRadarSubStuck');
+if (btnRadarSubLive && btnRadarSubHistory && btnRadarSubStuck) {
     btnRadarSubLive.addEventListener('click', () => {
         btnRadarSubLive.classList.add('active');
         btnRadarSubHistory.classList.remove('active');
+        btnRadarSubStuck.classList.remove('active');
         document.getElementById('radarSubViewLive').classList.remove('hidden');
         document.getElementById('radarSubViewHistory').classList.add('hidden');
+        document.getElementById('radarSubViewStuck').classList.add('hidden');
     });
     btnRadarSubHistory.addEventListener('click', () => {
         btnRadarSubHistory.classList.add('active');
         btnRadarSubLive.classList.remove('active');
+        btnRadarSubStuck.classList.remove('active');
         document.getElementById('radarSubViewLive').classList.add('hidden');
         document.getElementById('radarSubViewHistory').classList.remove('hidden');
+        document.getElementById('radarSubViewStuck').classList.add('hidden');
         fetchSessionHistory();
     });
+    btnRadarSubStuck.addEventListener('click', () => {
+        btnRadarSubStuck.classList.add('active');
+        btnRadarSubLive.classList.remove('active');
+        btnRadarSubHistory.classList.remove('active');
+        document.getElementById('radarSubViewLive').classList.add('hidden');
+        document.getElementById('radarSubViewHistory').classList.add('hidden');
+        document.getElementById('radarSubViewStuck').classList.remove('hidden');
+        fetchStuckReports();
+    });
+}
+
+async function fetchStuckReports() {
+    const listEl = document.getElementById('stuckList');
+    if (!listEl) return;
+    try {
+        const [resReports, resStats] = await Promise.all([
+            fetch('/api/stuck?limit=50', { headers: { 'X-Gabriel-Token': localToken } }),
+            fetch('/api/stuck/stats', { headers: { 'X-Gabriel-Token': localToken } })
+        ]);
+        const dataReports = await resReports.json();
+        const dataStats = await resStats.json();
+
+        if (dataStats.status === 'success') {
+            document.getElementById('stuck24hCount').innerText = dataStats.total_24h || 0;
+            document.getElementById('stuck7dCount').innerText = dataStats.total_7d || 0;
+            const topAgent = Object.entries(dataStats.by_agent || {}).sort((a, b) => b[1] - a[1])[0];
+            document.getElementById('stuckTopAgent').innerText = topAgent ? `${topAgent[0]} (${topAgent[1]})` : '--';
+        }
+
+        if (dataReports.status !== 'success' || !dataReports.reports || dataReports.reports.length === 0) {
+            listEl.innerHTML = '<div style="color:var(--text-secondary); text-align:center; padding:20px;">暂无卡点报告</div>';
+            return;
+        }
+
+        listEl.innerHTML = '';
+        dataReports.reports.forEach(rpt => {
+            const item = document.createElement('div');
+            item.className = 'agent-item';
+            item.style.flexDirection = 'column';
+            item.style.alignItems = 'stretch';
+            item.style.gap = '8px';
+            item.style.padding = '12px';
+
+            const header = document.createElement('div');
+            header.style.display = 'flex';
+            header.style.justifyContent = 'space-between';
+            header.style.alignItems = 'center';
+
+            const title = document.createElement('div');
+            title.style.display = 'flex';
+            title.style.gap = '8px';
+            title.style.alignItems = 'center';
+
+            const badge = document.createElement('span');
+            badge.style.background = 'rgba(239, 68, 68, 0.2)';
+            badge.style.color = '#ef4444';
+            badge.style.padding = '2px 8px';
+            badge.style.borderRadius = '4px';
+            badge.style.fontSize = '0.75rem';
+            badge.style.fontWeight = 'bold';
+            badge.innerText = rpt.agent;
+
+            const timeSpan = document.createElement('span');
+            timeSpan.style.color = 'var(--text-secondary)';
+            timeSpan.style.fontSize = '0.8rem';
+            timeSpan.innerText = rpt.ts_human;
+
+            title.appendChild(badge);
+            title.appendChild(timeSpan);
+
+            const searchBtn = document.createElement('button');
+            searchBtn.className = 'btn-outline';
+            searchBtn.style.fontSize = '0.75rem';
+            searchBtn.style.padding = '3px 8px';
+            searchBtn.innerText = '🔍 检索历史方案';
+
+            header.appendChild(title);
+            header.appendChild(searchBtn);
+
+            const ctxBox = document.createElement('div');
+            ctxBox.style.background = 'rgba(0,0,0,0.3)';
+            ctxBox.style.padding = '8px 12px';
+            ctxBox.style.borderRadius = '4px';
+            ctxBox.style.fontFamily = 'var(--font-mono)';
+            ctxBox.style.fontSize = '0.82rem';
+            ctxBox.style.whiteSpace = 'pre-wrap';
+            ctxBox.style.color = '#e2e8f0';
+            ctxBox.innerText = rpt.context;
+
+            const hitsContainer = document.createElement('div');
+            hitsContainer.style.display = 'none';
+            hitsContainer.style.flexDirection = 'column';
+            hitsContainer.style.gap = '6px';
+            hitsContainer.style.marginTop = '6px';
+
+            searchBtn.addEventListener('click', async () => {
+                searchBtn.innerText = '检索中...';
+                try {
+                    const res = await fetch('/api/kb/search', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Gabriel-Token': localToken
+                        },
+                        body: JSON.stringify({ text: rpt.context })
+                    });
+                    const data = await res.json();
+                    searchBtn.innerText = '🔍 检索历史方案';
+                    hitsContainer.style.display = 'flex';
+                    hitsContainer.innerHTML = '';
+                    if (data.hits && data.hits.length > 0) {
+                        data.hits.forEach(hit => {
+                            const hitCard = document.createElement('div');
+                            hitCard.style.background = 'rgba(16, 185, 129, 0.1)';
+                            hitCard.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+                            hitCard.style.borderRadius = '6px';
+                            hitCard.style.padding = '8px 12px';
+                            hitCard.style.fontSize = '0.82rem';
+                            hitCard.style.display = 'flex';
+                            hitCard.style.justifyContent = 'space-between';
+                            hitCard.style.alignItems = 'center';
+
+                            const textDiv = document.createElement('div');
+                            textDiv.style.flex = '1';
+                            textDiv.style.marginRight = '8px';
+                            textDiv.style.whiteSpace = 'pre-wrap';
+                            textDiv.innerText = hit.content;
+
+                            const copyBtn = document.createElement('button');
+                            copyBtn.className = 'btn-outline';
+                            copyBtn.style.fontSize = '0.75rem';
+                            copyBtn.style.padding = '2px 6px';
+                            copyBtn.innerText = '📋 复制';
+                            copyBtn.addEventListener('click', () => {
+                                navigator.clipboard.writeText(hit.content);
+                                copyBtn.innerText = '✅ 已复制';
+                                setTimeout(() => copyBtn.innerText = '📋 复制', 2000);
+                            });
+
+                            hitCard.appendChild(textDiv);
+                            hitCard.appendChild(copyBtn);
+                            hitsContainer.appendChild(hitCard);
+                        });
+                    } else {
+                        hitsContainer.innerHTML = '<div style="color:var(--text-secondary); font-size:0.8rem;">未匹配到相关历史 KB 方案</div>';
+                    }
+                } catch(e) {
+                    searchBtn.innerText = '🔍 检索历史方案';
+                    hitsContainer.style.display = 'flex';
+                    hitsContainer.innerHTML = `<div style="color:var(--error); font-size:0.8rem;">检索失败: ${e.message}</div>`;
+                }
+            });
+
+            item.appendChild(header);
+            item.appendChild(ctxBox);
+            item.appendChild(hitsContainer);
+            listEl.appendChild(item);
+        });
+    } catch(e) {
+        listEl.innerHTML = `<div style="color:var(--error); text-align:center; padding:20px;">加载卡点失败: ${e.message}</div>`;
+    }
 }
 
 const btnCloseSessionReview = document.getElementById('btnCloseSessionReview');

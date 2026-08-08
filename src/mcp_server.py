@@ -16,7 +16,7 @@ import sqlite3
 import time
 
 from mcp.server import MCPServer
-from src.main import save_insight, init_schema, ROOT_DIR
+from src.main import save_insight, init_schema, check_active_kb, ROOT_DIR
 
 DB_PATH = os.path.join(ROOT_DIR, "knowledge.db")
 
@@ -90,7 +90,7 @@ def add_gabriel_insight(content: str) -> str:
     name="report_agent_stuck",
     description=(
         "Report when an agent is stuck, in a loop, or encountering a blocking issue. "
-        "Persists the report context into Gabriel's database."
+        "Persists the report context into Gabriel's database and checks for matching historical solutions."
     ),
 )
 def report_agent_stuck(agent: str, context: str) -> str:
@@ -105,6 +105,10 @@ def report_agent_stuck(agent: str, context: str) -> str:
         )
         conn.commit()
         conn.close()
+
+        kb_hit = check_active_kb(context or "")
+        if kb_hit and kb_hit.get("content"):
+            return f"Reported stuck status for agent '{agent}'.\n📌 历史方案: {kb_hit['content']}"
         return f"Reported stuck status for agent '{agent}'."
     except Exception as e:
         return f"Error reporting stuck status: {e}"

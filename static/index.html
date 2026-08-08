@@ -192,6 +192,7 @@
                             <div style="display:flex; gap:6px;">
                                 <button id="btnRadarSubLive" class="btn-outline active" style="font-size:0.8rem; padding:4px 8px;">📊 实时监控</button>
                                 <button id="btnRadarSubHistory" class="btn-outline" style="font-size:0.8rem; padding:4px 8px;">📜 历史会话</button>
+                                <button id="btnRadarSubStuck" class="btn-outline" style="font-size:0.8rem; padding:4px 8px;">🛟 卡点雷达</button>
                             </div>
                         </div>
                         <div class="status-indicator" style="display:flex; align-items:center; gap:8px;">
@@ -261,6 +262,27 @@
                         <div id="radarSubViewHistory" class="hidden">
                             <div id="sessionHistoryList" style="display:flex; flex-direction:column; gap:8px; max-height:500px; overflow-y:auto;">
                                 <div style="color:var(--text-secondary); text-align:center; padding:20px;">加载历史会话中...</div>
+                            </div>
+                        </div>
+
+                        <!-- STUCK RADAR SUB-VIEW -->
+                        <div id="radarSubViewStuck" class="hidden">
+                            <div id="stuckStatsBanner" style="background: rgba(0,0,0,0.2); border-radius: 8px; padding: 12px; margin-bottom: 20px; display:flex; gap:16px;">
+                                <div style="flex:1;">
+                                    <div style="font-size:0.75rem; color:var(--text-secondary);">24h 卡点数</div>
+                                    <div id="stuck24hCount" style="font-size:1.5rem; font-weight:bold; color:#ef4444;">--</div>
+                                </div>
+                                <div style="flex:1;">
+                                    <div style="font-size:0.75rem; color:var(--text-secondary);">7d 卡点数</div>
+                                    <div id="stuck7dCount" style="font-size:1.5rem; font-weight:bold; color:#f59e0b;">--</div>
+                                </div>
+                                <div style="flex:1;">
+                                    <div style="font-size:0.75rem; color:var(--text-secondary);">最高频 Agent</div>
+                                    <div id="stuckTopAgent" style="font-size:1.1rem; font-weight:bold; color:var(--accent);">--</div>
+                                </div>
+                            </div>
+                            <div id="stuckList" style="display:flex; flex-direction:column; gap:8px; max-height:500px; overflow-y:auto;">
+                                <div style="color:var(--text-secondary); text-align:center; padding:20px;">加载卡点报告中...</div>
                             </div>
                         </div>
                     </div>

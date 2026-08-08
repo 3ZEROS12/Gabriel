@@ -268,7 +268,8 @@ DEFAULT_CONFIG = {
     "error_alert_cooldown": 60,
     "loop_detection_window": 8,
     "loop_detection_repeat": 5,
-    "loop_detection_cooldown": 60
+    "loop_detection_cooldown": 60,
+    "stuck_retention_max": 200
 }
 
 import copy
@@ -430,6 +431,7 @@ class ConfigModel(BaseModel):
     loop_detection_window: int = 8
     loop_detection_repeat: int = 5
     loop_detection_cooldown: int = 60
+    stuck_retention_max: int = 200
 
 # --- Security ---
 # Read from env if present (for persistent setups), otherwise generate randomly for session
@@ -724,6 +726,89 @@ def submit_kb_feedback(data: KBFeedbackModel, db: sqlite3.Connection = Depends(g
         return {"status": "ok"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+class KBSearchModel(BaseModel):
+    text: str
+
+def cleanup_stuck_reports(db: sqlite3.Connection):
+    max_retention = config.get("stuck_retention_max", 200)
+    try:
+        cursor = db.cursor()
+        cursor.execute(
+            "DELETE FROM stuck_reports WHERE id NOT IN (SELECT id FROM stuck_reports ORDER BY id DESC LIMIT ?)",
+            (max_retention,)
+        )
+        db.commit()
+    except Exception as e:
+        logger.warning(f"Failed to cleanup stuck_reports: {e}")
+
+@api_router.get("/stuck")
+def get_stuck_reports(limit: int = 50, db: sqlite3.Connection = Depends(get_db)):
+    cleanup_stuck_reports(db)
+    try:
+        cursor = db.cursor()
+        cursor.execute(
+            "SELECT id, agent, context, ts FROM stuck_reports ORDER BY id DESC LIMIT ?",
+            (limit,)
+        )
+        rows = cursor.fetchall()
+        now = time.time()
+        reports = []
+        for r in rows:
+            ts_val = float(r["ts"]) if r["ts"] else now
+            ts_human = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(ts_val))
+            age_sec = int(now - ts_val)
+            reports.append({
+                "id": r["id"],
+                "agent": r["agent"],
+                "context": r["context"],
+                "ts_human": ts_human,
+                "age_sec": age_sec
+            })
+        return JSONResponse({"status": "success", "reports": reports})
+    except Exception as e:
+        logger.error(f"Get Stuck Reports Error: {e}")
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+@api_router.get("/stuck/stats")
+def get_stuck_stats(db: sqlite3.Connection = Depends(get_db)):
+    try:
+        cursor = db.cursor()
+        now = time.time()
+        ts_24h = now - 86400
+        ts_7d = now - 604800
+
+        cursor.execute("SELECT COUNT(*) as cnt FROM stuck_reports WHERE ts > ?", (ts_24h,))
+        row_24h = cursor.fetchone()
+        count_24h = row_24h["cnt"] if row_24h and "cnt" in row_24h.keys() else (row_24h[0] if row_24h else 0)
+
+        cursor.execute("SELECT COUNT(*) as cnt FROM stuck_reports WHERE ts > ?", (ts_7d,))
+        row_7d = cursor.fetchone()
+        count_7d = row_7d["cnt"] if row_7d and "cnt" in row_7d.keys() else (row_7d[0] if row_7d else 0)
+
+        cursor.execute("SELECT agent, COUNT(*) as cnt FROM stuck_reports GROUP BY agent ORDER BY cnt DESC")
+        rows_agent = cursor.fetchall()
+        by_agent = {r["agent"]: r["cnt"] for r in rows_agent}
+
+        return JSONResponse({
+            "status": "success",
+            "by_agent": by_agent,
+            "total_24h": count_24h,
+            "total_7d": count_7d
+        })
+    except Exception as e:
+        logger.error(f"Get Stuck Stats Error: {e}")
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+@api_router.post("/kb/search")
+def search_kb_endpoint(data: KBSearchModel, db: sqlite3.Connection = Depends(get_db)):
+    try:
+        hit = check_active_kb(data.text)
+        hits = [{"id": hit["id"], "content": hit["content"]}] if hit else []
+        return JSONResponse({"status": "success", "hits": hits})
+    except Exception as e:
+        logger.error(f"Search KB Error: {e}")
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
 
 @api_router.get("/stats")
 def get_stats(db: sqlite3.Connection = Depends(get_db)):

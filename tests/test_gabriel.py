@@ -777,5 +777,67 @@ class TestGabrielControlCenter(unittest.TestCase):
                 self.assertIn("main.py", data["touched_files"])
         print("✅ P1-2 session review raw transcript endpoint test successful")
 
+    def test_p0_v8_stuck_radar_endpoints_and_search(self):
+        """Test P0 V8: /api/stuck, /api/stuck/stats, retention cleanup, auth, and /api/kb/search"""
+        import tempfile
+        import sqlite3
+        import time
+        from unittest.mock import patch
+        from main import init_schema, save_insight
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            test_db = os.path.join(tmpdir, "knowledge.db")
+            conn = sqlite3.connect(test_db)
+            init_schema(conn)
+            cursor = conn.cursor()
+
+            # Insert test stuck_reports with different timestamps
+            now = time.time()
+            cursor.execute("INSERT INTO stuck_reports (agent, context, ts) VALUES (?, ?, ?)", ("agent-a", "Build timeout in npm", now - 3600))
+            cursor.execute("INSERT INTO stuck_reports (agent, context, ts) VALUES (?, ?, ?)", ("agent-a", "Docker memory limit", now - 90000))
+            cursor.execute("INSERT INTO stuck_reports (agent, context, ts) VALUES (?, ?, ?)", ("agent-b", "Database connection reset", now - 200))
+            conn.commit()
+            conn.close()
+
+            with patch('main.ROOT_DIR', tmpdir):
+                # 1. Auth test (no token -> 401)
+                unauth_res = client.get("/api/stuck")
+                self.assertEqual(unauth_res.status_code, 401)
+
+                # 2. GET /api/stuck listing
+                res_list = client.get("/api/stuck?limit=10", headers={"X-Gabriel-Token": API_KEY})
+                self.assertEqual(res_list.status_code, 200)
+                data_list = res_list.json()
+                self.assertEqual(data_list["status"], "success")
+                self.assertEqual(len(data_list["reports"]), 3)
+                self.assertEqual(data_list["reports"][0]["agent"], "agent-b")
+
+                # 3. GET /api/stuck/stats
+                res_stats = client.get("/api/stuck/stats", headers={"X-Gabriel-Token": API_KEY})
+                self.assertEqual(res_stats.status_code, 200)
+                data_stats = res_stats.json()
+                self.assertEqual(data_stats["status"], "success")
+                self.assertEqual(data_stats["total_24h"], 2)
+                self.assertEqual(data_stats["total_7d"], 3)
+                self.assertEqual(data_stats["by_agent"]["agent-a"], 2)
+                self.assertEqual(data_stats["by_agent"]["agent-b"], 1)
+
+                # 4. Retention limit test
+                with patch('main.config', {"stuck_retention_max": 2}):
+                    res_ret = client.get("/api/stuck", headers={"X-Gabriel-Token": API_KEY})
+                    self.assertEqual(res_ret.status_code, 200)
+                    data_ret = res_ret.json()
+                    self.assertEqual(len(data_ret["reports"]), 2)
+
+                # 5. POST /api/kb/search
+                save_insight("```json\n{\"problem\": \"npm build timeout\", \"cause\": \"Network\", \"solution\": \"Set npm mirror\", \"tags\": [\"npm\"]}\n```")
+                res_search = client.post("/api/kb/search", json={"text": "npm build timeout"}, headers={"X-Gabriel-Token": API_KEY})
+                self.assertEqual(res_search.status_code, 200)
+                data_search = res_search.json()
+                self.assertEqual(data_search["status"], "success")
+                self.assertGreater(len(data_search["hits"]), 0)
+
+        print("✅ P0 V8 Stuck Radar endpoints & KB search test successful")
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)
