@@ -32,15 +32,18 @@ venv\Scripts\activate
 # macOS / Linux
 source venv/bin/activate
 
-pip install -e .
+pip install -r requirements.txt        # 全部运行时依赖（必须）
+pip install -e .                       # 可选：提供 `gabriel` 命令
 ```
 
 Configure environment:
 
 ```bash
 cp .env.example .env
-# Optional: set GABRIEL_TOKEN (otherwise a random session token is generated)
-# Optional: set OPENAI_API_KEY (preferred over the Settings UI — never written to disk config)
+# GABRIEL_TOKEN: 留空即可——每次启动自动生成随机 token 并打印在终端；
+#               需要固定 token 时用 `python -c "import secrets; print(secrets.token_hex(16))"` 生成填入。
+#               ⚠️ 切勿把 .env.example 的占位符原样留下（那会成为公开的真实 token）。
+# OPENAI_API_KEY: 可选，OpenAI 兼容接口密钥（优先于 Settings UI，永不写入磁盘配置）
 ```
 
 Run the server:
@@ -74,8 +77,10 @@ All `/api/*` endpoints require the token via the `X-Gabriel-Token` header; the W
 | `GET /api/agents` | Active agent sessions (path, mtime, steps) |
 | `GET /api/knowledge` · `GET/POST /api/kb` | Knowledge base listing / CRUD |
 | `POST /api/kb/feedback` | Weighted re-ranking of KB entries |
+| `POST /api/kb/search` | Read-only KB search (used by the stuck-radar "find past fixes") |
+| `GET /api/stuck` · `GET /api/stuck/stats` | Stuck-reports list / 24h-7d aggregation (retention-capped) |
 | `GET /api/stats` | Per-session turns / chars / est. cost |
-| `GET /api/sessions` · `GET /api/sessions/{id}/transcript` | Session history |
+| `GET /api/sessions` · `GET /api/sessions/{id}/transcript` | Session history (`?raw=1` returns last 200 lines + tokens + touched files for the review report) |
 | `POST /api/feedback` | User feedback (secrets redacted, stored locally) |
 | `WS /ws` | Log stream, chat, KB merge, insight injection |
 
@@ -96,7 +101,7 @@ Gabriel/
 │   ├── splash.html        # boot splash
 │   └── vendor/            # local copies of DOMPurify / marked / highlight.js — no CDN
 ├── tests/
-│   └── test_gabriel.py    # 15 unit tests (auth, parsers, KB, WS, sessions, stats)
+│   └── test_gabriel.py    # 31 unit tests (auth, parsers, KB, WS, sessions, stats, stuck, search)
 ├── docs/                  # architecture, API reference, optimization plans
 ├── scripts/               # Windows autostart, snapshot generator
 ├── requirements.txt
@@ -117,7 +122,23 @@ venv\Scripts\python.exe -m ruff check src tests
 node --check static/script.js
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines and [docs/](docs/) for the architecture & API reference.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
+
+**Documentation map (`docs/`):** [ARCHITECTURE.md](docs/ARCHITECTURE.md) (system design) · [API_REFERENCE.md](docs/API_REFERENCE.md) (endpoints) · [AUTOSTART.md](docs/AUTOSTART.md) (Windows auto-launch) · [RELEASE.md](docs/RELEASE.md) (PyPI / PyInstaller packaging) · [SCREENSHOTS.md](docs/SCREENSHOTS.md) (demo capture guide). Files named `OPTIMIZATION_PLAN_*` / `*_REPORT` / `*_Snapshot` are historical execution archives — you usually don't need them.
+
+> **AI-assist users:** Claude Code / Gemini CLI users can point their assistant at [`CLAUDE.md`](CLAUDE.md) (project map & conventions) and [`DESIGN.md`](DESIGN.md) (visual spec) before editing anything.
+
+## 🩹 Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| `ModuleNotFoundError` at startup | You ran `pip install -e .` without `requirements.txt` first — run `pip install -r requirements.txt` |
+| Browser shows login dialog but you lost the token | Token is printed in the server terminal at startup (`🔐 Security Token Generated`); or set `GABRIEL_TOKEN` in `.env` and restart |
+| "Error fetching agents." in UI | Usually a stale token in the browser — clear localStorage (`F12 → Application → Local Storage`) or click **Forget Token** in Settings, then re-login |
+| Port 8080 already in use | `python -m src.main --port 8090`, or kill the stale process (`netstat -ano \| findstr 8080` on Windows) |
+| Knowledge Base vector search slow on first use | `fastembed` downloads the embedding model on first run (one-time, ~100 MB); FTS5 search works meanwhile |
+| UI looks unstyled/mixed after an update | Hard refresh (`Ctrl+F5`) — static assets are cache-busted with `?v=` |
+| `sqlite-vec` fails to load | Falls back to pure FTS5 automatically (KB search still works, vector ranking disabled) |
 
 ## 🔒 Security Notes
 
