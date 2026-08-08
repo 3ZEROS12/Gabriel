@@ -5,6 +5,25 @@
 
 ---
 
+## ⚠️ 最新落地（2026-08-08 v8 设计重塑：Cyber-Dark → Light Indigo）
+
+> 外观重塑已完成（`DESIGN.md` 为视觉唯一规范，`docs/DESIGN_OVERHAUL_PLAN.md` 为执行计划）：
+- **浅色单主题**（Stripe 精致感 · 纯净克制）：白画布 `#ffffff` + 深藏青文字 `#0d253d` + 靛紫 `#533afd` 单一 CTA；删除极光动画、玻璃拟态、金色辉光、pulse 动效
+- **字体本地化**：Inter 300/400/500 + JetBrains Mono 400/600 woff2 vendor 进 `static/vendor/fonts/`（零 CDN 不变）
+- **全量收编**：`index.html` 内联 style 70→9、`script.js` 51→0；emoji 功能图标换细线 SVG（stroke 1.5px）；裸 hex 只在 `:root` 与 `.log-*` 映射区
+- **验收**：31 passed / ruff clean / node OK；5 视图截图 white 93-99% / dark 0%；截图存档 `docs/screenshots_v4/`
+- 顺带修复：`.js-modal` 被 `.modern-modal-overlay{display:flex}` 覆盖导致弹窗常显的 bug；新增 `?tab=` 深链与 `?skip_onboard=` 截图参数
+
+## ⚠️ 最新落地（2026-08-08 v4.0.0 双击即用：PyInstaller onedir 发行包）
+
+> 目标：免环境 Windows 发行（解压双击即用，数据不丢）。构建 `venv\Scripts\python.exe -m PyInstaller Gabriel.spec --noconfirm --clean`（spec 为 gitignore 的本地构建工具，见 `.gitignore` `*.spec`）：
+- **数据/代码分离**：frozen 下 `DATA_DIR` = exe 所在目录（`knowledge.db`/`config.json`/`logs/`），`CODE_DIR` = `_MEIPASS`（static 只读打包区）——源码模式行为不变（`src/main.py` Paths 区）
+- **启动链路**：端口自动避让（8080 被占 → 递增，最多 20 次）、单实例锁（`.gabriel.lock` 记录端口，重复双击打开已有实例并退出；源码模式不启用）、就绪探测后自动开浏览器（`?token=` 直达）、`--no-browser`/`--port` 可覆盖；控制台可见 token 与日志，关窗即停
+- **依赖策略**：`onedir` + `--noupx`（启动快）；`collect_data_files('jieba', excludes=['lac_small'])` 裁掉 LAC 词法模型（只用 TF-IDF 提取）；`collect_dynamic_libs('sqlite_vec')` 收 native DLL；Anaconda MSVC 运行库显式收集；排除 `fastembed`/`onnxruntime`（FTS5 降级路径已支持）+ `PIL`/`pygments`（仅 rich 可选导入，exe 用不到）+ 测试/桌面壳
+- **不可裁项（实测）**：`numpy` 由 `sqlite_vec` 顶层导入（排除即启动崩）；`jieba.posseg` 数据被 `jieba.analyse`→textrank 链在导入期加载
+- **验收**：34 passed / ruff clean；frozen 冒烟——knowledge.db 落 exe 旁、static 200、token 鉴权、KB 写读搜全通、重复实例秒退；产物 `dist/Gabriel/`（~135MB）→ `Gabriel-v4.0.0-win64.zip`
+- 注：早期 ~50MB 估算是乐观值，实测地板 ~135MB（python313 + numpy/openblas 27MB 不可裁）
+
 ## ⚠️ 最新核对状态（2026-08-08，核对于 v6 优化方案完成）
 
 > 本文档第 1 节"尚未完成"清单已大幅过时，以下项已逐行核验为**已落地**，请勿重复排期：
