@@ -10,10 +10,10 @@ jobs:
   test:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Set up Python 3.11
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: "3.11"
         
@@ -32,10 +32,10 @@ jobs:
     needs: test
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: "3.11"
         
@@ -48,7 +48,7 @@ jobs:
         pyinstaller --noconfirm --onedir --windowed --add-data "static;static" --add-data "src;src" src/main.py --name "Gabriel_Agent_OS"
         
     - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Gabriel-Windows-Build
         path: dist/Gabriel_Agent_OS/
