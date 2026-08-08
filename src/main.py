@@ -26,7 +26,7 @@ import secrets
 import openai
 from openai import AsyncOpenAI
 import re
-from collections import Counter
+from collections import Counter, deque
 import jieba
 import jieba.analyse
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
@@ -265,7 +265,10 @@ DEFAULT_CONFIG = {
     "price_input_per_m": 1.0,
     "price_output_per_m": 3.0,
     "error_alert_threshold": 5,
-    "error_alert_cooldown": 60
+    "error_alert_cooldown": 60,
+    "loop_detection_window": 8,
+    "loop_detection_repeat": 5,
+    "loop_detection_cooldown": 60
 }
 
 import copy
@@ -424,6 +427,9 @@ class ConfigModel(BaseModel):
     price_output_per_m: float = 3.0
     error_alert_threshold: int = 5
     error_alert_cooldown: int = 60
+    loop_detection_window: int = 8
+    loop_detection_repeat: int = 5
+    loop_detection_cooldown: int = 60
 
 # --- Security ---
 # Read from env if present (for persistent setups), otherwise generate randomly for session
@@ -1171,6 +1177,80 @@ def _is_tool_response(line: str) -> bool:
     (Antigravity `"type": "TOOL_RESPONSE"` or plain-text `TOOL_RESPONSE` prefix)."""
     return '"TOOL_RESPONSE"' in line or line.startswith("TOOL_RESPONSE")
 
+def _tool_signature(line: str) -> str | None:
+    """从 transcript 行提取规范化工具签名：TOOL_CALL/tool_calls/run_command
+    取工具名或命令首 token；非工具行返回 None。"""
+    if not line or not isinstance(line, str):
+        return None
+
+    line_str = line.strip()
+    if not line_str:
+        return None
+
+    if line_str.startswith("{") and line_str.endswith("}"):
+        try:
+            data = json.loads(line_str)
+            if isinstance(data, dict):
+                tool_calls = data.get("tool_calls")
+                if isinstance(tool_calls, list) and tool_calls:
+                    tc = tool_calls[0]
+                    if isinstance(tc, dict):
+                        name = tc.get("name") or tc.get("function", {}).get("name") or "unknown"
+                        args = tc.get("args") or tc.get("function", {}).get("arguments") or {}
+                        if isinstance(args, str):
+                            try:
+                                args = json.loads(args)
+                            except Exception:
+                                args = {}
+                        if name in ("run_command", "Bash", "execute_command") and isinstance(args, dict):
+                            cmd = args.get("CommandLine") or args.get("command") or ""
+                            if cmd:
+                                first_token = cmd.strip().split()[0]
+                                return f"{name}:{first_token}"
+                        return name
+
+                if data.get("type") in ("tool_use", "tool_call"):
+                    name = data.get("name") or "unknown"
+                    inp = data.get("input") or {}
+                    if isinstance(inp, dict) and name in ("Bash", "run_command", "execute_command"):
+                        cmd = inp.get("command") or inp.get("CommandLine") or ""
+                        if cmd:
+                            first_token = cmd.strip().split()[0]
+                            return f"{name}:{first_token}"
+                    return name
+        except Exception:
+            pass
+
+    m_name = re.search(r'"name":\s*"([^"]+)"', line_str)
+    if m_name:
+        name = m_name.group(1)
+        if name in ("run_command", "Bash", "execute_command"):
+            m_cmd = re.search(r'"(?:CommandLine|command)":\s*"([^"]+)"', line_str)
+            if m_cmd:
+                first_token = m_cmd.group(1).strip().split()[0]
+                return f"{name}:{first_token}"
+        return name
+
+    m_tool = re.search(r'(?:TOOL_CALL|tool_call):\s*([a-zA-Z0-9_\-]+)', line_str, re.IGNORECASE)
+    if m_tool:
+        return m_tool.group(1)
+
+    return None
+
+
+def detect_loop(signatures: list, window: int = 8, repeat: int = 5) -> str | None:
+    """滑动窗口内同一签名出现 >= repeat 次 → 返回该签名；否则 None。"""
+    if not signatures:
+        return None
+    recent = [s for s in signatures if s is not None][-window:]
+    if len(recent) < repeat:
+        return None
+    counts = Counter(recent)
+    for sig, count in counts.items():
+        if count >= repeat:
+            return sig
+    return None
+
 def _compress_lines(lines: list, max_events: int = 40) -> list:
     if not lines:
         return []
@@ -1464,6 +1544,8 @@ async def async_log_tailer():
     last_wait_state = {}
     last_wait_notified = {}
     session_token_totals = {}
+    tool_signature_deques = {}
+    last_loop_warnings = {}
     active_tracking = set()
     
     while True:
@@ -1615,6 +1697,31 @@ async def async_log_tailer():
                                     "content": "检测到连续异常，可能是卡点，是否需要我诊断？"
                                 }))
                         
+                        # Loop / tool oscillation detection
+                        window = config.get("loop_detection_window", 8)
+                        repeat = config.get("loop_detection_repeat", 5)
+                        loop_cooldown = config.get("loop_detection_cooldown", 60)
+
+                        if target_file not in tool_signature_deques or tool_signature_deques[target_file].maxlen != window:
+                            tool_signature_deques[target_file] = deque(maxlen=window)
+
+                        for line in new_lines:
+                            sig = _tool_signature(line)
+                            if sig:
+                                tool_signature_deques[target_file].append(sig)
+
+                        loop_sig = detect_loop(tool_signature_deques[target_file], window=window, repeat=repeat)
+                        if loop_sig:
+                            now = time.time()
+                            if now - last_loop_warnings.get(target_file, 0) > loop_cooldown:
+                                last_loop_warnings[target_file] = now
+                                await broker.publish(json.dumps({
+                                    "type": "error_warning",
+                                    "agent": agent_name,
+                                    "path": target_file,
+                                    "content": f"疑似死循环：命令「{loop_sig}」在最近 {window} 次工具调用中重复 {repeat} 次，建议打断或调整策略"
+                                }))
+
             frozen = active_tracking - current_active
             for f in frozen:
                 await broker.publish(json.dumps({"type": "agent_frozen", "path": f}))
@@ -1625,6 +1732,10 @@ async def async_log_tailer():
                     del last_mtimes[f]
                 if f in session_token_totals:
                     del session_token_totals[f]
+                if f in tool_signature_deques:
+                    del tool_signature_deques[f]
+                if f in last_loop_warnings:
+                    del last_loop_warnings[f]
                     
         except Exception:
             logger.error("async_log_tailer 轮询异常: %s", traceback.format_exc())

@@ -698,5 +698,45 @@ class TestGabrielControlCenter(unittest.TestCase):
                 self.assertIn("Output Tokens: 300", summary_res)
         print("✅ P0 save_insight and MCP tools test successful")
 
+    def test_p1_1_loop_detection(self):
+        """Test P1-1: _tool_signature extraction and detect_loop sliding window loop detection"""
+        from main import _tool_signature, detect_loop, DEFAULT_CONFIG, ConfigModel
+
+        # 1. Test _tool_signature
+        json_line_1 = '{"type": "PLANNER_RESPONSE", "tool_calls": [{"name": "run_command", "args": {"CommandLine": "pytest tests/"}}]}'
+        self.assertEqual(_tool_signature(json_line_1), "run_command:pytest")
+
+        json_line_2 = '{"type": "tool_use", "name": "view_file", "input": {"path": "src/main.py"}}'
+        self.assertEqual(_tool_signature(json_line_2), "view_file")
+
+        plain_line = "Just a normal user input or assistant text message"
+        self.assertIsNone(_tool_signature(plain_line))
+
+        # 2. Test detect_loop hit and miss states
+        sigs_no_loop = ["view_file", "replace_file_content", "view_file", "run_command:pytest", "view_file"]
+        self.assertIsNone(detect_loop(sigs_no_loop, window=8, repeat=5))
+
+        sigs_loop = ["run_command:pytest", "run_command:pytest", "run_command:pytest", "run_command:pytest", "run_command:pytest"]
+        self.assertEqual(detect_loop(sigs_loop, window=8, repeat=5), "run_command:pytest")
+
+        # 3. Test loop detection config defaults
+        self.assertIn("loop_detection_window", DEFAULT_CONFIG)
+        self.assertIn("loop_detection_repeat", DEFAULT_CONFIG)
+        self.assertIn("loop_detection_cooldown", DEFAULT_CONFIG)
+
+        cfg = ConfigModel(
+            base_url="http://localhost",
+            api_key="test",
+            model="test-model",
+            target_agent="auto",
+            loop_detection_window=10,
+            loop_detection_repeat=6,
+            loop_detection_cooldown=120
+        )
+        self.assertEqual(cfg.loop_detection_window, 10)
+        self.assertEqual(cfg.loop_detection_repeat, 6)
+        self.assertEqual(cfg.loop_detection_cooldown, 120)
+        print("✅ P1-1 loop detection test successful")
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)
