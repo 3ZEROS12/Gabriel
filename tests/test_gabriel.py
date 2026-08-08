@@ -1,15 +1,13 @@
 import sys
 import os
-import json
 import unittest
 from fastapi.testclient import TestClient
-from pathlib import Path
 
 # Add src to path to import main
 sys.path.insert(0, os.path.abspath("src"))
 
 try:
-    from main import app, config, DEFAULT_CONFIG, API_KEY
+    from main import app, API_KEY
 except ImportError as e:
     print(f"Failed to import app from src.main: {e}")
     sys.exit(1)
@@ -76,7 +74,6 @@ class TestGabrielControlCenter(unittest.TestCase):
         """Test SQLite KB injection and retrieval"""
         import tempfile
         from unittest.mock import patch
-        import main
 
         with tempfile.TemporaryDirectory() as tmpdirname:
             with patch('main.ROOT_DIR', tmpdirname):
@@ -107,9 +104,6 @@ class TestGabrielControlCenter(unittest.TestCase):
 
     def test_websocket_pubsub(self):
         """Test WebSocket connection and EventBroker broadcasting"""
-        from main import broker
-        import asyncio
-        import json
         
         # We must use a separate event loop context for this if we were strictly async, 
         # but TestClient handles websocket_connect synchronously in Starlette
@@ -132,7 +126,6 @@ class TestGabrielControlCenter(unittest.TestCase):
 
     def test_claude_code_parser(self):
         from main import ClaudeCodeParser
-        import html
         
         # Normal user
         res = ClaudeCodeParser.parse('{"type": "user", "content": "hello"}')
@@ -284,7 +277,6 @@ class TestGabrielControlCenter(unittest.TestCase):
         """Test KB weighted ranking formula & useless demotion (T4)"""
         import tempfile
         from unittest.mock import patch
-        import main
         from main import check_active_kb
 
         with tempfile.TemporaryDirectory() as tmpdirname:
@@ -486,6 +478,114 @@ class TestGabrielControlCenter(unittest.TestCase):
         cfg2["price_cache_read_per_m"] = 0.0
         self.assertAlmostEqual(token_cost(usage, cfg2), (3000 + 3000 + 375) / 1e6, places=9)
         print("✅ Token cost calculation test successful")
+
+    def test_jieba_tokenization_and_fts_keywords(self):
+        """Test P0-1: jieba Chinese tokenization and extract_keywords Chinese tags"""
+        from main import tokenize_for_fts, extract_keywords
+        
+        # Test Chinese tokenization
+        raw_text = "数据库连接失败重试机制"
+        tokenized = tokenize_for_fts(raw_text)
+        self.assertIn("数据库", tokenized)
+        self.assertIn("连接", tokenized)
+        self.assertIn(" ", tokenized)
+
+        # Test extract_keywords for Chinese text
+        kw = extract_keywords("数据库连接超时异常，请检查配置")
+        self.assertTrue(len(kw) > 0)
+        self.assertIn("数据库", kw)
+        self.assertIn("OR", kw)
+        print("✅ P0-1 jieba tokenization & keyword extraction test successful")
+
+    def test_parse_structured_insight_three_states(self):
+        """Test P0-2: parse_structured_insight with JSON, ```json``` block, and non-JSON fallback"""
+        from main import parse_structured_insight
+
+        # State 1: ```json ... ``` codeblock
+        raw1 = '```json\n{"problem": "超时", "cause": "网络原因", "solution": "增加重试", "tags": ["网络", "超时"]}\n```'
+        res1 = parse_structured_insight(raw1)
+        self.assertEqual(res1.get("problem"), "超时")
+        self.assertEqual(res1.get("cause"), "网络原因")
+        self.assertEqual(res1.get("solution"), "增加重试")
+        self.assertEqual(res1.get("tags"), ["网络", "超时"])
+
+        # State 2: Plain JSON
+        raw2 = '{"problem": "OOM", "cause": "内存泄漏", "solution": "修复引用", "tags": ["内存"]}'
+        res2 = parse_structured_insight(raw2)
+        self.assertEqual(res2.get("problem"), "OOM")
+
+        # State 3: Non-JSON plain text fallback
+        raw3 = "这里是一整段 Plain Text 方案，完全不是 JSON"
+        res3 = parse_structured_insight(raw3)
+        self.assertEqual(res3, {})
+        print("✅ P0-2 parse_structured_insight 3-state test successful")
+
+    def test_tenacity_llm_retry(self):
+        """Test P0-3: retry_llm retries on APIConnectionError and succeeds on 3rd attempt"""
+        from main import retry_llm
+        import openai
+        from unittest.mock import MagicMock
+
+        attempts = 0
+
+        @retry_llm
+        def mock_llm_call():
+            nonlocal attempts
+            attempts += 1
+            if attempts < 3:
+                raise openai.APIConnectionError(request=MagicMock())
+            return "SUCCESS"
+
+        result = mock_llm_call()
+        self.assertEqual(result, "SUCCESS")
+        self.assertEqual(attempts, 3)
+        print("✅ P0-3 tenacity retry_llm test successful")
+
+    def test_rrf_fuse_and_vector_fallback(self):
+        """Test P0: RRF rank fusion & vector fallback to FTS5"""
+        from main import rrf_fuse, check_active_kb
+        from unittest.mock import patch
+
+        fts_rows = [(1, "Content A"), (2, "Content B")]
+        vec_rows = [(2, "Content B"), (3, "Content C")]
+        fused = rrf_fuse(fts_rows, vec_rows, k=60)
+        # ID 2 is in both, so it should rank first with highest RRF score
+        self.assertEqual(fused[0][0], 2)
+
+        # Fallback test: when embedder is patched to None, check_active_kb degrades to FTS5 gracefully
+        with patch('main.get_embedder', return_value=None):
+            res = check_active_kb("数据库超时")
+            self.assertTrue(res is None or isinstance(res, dict))
+        print("✅ P0 RRF fuse & vector fallback test successful")
+
+    def test_chinese_stopwords_filtering(self):
+        """Test P1.1: extract_keywords excludes Chinese stopwords like '怎么办'"""
+        from main import extract_keywords
+
+        kw = extract_keywords("数据库连接超时了怎么办")
+        self.assertNotIn("怎么办", kw)
+        print("✅ P1.1 Chinese stopwords filtering test successful")
+
+    def test_configurable_error_alert_threshold(self):
+        """Test P1.2: error_alert_threshold and cooldown configurable in DEFAULT_CONFIG"""
+        from main import DEFAULT_CONFIG, ConfigModel
+
+        self.assertIn("error_alert_threshold", DEFAULT_CONFIG)
+        self.assertIn("error_alert_cooldown", DEFAULT_CONFIG)
+        self.assertEqual(DEFAULT_CONFIG["error_alert_threshold"], 5)
+        self.assertEqual(DEFAULT_CONFIG["error_alert_cooldown"], 60)
+
+        cfg = ConfigModel(
+            base_url="http://localhost",
+            api_key="test",
+            model="test-model",
+            target_agent="auto",
+            error_alert_threshold=3,
+            error_alert_cooldown=30
+        )
+        self.assertEqual(cfg.error_alert_threshold, 3)
+        self.assertEqual(cfg.error_alert_cooldown, 30)
+        print("✅ P1.2 Configurable error alert threshold test successful")
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

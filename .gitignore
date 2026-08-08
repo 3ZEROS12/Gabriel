@@ -35,3 +35,7 @@ test_jsdom.js
 
 # Python Package
 *.egg-info/
+
+# Fastembed Cache
+.model_cache/
+

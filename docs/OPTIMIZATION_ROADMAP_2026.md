@@ -5,7 +5,7 @@
 
 ---
 
-## ⚠️ 最新核对状态（2026-08-07，核对于 commit `9c148a0` + 本轮优化）
+## ⚠️ 最新核对状态（2026-08-08，核对于 v6 优化方案完成）
 
 > 本文档第 1 节"尚未完成"清单已大幅过时，以下项已逐行核验为**已落地**，请勿重复排期：
 
@@ -17,12 +17,15 @@
 | P1-1 会话历史浏览器 + 恢复 | ✅ 雷达页历史 Tab + `/api/sessions` + 只读回看（含"存在/已删"徽章） |
 | A2 收藏"百宝箱"页签 | ✅ KB 页 ⭐ 百宝箱子 Tab（`/api/kb?filter=favorite`） |
 | D4 token 泄露面 | ✅ `/api/auth/ticket` 一次性握手已接入（前端优先 ticket，fallback token） |
-| A3 错误预警卡片 | ✅ 后端 `error_warning`（≥5 错误 + 60s 冷却）+ 前端卡片（详情折叠 + ⚡ 一键诊断） |
+| A3 错误预警卡片 | ✅ 后端 `error_warning`（阈值/冷却可配）+ 前端卡片（详情折叠 + ⚡ 一键诊断） |
 | 价格输入 UI | ✅ Settings 已有 input/output 单价输入 |
 
-**本轮（2026-08-07 第二批）新增落地：**
-- `estimate_cost()` 统一成本估算（chars/4 ≈ tokens，70/30 in/out 拆分，价格可配）+ 单测
-- waiting 首轮误报修复：状态仅翻转时推送（首次观测为基线，不再误发 `agent_unblocked`）
+**最新落地（2026-08-08 v6 方案）：**
+- **P0 向量+关键词 RRF 混合检索** (`sqlite-vec` + `fastembed` BAAI/bge-small-zh-v1.5) + FTS5 离线优雅降级
+- **P0 jieba 中文分词与 4 段结构化 JSON 入库** (`{problem, cause, solution, tags}`) + Tag Chips
+- **P0 tenacity 重试** (指数退避防御 429/500/timeout)
+- **P1 pytest + ruff 工具链** (24/24 单元测试通过，0 lint errors)
+- **P1.1 中文停用词** ("怎么办/如何/为什么"等虚词过滤) + **P1.2 错误预警配置** + **P1.3 Notification 请求**
 - Settings 价格档位预设（GPT-4o / DeepSeek / Claude / Gemini，手动改价自动回"自定义"）
 - 会话历史列表补"Avg: $X/turn"列
 - i18n 全量补齐：6 种语言 × 77 键（ko 此前缺 33 键）

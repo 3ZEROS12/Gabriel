@@ -4,20 +4,136 @@ import asyncio
 import glob
 import time
 import sqlite3
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, HTTPException, status, Security, Depends
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, HTTPException, status, Depends
 from contextlib import asynccontextmanager
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.security import APIKeyHeader
 from pydantic import BaseModel
 import json
 import logging
 import secrets
+import openai
 from openai import AsyncOpenAI
 import re
 from collections import Counter
+import jieba
+import jieba.analyse
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+import sqlite_vec
+
+RETRYABLE_EXCEPTIONS = (openai.APIConnectionError, openai.APITimeoutError, openai.RateLimitError)
+retry_llm = retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, max=8),
+    retry=retry_if_exception_type(RETRYABLE_EXCEPTIONS),
+    reraise=True
+)
+
+_embedder_instance = None
+_embedder_failed = False
+
+def get_embedder():
+    """Lazy singleton for fastembed TextEmbedding (BAAI/bge-small-zh-v1.5).
+    If initialization or model loading fails, log warning and set to None.
+    """
+    global _embedder_instance, _embedder_failed
+    if _embedder_failed:
+        return None
+    if _embedder_instance is None:
+        try:
+            from fastembed import TextEmbedding
+            cache_dir = os.path.join(ROOT_DIR, ".model_cache")
+            os.makedirs(cache_dir, exist_ok=True)
+            _embedder_instance = TextEmbedding(model_name="BAAI/bge-small-zh-v1.5", cache_dir=cache_dir)
+            logger.info("Fastembed model BAAI/bge-small-zh-v1.5 initialized successfully.")
+        except Exception as e:
+            logger.warning(f"Fastembed model initialization failed ({e}). Falling back to pure FTS5.")
+            _embedder_failed = True
+            _embedder_instance = None
+    return _embedder_instance
+
+def rrf_fuse(fts_rows: list, vec_rows: list, k: int = 60) -> list:
+    """RRF Reciprocal Rank Fusion:
+    fts_rows: list of (insight_id, content) from FTS5
+    vec_rows: list of (insight_id, content) from sqlite-vec
+    returns sorted list of (insight_id, content, score)
+    """
+    scores = {}
+    content_map = {}
+
+    for rank, item in enumerate(fts_rows or []):
+        iid = item[0]
+        content_map[iid] = item[1]
+        scores[iid] = scores.get(iid, 0.0) + (1.0 / (k + rank + 1))
+
+    for rank, item in enumerate(vec_rows or []):
+        iid = item[0]
+        content_map[iid] = item[1]
+        scores[iid] = scores.get(iid, 0.0) + (1.0 / (k + rank + 1))
+
+    sorted_ids = sorted(scores.keys(), key=lambda x: scores[x], reverse=True)
+    return [(iid, content_map[iid], scores[iid]) for iid in sorted_ids]
+
+def load_sqlite_vec(conn: sqlite3.Connection):
+    try:
+        conn.enable_load_extension(True)
+        sqlite_vec.load(conn)
+    except Exception as e:
+        logger.warning(f"Could not load sqlite-vec extension: {e}")
+
+def store_insight_vector(insight_id: int, content: str):
+    embedder = get_embedder()
+    if not embedder or not content or not insight_id:
+        return
+    try:
+        embeddings = list(embedder.embed([content]))
+        if embeddings:
+            vec_blob = sqlite_vec.serialize_float32(embeddings[0])
+            db_path = os.path.join(ROOT_DIR, "knowledge.db")
+            with sqlite3.connect(db_path) as conn:
+                load_sqlite_vec(conn)
+                conn.execute("INSERT OR REPLACE INTO insights_vec (insight_id, embedding) VALUES (?, ?)", (insight_id, vec_blob))
+                conn.commit()
+    except Exception as e:
+        logger.warning(f"Failed to store vector for insight {insight_id}: {e}")
+
+def tokenize_for_fts(text: str) -> str:
+    """jieba 分词后空格拼接；英文与非词字符原样保留。供 FTS5 入库前调用。"""
+    if not text:
+        return ""
+    return " ".join(jieba.cut(text))
+
+def parse_structured_insight(raw: str) -> dict:
+    """从 LLM 输出提取 {problem, cause, solution, tags}。
+    依次尝试：```json 代码块 → 直接 json.loads → 正则抓取 JSON 对象。
+    全部失败返回空 dict（调用方降级为整段 content）。"""
+    if not raw:
+        return {}
+    m = re.search(r'```(?:json)?\s*(\{[\s\S]*?\})\s*```', raw, re.IGNORECASE)
+    if m:
+        try:
+            data = json.loads(m.group(1))
+            if isinstance(data, dict):
+                return data
+        except Exception:
+            pass
+    try:
+        data = json.loads(raw.strip())
+        if isinstance(data, dict):
+            return data
+    except Exception:
+        pass
+    m_obj = re.search(r'\{[\s\S]*\}', raw)
+    if m_obj:
+        try:
+            data = json.loads(m_obj.group(0))
+            if isinstance(data, dict):
+                return data
+        except Exception:
+            pass
+    return {}
 
 import traceback
 from logging.handlers import RotatingFileHandler
@@ -75,7 +191,9 @@ DEFAULT_CONFIG = {
     "model": "gpt-4o-mini",
     "target_agent": "auto",
     "price_input_per_m": 1.0,
-    "price_output_per_m": 3.0
+    "price_output_per_m": 3.0,
+    "error_alert_threshold": 5,
+    "error_alert_cooldown": 60
 }
 
 import copy
@@ -85,7 +203,7 @@ import logging
 
 def init_schema(conn: sqlite3.Connection):
     cursor = conn.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS insights (id INTEGER PRIMARY KEY, content TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS insights (id INTEGER PRIMARY KEY, content TEXT, problem TEXT, cause TEXT, solution TEXT, tags TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)")
     try:
         cursor.execute("CREATE VIRTUAL TABLE IF NOT EXISTS insights_fts USING fts5(content, timestamp)")
     except Exception:
@@ -93,6 +211,7 @@ def init_schema(conn: sqlite3.Connection):
     cursor.execute("CREATE TABLE IF NOT EXISTS kb_feedback (id INTEGER PRIMARY KEY, insight_id INTEGER, action TEXT, ts DATETIME DEFAULT CURRENT_TIMESTAMP)")
     cursor.execute("CREATE TABLE IF NOT EXISTS session_meta (id INTEGER PRIMARY KEY, agent_name TEXT, path TEXT, ts DATETIME DEFAULT CURRENT_TIMESTAMP, turns INTEGER DEFAULT 0, chars INTEGER DEFAULT 0, est_cost REAL DEFAULT 0.0)")
     cursor.execute("CREATE TABLE IF NOT EXISTS chat_history (id INTEGER PRIMARY KEY, agent_path TEXT, role TEXT, content TEXT, ts DATETIME DEFAULT CURRENT_TIMESTAMP)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS kb_meta (key TEXT PRIMARY KEY, value TEXT)")
     
     for col_def in ["turns INTEGER DEFAULT 0", "chars INTEGER DEFAULT 0", "est_cost REAL DEFAULT 0.0",
                     "input_tokens INTEGER DEFAULT 0", "output_tokens INTEGER DEFAULT 0",
@@ -101,6 +220,33 @@ def init_schema(conn: sqlite3.Connection):
             cursor.execute(f"ALTER TABLE session_meta ADD COLUMN {col_def}")
         except Exception:
             pass
+            
+    for col_def in ["problem TEXT", "cause TEXT", "solution TEXT", "tags TEXT"]:
+        try:
+            cursor.execute(f"ALTER TABLE insights ADD COLUMN {col_def}")
+        except Exception:
+            pass
+
+    # Migration to schema_version 2 (jieba fts tokenization)
+    try:
+        cursor.execute("SELECT value FROM kb_meta WHERE key = 'schema_version'")
+        row = cursor.fetchone()
+        ver = int(row[0]) if row and row[0].isdigit() else 0
+    except Exception:
+        ver = 0
+
+    if ver < 2:
+        try:
+            cursor.execute("DROP TABLE IF EXISTS insights_fts")
+            cursor.execute("CREATE VIRTUAL TABLE IF NOT EXISTS insights_fts USING fts5(content, timestamp)")
+            cursor.execute("SELECT id, content, timestamp FROM insights")
+            rows = cursor.fetchall()
+            for r_id, r_content, r_ts in rows:
+                tok = tokenize_for_fts(r_content or "")
+                cursor.execute("INSERT INTO insights_fts (rowid, content, timestamp) VALUES (?, ?, ?)", (r_id, tok, r_ts))
+            cursor.execute("INSERT OR REPLACE INTO kb_meta (key, value) VALUES ('schema_version', '2')")
+        except Exception as e:
+            logger.error(f"FTS5 migration failed: {e}")
             
     conn.commit()
 
@@ -178,6 +324,8 @@ class ConfigModel(BaseModel):
     target_agent: str
     price_input_per_m: float = 1.0
     price_output_per_m: float = 3.0
+    error_alert_threshold: int = 5
+    error_alert_cooldown: int = 60
 
 # --- Security ---
 # Read from env if present (for persistent setups), otherwise generate randomly for session
@@ -288,28 +436,6 @@ async def update_config(cfg: ConfigModel):
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-@api_router.get("/knowledge")
-def get_knowledge():
-    db_path = os.path.join(ROOT_DIR, "knowledge.db")
-    if not os.path.exists(db_path):
-        return {"status": "success", "data": []}
-    
-    try:
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
-        # Ensure table exists first just in case
-        cursor.execute("CREATE TABLE IF NOT EXISTS insights (id INTEGER PRIMARY KEY, content TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)")
-        cursor.execute("SELECT content, strftime('%s', timestamp) FROM insights ORDER BY timestamp DESC LIMIT 50")
-        rows = cursor.fetchall()
-        
-        data = [{"content": row[0], "timestamp": float(row[1])} for row in rows]
-        return {"status": "success", "data": data}
-    except Exception as e:
-        logger.error(f"Error fetching knowledge: {e}")
-        return {"status": "error", "message": str(e)}
-    finally:
-        if 'conn' in locals():
-            conn.close()
 
 _agent_scan_cache = {}
 
@@ -417,7 +543,7 @@ def get_kb(filter: str = None, db: sqlite3.Connection = Depends(get_db)):
         cursor = db.cursor()
         if filter == "favorite":
             cursor.execute("""
-                SELECT DISTINCT i.id, i.content, i.timestamp
+                SELECT DISTINCT i.id, i.content, i.problem, i.cause, i.solution, i.tags, i.timestamp
                 FROM insights i
                 JOIN kb_feedback f ON i.id = f.insight_id
                 WHERE f.action = 'favorite'
@@ -427,31 +553,70 @@ def get_kb(filter: str = None, db: sqlite3.Connection = Depends(get_db)):
                 ORDER BY i.timestamp DESC
             """)
             rows = cursor.fetchall()
-            items = [{"id": row["id"], "content": row["content"], "timestamp": str(row["timestamp"])} for row in rows]
+            items = [{
+                "id": row["id"],
+                "content": row["content"],
+                "problem": row["problem"] if "problem" in row.keys() and row["problem"] else "",
+                "cause": row["cause"] if "cause" in row.keys() and row["cause"] else "",
+                "solution": row["solution"] if "solution" in row.keys() and row["solution"] else "",
+                "tags": row["tags"] if "tags" in row.keys() and row["tags"] else "",
+                "timestamp": str(row["timestamp"])
+            } for row in rows]
             return JSONResponse({"favorites": items})
 
-        # Fallback to normal table if FTS is empty for backward compatibility
-        cursor.execute("SELECT content FROM insights_fts ORDER BY timestamp DESC LIMIT 1")
+        if filter == "all":
+            cursor.execute("SELECT id, content, problem, cause, solution, tags, timestamp FROM insights ORDER BY id DESC")
+            rows = cursor.fetchall()
+            items = [{
+                "id": row["id"],
+                "content": row["content"],
+                "problem": row["problem"] if "problem" in row.keys() and row["problem"] else "",
+                "cause": row["cause"] if "cause" in row.keys() and row["cause"] else "",
+                "solution": row["solution"] if "solution" in row.keys() and row["solution"] else "",
+                "tags": row["tags"] if "tags" in row.keys() and row["tags"] else "",
+                "timestamp": str(row["timestamp"])
+            } for row in rows]
+            return JSONResponse({"rules": items, "items": items, "data": items, "status": "success"})
+
+        cursor.execute("SELECT id, content, problem, cause, solution, tags, timestamp FROM insights ORDER BY timestamp DESC LIMIT 1")
         row = cursor.fetchone()
-        if not row:
-            cursor.execute("SELECT content FROM insights ORDER BY timestamp DESC LIMIT 1")
-            row = cursor.fetchone()
         if row:
-            return JSONResponse({"content": row["content"]})
+            return JSONResponse({
+                "id": row["id"],
+                "content": row["content"],
+                "problem": row["problem"] if "problem" in row.keys() and row["problem"] else "",
+                "cause": row["cause"] if "cause" in row.keys() and row["cause"] else "",
+                "solution": row["solution"] if "solution" in row.keys() and row["solution"] else "",
+                "tags": row["tags"] if "tags" in row.keys() and row["tags"] else "",
+                "timestamp": str(row["timestamp"])
+            })
     except Exception as e:
         logger.error(f"KB Get Error: {e}")
-    return JSONResponse({"content": "", "favorites": []})
+    return JSONResponse({"content": "", "favorites": [], "rules": [], "items": []})
+
+@api_router.get("/knowledge")
+def get_knowledge(db: sqlite3.Connection = Depends(get_db)):
+    return get_kb(filter="all", db=db)
 
 @api_router.post("/kb")
 def update_kb(data: KBModel, db: sqlite3.Connection = Depends(get_db)):
     try:
         cursor = db.cursor()
-        cursor.execute("INSERT INTO insights (content) VALUES (?)", (data.content,))
-        # Insert into FTS5 high-performance index
-        cursor.execute("INSERT INTO insights_fts (content, timestamp) VALUES (?, CURRENT_TIMESTAMP)", (data.content,))
+        parsed = parse_structured_insight(data.content)
+        prob = parsed.get("problem", "")
+        cause = parsed.get("cause", "")
+        sol = parsed.get("solution", "")
+        tags_raw = parsed.get("tags", [])
+        tags_str = json.dumps(tags_raw, ensure_ascii=False) if isinstance(tags_raw, list) else str(tags_raw)
+
+        cursor.execute(
+            "INSERT INTO insights (content, problem, cause, solution, tags) VALUES (?, ?, ?, ?, ?)",
+            (data.content, prob, cause, sol, tags_str)
+        )
+        tok_content = tokenize_for_fts(data.content)
+        cursor.execute("INSERT INTO insights_fts (content, timestamp) VALUES (?, CURRENT_TIMESTAMP)", (tok_content,))
         db.commit()
         
-        # Keep a markdown mirror for backward compatibility and easy human reading
         kb_path = os.path.join(ROOT_DIR, "Gabriel_Insight.md")
         with open(kb_path, "a", encoding="utf-8") as f:
             f.write(f"\n\n---\n## Insight ({time.strftime('%Y-%m-%d %H:%M:%S')})\n{data.content}")
@@ -885,7 +1050,12 @@ def _format_transcript_sync(filepath, is_initial=False):
 async def format_transcript(filepath, is_initial=False):
     return await asyncio.to_thread(_format_transcript_sync, filepath, is_initial)
 
-STOP_WORDS = {"this", "that", "with", "from", "your", "have", "what", "there", "their", "will", "would", "could", "should", "about", "which", "when", "where", "while", "these", "those", "using", "system", "message", "content", "response", "planner"}
+STOP_WORDS = {
+    "this", "that", "with", "from", "your", "have", "what", "there", "their",
+    "will", "would", "could", "should", "about", "which", "when", "where", "while",
+    "these", "those", "using", "system", "message", "content", "response", "planner",
+    "怎么办", "如何", "什么", "为什么", "这个", "那个", "一个", "我们", "你们", "他们", "进行", "可以", "需要"
+}
 
 def extract_touched_files(text: str) -> list:
     clean_text = re.sub(r'<[^>]+>', ' ', text)
@@ -895,6 +1065,9 @@ def extract_touched_files(text: str) -> list:
 def extract_keywords(text: str, max_words=4) -> str:
     # Remove HTML tags
     clean_text = re.sub(r'<[^>]+>', ' ', text)
+    
+    # 0. Chinese keywords via jieba.analyse
+    zh_words = jieba.analyse.extract_tags(clean_text, topK=max_words)
     
     # 1. Extract file names (e.g., main.py, script.js)
     files = re.findall(r'\b[\w-]+\.(?:py|js|ts|jsx|tsx|css|html|md|json)\b', clean_text, re.IGNORECASE)
@@ -906,8 +1079,8 @@ def extract_keywords(text: str, max_words=4) -> str:
     errors = re.findall(r'\b(?:error|exception|traceback|fail(?:ed|ure)?|fatal|warn(?:ing)?)\b', clean_text, re.IGNORECASE)
     
     # Combine and normalize
-    all_terms = [re.sub(r'[^\w\.\_\-]', '', w.lower()) for w in (files + identifiers + errors)]
-    filtered = [w for w in all_terms if w not in STOP_WORDS and len(w) > 3]
+    all_terms = [re.sub(r'[^\w\.\_\-]', '', w.lower()) for w in (zh_words + files + identifiers + errors)]
+    filtered = [w for w in all_terms if w not in STOP_WORDS and len(w) >= 2]
     
     most_common = [w[0] for w in Counter(filtered).most_common(max_words)]
     
@@ -1033,23 +1206,45 @@ def build_prompt_content(mode: dict, contexts: dict, user_prompt: str) -> str:
 
 def check_active_kb(text: str):
     kw = extract_keywords(text)
-    if not kw: return None
     db_path = os.path.join(ROOT_DIR, "knowledge.db")
     conn = sqlite3.connect(db_path)
+    load_sqlite_vec(conn)
     cursor = conn.cursor()
+
+    fts_rows = []
+    if kw:
+        try:
+            cursor.execute("SELECT rowid, content FROM insights_fts WHERE insights_fts MATCH ? ORDER BY rank LIMIT 5", (kw,))
+            fts_rows = cursor.fetchall()
+        except Exception as e:
+            logger.warning(f"FTS Search error: {e}")
+
+    vec_rows = []
+    embedder = get_embedder()
+    if embedder and text:
+        try:
+            embeddings = list(embedder.embed([text]))
+            if embeddings:
+                query_blob = sqlite_vec.serialize_float32(embeddings[0])
+                cursor.execute(
+                    "SELECT v.insight_id, i.content FROM insights_vec v JOIN insights i ON v.insight_id = i.id WHERE v.embedding MATCH ? ORDER BY distance LIMIT 5",
+                    (query_blob,)
+                )
+                vec_rows = cursor.fetchall()
+        except Exception as e:
+            logger.warning(f"Vector search error: {e}")
+
+    candidates = rrf_fuse(fts_rows, vec_rows)
+    if not candidates:
+        conn.close()
+        return None
+
     try:
-        # Get top 5 matches
-        cursor.execute("SELECT rowid, content FROM insights_fts WHERE insights_fts MATCH ? ORDER BY rank LIMIT 5", (kw,))
-        rows = cursor.fetchall()
-        if not rows: return None
-        
-        # Ensure feedback table exists
         cursor.execute("CREATE TABLE IF NOT EXISTS kb_feedback (id INTEGER PRIMARY KEY, insight_id INTEGER, action TEXT, ts DATETIME DEFAULT CURRENT_TIMESTAMP)")
-        
         best_row = None
         best_score = -9999
         
-        for rowid, content in rows:
+        for rowid, content, rrf_score in candidates:
             cursor.execute("SELECT action FROM kb_feedback WHERE insight_id = ?", (rowid,))
             feedbacks = cursor.fetchall()
             
@@ -1064,7 +1259,7 @@ def check_active_kb(text: str):
             if useless_count >= 2:
                 score = -10.0
             else:
-                base = 0.3
+                base = rrf_score
                 delta = (useful_count - 0.8 * useless_count + 1.5 * effective_favorite) / max(1, total_votes) if total_votes > 0 else 0
                 score = base + delta
             
@@ -1075,7 +1270,7 @@ def check_active_kb(text: str):
         if best_row:
             return {"id": best_row[0], "content": best_row[1]}
     except Exception as e:
-        logger.error(f"FTS Search error: {e}")
+        logger.error(f"KB Search error: {e}")
     finally:
         conn.close()
     return None
@@ -1306,8 +1501,10 @@ async def async_log_tailer():
                             
                         recent_20 = list(last_lines)[-20:]
                         err_lines = [l for l in recent_20 if re.search(r'(?i)(error|exception|timeout)', l)]
-                        if len(err_lines) >= 5:
-                            if time.time() - last_error_warnings.get(target_file, 0) > 60:
+                        threshold = config.get("error_alert_threshold", 5)
+                        cooldown = config.get("error_alert_cooldown", 60)
+                        if len(err_lines) >= threshold:
+                            if time.time() - last_error_warnings.get(target_file, 0) > cooldown:
                                 last_error_warnings[target_file] = time.time()
                                 await broker.publish(json.dumps({
                                     "type": "error_warning",
@@ -1466,7 +1663,7 @@ async def websocket_endpoint(websocket: WebSocket, token: str = None, ticket: st
                         "content": ""
                     }))
                     
-                    response = await client.chat.completions.create(
+                    response = await retry_llm(client.chat.completions.create)(
                         model=config["model"],
                         messages=api_messages,
                         stream=True
@@ -1528,29 +1725,56 @@ async def websocket_endpoint(websocket: WebSocket, token: str = None, ticket: st
                 
             elif msg["type"] == "merge_kb":
                 combined = "\n".join([f"--- Agent: {path} ---\n{ctx}" for path, ctx in current_contexts.items()])
-                kb_prompt = f"请将以下开发日志中的核心问题和解决方案提炼成一段 Markdown 笔记（包含问题描述、原因分析、解决方案、以及可以直接复制粘贴的修复代码）。要求格式极其严谨。\n\n日志上下文:\n```\n{combined}\n```"
+                kb_prompt = (
+                    "请将以下开发日志中的核心问题和解决方案提炼为结构化 JSON 对象。\n"
+                    "必须输出符合以下 JSON 结构的单一个 JSON 对象：\n"
+                    "{\n"
+                    '  "problem": "具体问题描述",\n'
+                    '  "cause": "根本原因分析",\n'
+                    '  "solution": "可复制粘贴的解决方案与修复代码",\n'
+                    '  "tags": ["标签1", "标签2", "标签3"]\n'
+                    "}\n\n"
+                    f"日志上下文:\n```\n{combined}\n```"
+                )
                 try:
                     client = get_ai_client()
-                    response = await client.chat.completions.create(
+                    response = await retry_llm(client.chat.completions.create)(
                         model=config["model"],
                         messages=[{"role": "user", "content": kb_prompt}]
                     )
                     
-                    insight_content = response.choices[0].message.content
-                    
+                    raw_content = response.choices[0].message.content
+                    parsed = parse_structured_insight(raw_content)
+                    prob = parsed.get("problem", "")
+                    cause = parsed.get("cause", "")
+                    sol = parsed.get("solution", "")
+                    tags_raw = parsed.get("tags", [])
+                    tags_str = json.dumps(tags_raw, ensure_ascii=False) if isinstance(tags_raw, list) else str(tags_raw)
+
+                    if prob and sol:
+                        insight_content = f"# 问题: {prob}\n\n## 原因\n{cause}\n\n## 解决方案\n{sol}"
+                        if tags_raw:
+                            insight_content += f"\n\n**标签**: {', '.join(tags_raw) if isinstance(tags_raw, list) else tags_str}"
+                    else:
+                        insight_content = raw_content
+
                     # Also write to file for legacy/UI reasons
                     kb_path = os.path.join(ROOT_DIR, "Gabriel_Insight.md")
                     with open(kb_path, "a", encoding="utf-8") as f:
                         f.write(f"\n\n---\n## Insight ({time.strftime('%Y-%m-%d %H:%M:%S')})\n{insight_content}")
                         
-                    # Save to DB for FTS5 indexing
+                    # Save to DB for FTS5 indexing with jieba tokenization
                     db_path = os.path.join(ROOT_DIR, "knowledge.db")
                     conn = sqlite3.connect(db_path)
                     try:
                         cursor = conn.cursor()
-                        cursor.execute("CREATE TABLE IF NOT EXISTS insights (id INTEGER PRIMARY KEY, content TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)")
-                        cursor.execute("INSERT INTO insights (content) VALUES (?)", (insight_content,))
-                        cursor.execute("INSERT INTO insights_fts (content, timestamp) VALUES (?, CURRENT_TIMESTAMP)", (insight_content,))
+                        init_schema(conn)
+                        cursor.execute(
+                            "INSERT INTO insights (content, problem, cause, solution, tags) VALUES (?, ?, ?, ?, ?)",
+                            (insight_content, prob, cause, sol, tags_str)
+                        )
+                        tok = tokenize_for_fts(insight_content)
+                        cursor.execute("INSERT INTO insights_fts (content, timestamp) VALUES (?, CURRENT_TIMESTAMP)", (tok,))
                         conn.commit()
                     except Exception as db_err:
                         logger.error(f"Failed to insert into FTS5: {db_err}")
@@ -1564,7 +1788,7 @@ async def websocket_endpoint(websocket: WebSocket, token: str = None, ticket: st
                     
                     await wrapper.send_text(json.dumps({
                         "type": "sys_message",
-                        "content": "✅ 已生成知识库并存入大脑（FTS5索引完成）！"
+                        "content": "✅ 已生成结构化知识库并存入大脑（FTS5索引完成）！"
                     }))
                 except Exception as e:
                     await wrapper.send_text(json.dumps({
@@ -1573,13 +1797,24 @@ async def websocket_endpoint(websocket: WebSocket, token: str = None, ticket: st
                     }))
             elif msg["type"] == "inject_insight":
                 insight_content = msg.get("content", "")
+                parsed = parse_structured_insight(insight_content)
+                prob = parsed.get("problem", "")
+                cause = parsed.get("cause", "")
+                sol = parsed.get("solution", "")
+                tags_raw = parsed.get("tags", [])
+                tags_str = json.dumps(tags_raw, ensure_ascii=False) if isinstance(tags_raw, list) else str(tags_raw)
+
                 db_path = os.path.join(ROOT_DIR, "knowledge.db")
                 conn = sqlite3.connect(db_path)
                 try:
                     cursor = conn.cursor()
-                    cursor.execute("CREATE TABLE IF NOT EXISTS insights (id INTEGER PRIMARY KEY, content TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)")
-                    cursor.execute("INSERT INTO insights (content) VALUES (?)", (insight_content,))
-                    cursor.execute("INSERT INTO insights_fts (content, timestamp) VALUES (?, CURRENT_TIMESTAMP)", (insight_content,))
+                    init_schema(conn)
+                    cursor.execute(
+                        "INSERT INTO insights (content, problem, cause, solution, tags) VALUES (?, ?, ?, ?, ?)",
+                        (insight_content, prob, cause, sol, tags_str)
+                    )
+                    tok = tokenize_for_fts(insight_content)
+                    cursor.execute("INSERT INTO insights_fts (content, timestamp) VALUES (?, CURRENT_TIMESTAMP)", (tok,))
                     conn.commit()
                 except Exception as db_err:
                     logger.error(f"Failed to insert into FTS5: {db_err}")
@@ -1591,7 +1826,7 @@ async def websocket_endpoint(websocket: WebSocket, token: str = None, ticket: st
                     f.write(f"\n\n---\n## Insight ({time.strftime('%Y-%m-%d %H:%M:%S')})\n{insight_content}")
                 await wrapper.send_text(json.dumps({
                     "type": "sys_message",
-                    "content": "✅ 已注入知识库草稿！(Injected into KB)"
+                    "content": "✅ 已注入结构化知识库草稿！(Injected into KB)"
                 }))
             elif msg["type"] == "ping":
                 await wrapper.send_text(json.dumps({"type": "pong"}))

@@ -10,10 +10,13 @@ Gabriel runs independently alongside your terminal, tailing agent transcripts in
 - **Real-time WebSocket Dashboard** — Parsed log lines are broadcast to the browser over a single WebSocket with a bounded non-blocking queue (slow clients drop frames instead of stalling the broker).
 - **Mission Control Grid** — Multiple active agent sessions side by side in a CSS Grid dashboard, each with its own live terminal card, scroll-lock, and one-click Markdown export.
 - **Side-brain Chat** — Ask "what is it doing?", "any errors?", or debug a stack trace without polluting the main agent's context. Optional terminal-snapshot attachment, streaming markdown responses, and SQLite-persisted chat history (40 turns per agent).
-- **Active Knowledge Base (FTS5)** — SQLite full-text search with keyword extraction and *proactive* toast recommendations when a similar error appears again. Weighted ranking + feedback demotion (`/api/kb/feedback`), one-click "Merge to KB" from the chat.
+- **Hybrid Knowledge Base (FTS5 + Vector RRF)** — Chinese-aware jieba tokenization + local vector search (`sqlite-vec` + `fastembed` BAAI/bge-small-zh-v1.5) fused via Reciprocal Rank Fusion (RRF). Proactive toast recommendations on repeated errors with graceful pure FTS5 offline fallback.
+- **Structured 4-Section Insights** — Insights automatically parse into structured `{problem, cause, solution, tags}` with tag chip rendering and legacy Markdown compatibility.
+- **Resilient AI Pipeline** — Exponential backoff retries via `tenacity` for API connections, rate limits, and network timeouts.
 - **Session Analytics** — `/api/stats` aggregates turns / characters / estimated cost per session; `/api/sessions` and `/api/sessions/{id}/transcript` expose full history.
-- **MCP Server** — A stdio MCP endpoint (`src/mcp_server.py`) lets Claude Code / Cursor query the knowledge base directly.
-- **Local-first & Secure** — Token auth on every API route and the WebSocket (constant-time comparison); all frontend libs (DOMPurify, marked, highlight.js) vendored locally — **zero CDN dependencies**, fully offline; API key lives only in `.env`, never persisted to `config.json`.
+- **MCP Server** — Stdio MCP server (`src/mcp_server.py`) and optional `--http` transport lets Claude Code / Cursor query the knowledge base directly.
+- **Local-first & Secure** — Token auth on every API route and WebSocket (constant-time comparison); all frontend libs (DOMPurify, marked, highlight.js) vendored locally — **zero CDN dependencies**, fully offline; API key lives only in `.env`, never persisted to `config.json`.
+- **Standardized Toolchain** — Built with `pytest` for unit testing and `ruff` for fast linting.
 
 ## 🚀 Quickstart
 
@@ -104,8 +107,11 @@ Gabriel/
 ## 🛠️ Development
 
 ```bash
-# Run the full test suite (auth, parsers, knowledge base, WebSocket, sessions)
-venv\Scripts\python.exe -m unittest discover tests -v
+# Run the full test suite (pytest)
+venv\Scripts\python.exe -m pytest tests/ -q
+
+# Code linter check (ruff)
+venv\Scripts\python.exe -m ruff check src tests
 
 # Frontend syntax check
 node --check static/script.js

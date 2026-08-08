@@ -803,12 +803,18 @@ async function connectWebSocket() {
                 }
             }
         } else if (msg.type === "agent_waiting") {
-            if ('Notification' in window && Notification.permission === 'granted') {
-                try {
-                    new Notification('Gabriel — Agent 需要你', {
-                        body: `Agent ${msg.agent || ''} 正在等待你的输入`
-                    });
-                } catch(e) {}
+            if ('Notification' in window) {
+                if (Notification.permission === 'granted') {
+                    try {
+                        new Notification('Gabriel — Agent 需要你', {
+                            body: `Agent ${msg.agent || ''} 正在等待你的输入`
+                        });
+                    } catch(e) {}
+                } else if (Notification.permission === 'default') {
+                    try {
+                        Notification.requestPermission();
+                    } catch(e) {}
+                }
             }
             let cardId = 'agent_' + msg.path.replace(/[^a-zA-Z0-9]/g, '_');
             let card = document.getElementById(cardId);
@@ -1276,17 +1282,20 @@ async function fetchKbRules() {
             return;
         }
         
-        const res = await fetch('/api/knowledge');
+        const res = await fetch('/api/kb?filter=all', {
+            headers: { 'X-Gabriel-Token': localToken }
+        });
         const json = await res.json();
+        const rules = json.items || json.rules || json.data || [];
         
-        if (json.status !== "success" || !json.data || json.data.length === 0) {
+        if (rules.length === 0) {
             listEl.innerHTML = '<div style="color:var(--text-secondary); font-size:0.9rem; text-align:center; margin-top:20px;">No insights found yet.</div>';
             return;
         }
         
         listEl.innerHTML = '';
-        json.data.forEach(rule => {
-            const date = new Date(rule.timestamp * 1000).toLocaleString();
+        rules.forEach(rule => {
+            const date = rule.timestamp ? rule.timestamp : 'Just now';
             const div = document.createElement('div');
             div.className = 'kb-rule-card';
             
@@ -1294,9 +1303,29 @@ async function fetchKbRules() {
             const displayContent = rule.content.length > 150 ? rule.content.substring(0, 150) + '...' : rule.content;
             const parsed = window.DOMPurify && window.marked ? DOMPurify.sanitize(marked.parse(displayContent)) : displayContent;
             
+            let tagsHtml = '';
+            if (rule.tags) {
+                let parsedTags = [];
+                try {
+                    parsedTags = typeof rule.tags === 'string' ? JSON.parse(rule.tags) : rule.tags;
+                } catch(e) {
+                    if (typeof rule.tags === 'string') parsedTags = rule.tags.split(',');
+                }
+                if (Array.isArray(parsedTags) && parsedTags.length > 0) {
+                    tagsHtml = '<div style="margin-top:6px; display:flex; gap:4px; flex-wrap:wrap;">' +
+                        parsedTags.map(t => {
+                            const cleanT = String(t).trim().replace(/^#/, '');
+                            const safeT = window.DOMPurify ? DOMPurify.sanitize(cleanT) : cleanT;
+                            return `<span class="kb-tag-chip" style="background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); font-size:0.75rem; padding:2px 6px; border-radius:4px;">#${safeT}</span>`;
+                        }).join('') +
+                        '</div>';
+                }
+            }
+
             div.innerHTML = `
                 <span class="kb-rule-date">🕒 ${date}</span>
                 <div style="font-family:var(--font-ui);">${parsed}</div>
+                ${tagsHtml}
             `;
             
             // Clicking a rule populates the editor
