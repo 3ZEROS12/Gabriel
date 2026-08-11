@@ -1,9 +1,9 @@
 @echo off
 chcp 65001 >nul
-title 启动 Gabriel 副屏
+title 加百列
 cd /d "%~dp0"
 echo --------------------------------------------------
-echo   👼 正在启动 Gabriel 副屏控制台...
-echo   浏览器将自动打开，请稍候...
+echo   👼 正在启动加百列...
+echo   浏览器即将自动打开控制台
 echo --------------------------------------------------
 .\venv\Scripts\python.exe -m src.main
