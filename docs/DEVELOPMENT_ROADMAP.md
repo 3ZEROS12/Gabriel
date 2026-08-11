@@ -4,10 +4,14 @@
 
 ---
 
-## Ⅰ. 项目定位与起源 (Vision & Lore)
+## Ⅰ. 项目定位与起步初衷 (Vision & Lore)
 
-### 1. 核心定位
-**Gabriel（加百列）** 是 CLI 型 AI Agent（Antigravity / Claude Code / Cursor 等）的**零侵入 GUI 副屏与旁路控制台**。
+### 1. 起步初衷与个人定位
+Gabriel 最初是开发者为解决**个人自用痛点**而打造的 Agent 旁路副屏工具：
+- **开发起步点**：每当主 CLI Agent（Antigravity / Claude Code / Cursor）在终端中执行一项复杂的**长任务**时，开发者往往会产生很多发散性的探索问题，但**完全不敢打扰或随便提问** —— 生怕打断主 Agent 的思考上下文链路、污染记忆记忆库，或让其在主干任务中做无用功。
+- **解决方案**：Gabriel 作为**零侵入的旁路副屏 (Sidecar)**，静默监控 Agent 日志，提供隔离的“副脑问答沙盒”与“可视化控制台”，让用户在主 Agent 跑长任务时可以随时向副屏 Ask / Debug，完全不打扰主 Agent 记忆。
+
+### 2. 核心机制
 - **旁路 Tail**：静默监控已知 Agent 轨迹日志（如 `~/.gemini/antigravity-cli/brain/**/logs/transcript.jsonl`），增量字节偏移读取。
 - **物理安全**：无 PTY / STDOUT / 终端 Hook，绝不会阻塞或导致主 Agent 崩溃。
 - **副脑隔离问答**：允许开发者随时向副屏 Ask/Debug，不占用、污染主 Agent 的上下文记忆。
