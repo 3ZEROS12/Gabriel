@@ -17,9 +17,11 @@ Gabriel 最初是开发者为解决**个人自用痛点**而打造的 Agent 旁�
 - **副脑隔离问答**：允许开发者随时向副屏 Ask/Debug，不占用、污染主 Agent 的上下文记忆。
 - **私有知识库注入**：将副脑调试得出的经验 / 踩坑点，一键结构化存入知识库，并可通过 MCP / 剪贴板注入会话。
 
-### 2. 命名由来
-> “加百列，天堂副君，神似的协助者。”  
-如果主 CLI Agent 是构建代码宇宙的“主执行器”，Gabriel 就是伴随其左右的“旁路监视与副大脑”。
+### 2. 命名与世界观设定 (Lore)
+> “加百列，神之力与智慧之使者 —— 手持白百合，为战场上的米迦勒带来破局启示。”  
+在加百列的世界观设定中：
+- **主 CLI Agent（Antigravity / Claude Code）** 充当 **米迦勒（Michael - 主战大统帅）**，在终端主战场上正面硬刚 Bug 与复杂长任务；
+- **Gabriel 旁路副屏** 则是 **加百列（Gabriel - 智慧使者）**，手持白百合与纯净上下文，在旁路静默守护，当主 Agent 遭遇卡点或死循环时递上神圣解法与破局 Insight。
 
 ---
 
@@ -34,6 +36,8 @@ flowchart TD
     V5 --> V6["v6.0<br/>私有知识库<br/>sqlite-vec + jieba FTS5 RRF 融合 + 4段 Insights"]
     V6 --> V7["v7.0<br/>生态与防震荡<br/>Stdio MCP 4工具 + 工具死循环检测 + Session 复盘导出"]
     V7 --> V8["v8.0<br/>卡点雷达与高可靠<br/>Stuck Radar + 统一 search_kb + 34 单测 100% 绿 Pass"]
+    V8 --> V8_5["v8.5<br/>易用性与形态重塑<br/>服务商预设 + 无边框 1/4 屏 + CCSwitch 模式 Popover"]
+    V8_5 --> V8_7["v8.7<br/>开源品牌 SVG Logo 与 Raycast 选择器<br/>同圆徽章 + 绿光 Key 状态指示灯 + 空 Key 安全校验 + 深度清理"]
 ```
 
 ### 详细版本履历
@@ -73,6 +77,19 @@ flowchart TD
 - **自动化稳定性与断言**：提供 `scripts/stability_run.py` 进行长跑内存泄漏断言。
 - **全量测试与规范 100% 绿灯**：34/34 pytest 单元测试通过，`ruff check` 0 警告，前端 JS `node --check` 语法纯净。
 
+#### 7. v8.6 (多服务商 Key 记忆、动态模型拉取与开源 Benchmark)
+- **开源对比全局命令**：将“持续联网参考开源优质项目（Cherry Studio / LobeChat / NextChat）”写入全局开发守则。
+- **多服务商 Key 独立持久化**：建立 SQLite `provider_configs` 表，每个服务商（DeepSeek、OpenAI、硅基流动、智谱等）独立记忆其 Base URL、API Key、Model Name 与计费单价，切换服务商瞬间自动还原 Key。
+- **动态模型获取端点**：提供 `POST /api/config/models`，自动请求供应商 `/v1/models` 端点并实时构建可用模型下拉菜单。
+- **高级配置折叠收纳**：手填 Token 价格字段收纳至 `<details>` 面板，去除主视图打扰。
+
+#### 8. v8.7 (正版开源 SVG Logo、Raycast 胶囊选择器与测试全绿)
+- **10 大厂商正版开源矢量 SVG Logo**：挂载 SimpleIcons / LobeHub 官方开源矢量 Logo（OpenAI, DeepSeek, Claude, Gemini, SiliconFlow, Zhipu, Qwen, Kimi, Ollama, Groq）。
+- **Raycast / Linear 极简同圆徽章选择器**：采用 24px 微型同圆徽章与圆角胶囊 Pill 造型，兼具高级感与规范排版。
+- **🟢 绿光 Key 状态指示灯与 🔑 全局计数器**：无需点击即可直观洞察哪些厂商已配置 API Key 及全局已配置总数。
+- **一键清空 Key (`✕`) 与安全校验拦截**：支持聚焦自动高亮与一键清空 Key；连接测试去除了环境 Key 静默回退，空 Key 请求精准返回 400 校验拦截提示。
+- **仓库深度清理**：全量清除开发过程生成的 49 个临时碎片文件与 10 个测试过程目录，测试集 34/34 持续 100% 全绿。
+
 ---
 
 ## Ⅲ. 核心架构与工程守则 (Architecture & Guardrails)
@@ -81,12 +98,12 @@ flowchart TD
 ```
 Gabriel/
 ├── src/
-│   ├── main.py            # FastAPI 后端: REST API + WebSocket + 日志 Tailer + FTS5/向量 KB
+│   ├── main.py            # FastAPI 后端: REST API + WebSocket + 日志 Tailer + FTS5/向量 KB + 多服务商持久化
 │   ├── mcp_server.py      # Stdio MCP 服务 (供 External Agent 调用)
-│   └── run.py             # pywebview 桌面包装壳
+│   └── run.py             # pywebview 桌面包装壳 (1/4 屏幕无边框形态)
 ├── static/
 │   ├── index.html         # Dashboard 页面 (4 大视图 + Token 登录)
-│   ├── script.js          # 前端交互逻辑
+│   ├── script.js          # 前端交互逻辑 (i18n、WS、模式 Popover、动态模型拉取)
 │   ├── style.css          # v4 Light Indigo 样式系统
 │   ├── icons.js           # Lucide 图标模块
 │   └── vendor/            # 本地 Vendor 字体与 JS 依赖 (零 CDN)
@@ -107,25 +124,27 @@ Gabriel/
 3. **KB 写入与检索单一入口**：写入强制走 `save_insight()`，检索强制走 `search_kb()`，禁止手写平行 SQL 逻辑。
 4. **离线降级策略**：向量库缺失或 LLM 连接失败时必须无缝平滑降级至本地 FTS5，严禁抛错阻塞主流程。
 5. **变动必须通过验证**：修改后必须确保 `pytest tests/` (34 个测试)、`ruff check` 和 `node --check` 全绿。
+6. **开源对比全局指令**：优化时必须一直联网参考开源优质项目（Cherry Studio, LobeChat, NextChat, One-API）的设计规范与技术最佳实践。
 
 ---
 
 ## Ⅳ. 后续重启开发路线图 (Future Roadmap When Resuming)
 
-如果未来恢复 Gabriel 的开发，建议按以下优先级逐步推进：
+根据开源标杆项目深度对比，后续开发建议按以下优先级逐步推进：
 
-### 阶段 1：精细化遥测与快照增强 (P0)
-- **三层上下文快照优化**：将 Ask Side-brain 时的上下文抓取升级为“现场状态 + 关键时间线 + 增量日志尾部”，自动对连续重复的 `TOOL_RESPONSE` 进行压缩截断。
-- **KB 权重动态衰减**：在 `kb_feedback` 的基础上引入时间衰减与样本数加权公式，让最近且验证有效的解法排序更高。
+### 阶段 1：高可用路由与 Token 观测性 (P0 - 近期可落地)
+- **模型自动故障转移路由 (Model Fallback Router)**：参考 One-API 机制，当主模型 API 遭遇 503 繁忙或 429 限流时，自动无缝透明降级至备用服务商/模型，确保副驾永不卡死。
+- **Context Token 实时占用条 (Context Gauge Bar)**：在 Chat 窗口顶部显示当前对话上下文的 Token 占用百分比（如 `8,420 / 128,000 Tokens (6.5%)`）与消耗预估。
 
-### 阶段 2：系统级体验与多 Agent 编排 (P1)
-- **OS 原生托盘与系统通知**：支持 Windows 系统托盘驻留，当 Agent 处于长等待 (Waiting) 或反复卡点 (Stuck) 时触发系统级 Notify 弹窗。
-- **多并发 Agent Dashboard**：进一步强化 Grid 视图，支持按任务标签筛选多 Agent 会话，并实时展示 Token / Cost 消耗曲线。
+### 阶段 2：交互体验与系统级支持 (P1 - 体验突破)
+- **全局唤醒热键 (Global Shortcut Hotkey)**：支持 `Alt + G` 系统级快捷键，在 Windows 上任意应用下无缝呼出/隐藏 Gabriel 窗口。
+- **终端日志智能分流 (Interactive Log Search)**：在 Terminal Context 面板增加 `🔴 仅看报错`、`🛠️ 仅看工具` 选项卡，助用户秒定位卡点。
+- **Mermaid 图表与 Code Diff 渲染**：支持解析展示 Mermaid 架构流程图与 `git diff` 格式补丁对比。
 
-### 阶段 3：前端工程化与跨平台打包 (P2)
-- **前端组件化评估**：当 Vanilla JS 控制规模进一步扩大时，可评估将 `script.js` 拆分为 ES Module 或迁移至 Vite + React 架构。
-- **跨平台 CI 发行**：配置 GitHub Actions 构建 Linux AppImage 与 macOS DMG 发行包。
+### 阶段 3：生态扩展与副脑 MCP (P2 - 长期演进)
+- **副脑自用 MCP 工具箱 (Side-Brain MCP Client)**：允许 Gabriel 副脑调用外部 MCP 工具（如 Brave Web 搜索API、本地文件检索），提升调试与答疑能力。
+- **快捷指令库 (Slash Commands)**：提供 `/debug`、`/review` 等常用高频 Prompt 模版快捷触发。
 
 ---
 
-*(文档整理时间：2026-08-11 | 校验状态：代码库 34/34 测试通过)*
+*(文档更新时间：2026-08-11 | 校验状态：代码库 34/34 测试通过)*

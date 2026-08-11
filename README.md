@@ -1,12 +1,20 @@
-# Gabriel 👼 (加百列)
+<p align="center">
+  <img src="static/assets/pixel_q_rose_transparent.png" width="160" alt="Gabriel Lily Bouquet" style="margin-bottom: 8px;">
+</p>
 
-> **CLI AI Agent 的零侵入 GUI 副屏与旁路监视器** —— 零卡顿、零侵入、自带私有大脑。  
-> *A zero-intrusion, local-first GUI sidecar for Antigravity, Claude Code, and Cursor.*
+<h1 align="center">Gabriel 👼 (加百列)</h1>
 
-[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-brightgreen.svg)](pyproject.toml)
-[![Tests: 34 Passed](https://img.shields.io/badge/Tests-34%20Passed-success.svg)](tests/test_gabriel.py)
-[![Code Style: Ruff](https://img.shields.io/badge/Code%20Style-Ruff-000000.svg)](pyproject.toml)
+<p align="center">
+  <strong>CLI AI Agent 的零侵入 GUI 副屏与旁路监视器</strong> —— 零卡顿、零侵入、自带私有大脑。<br>
+  <em>A zero-intrusion, local-first GUI sidecar for Antigravity, Claude Code, and Cursor.</em>
+</p>
+
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-AGPL--3.0-blue.svg" alt="License: AGPL-3.0"></a>
+  <a href="pyproject.toml"><img src="https://img.shields.io/badge/Python-3.10+-brightgreen.svg" alt="Python 3.10+"></a>
+  <a href="tests/test_gabriel.py"><img src="https://img.shields.io/badge/Tests-34%20Passed-success.svg" alt="Tests: 34 Passed"></a>
+  <a href="pyproject.toml"><img src="https://img.shields.io/badge/Code%20Style-Ruff-000000.svg" alt="Code Style: Ruff"></a>
+</p>
 
 ---
 
@@ -27,10 +35,16 @@ Gabriel 最初是我在日常使用 CLI AI Agent（如 Antigravity / Claude Code
 
 - 🛡️ **零侵入 Tailer (Zero-Intrusion)**  
   基于增量字节偏移监听 Agent Transcript (`.jsonl`) 日志。无 PTY / 无 STDOUT 钩子，主 Agent 就算崩溃也影响不到 Gabriel，Gabriel 崩溃也绝不会打断主 Agent。
-- 🧠 **Side-brain 隔离沙盒问答**  
-  独立副脑对话框，自带终端上下文快照挂载。随心提问“它现在在干嘛？”“帮我分析这个 Trace”，问答记录持久化在 SQLite 中，完全不占用主 Agent 上下文。
-- 🎨 **Light Indigo 极简设计**  
-  借鉴 Stripe 的现代美学设计（`DESIGN.md`）：纯净白底 (`#ffffff`) + 藏青文字 (`#0d253d`) + 靛紫 (`#533afd`) 唯一 CTA。**100% 零 CDN 外部依赖**，字体与图标全本地 Vendor，断网也能丝滑使用。
+- 📐 **无边框 1/4 屏右侧悬浮副屏**  
+  启动自动定位在屏幕右上角 1/4 屏形态，支持自研无边框拖拽、窗口置顶 (`📌`) 与拉伸调节，并支持导航栏 (56px) 与终端面板一键隐藏折叠（`Ctrl + [` / `Ctrl + B`）。
+- 🧠 **CCSwitch 风格副脑问答沙盒**  
+  独立副脑对话框，配备 CCSwitch 风格的 **Segmented Pill 模式 Popover 选择器**（轻量助手 💨 / 私密问答 🔒 / 深度审计 🔬 / 一次性深拆 ⚡），自带终端上下文快照挂载与 SQLite 聊天持久化。
+- ⚙️ **多厂商开源 SVG Logo 与 Raycast 胶囊选择器**  
+  内置 OpenAI、Claude、DeepSeek、Gemini、硅基流动、智谱 GLM-4、通义千问、Kimi、Ollama 本地、Groq 等 10 大厂商**正版开源矢量 SVG Logo**。采用 24px 微型同圆徽章与 Raycast/Linear 极简胶囊造型，配备 **🟢 绿光 Key 状态指示灯** 与 **🔑 全局已配置 Key 计数器**。
+- 🔄 **极速 Key 替换与安全连接校验**  
+  支持一键清空 Key (`✕`) 与聚焦自动高亮覆盖。连接测试端点彻底去除了环境 Key 静默回退，空 Key 测试精准返回 400 校验拦截提示。
+- 🎨 **Claude Warm Parchment 与加百列百合美学**  
+  融合 Claude 暖羊皮纸背景 (`#faf8f5`)、赤陶琥珀高亮 (`#d97757`) 与 Nanobanana 加百列百合/月季切片图标 (`botanical_icon_*.png`)，自带 240px 浮动百合束启动页与系统托盘驻留。
 - 🔍 **双重 RRF 混合知识库 (FTS5 + Vector)**  
   `jieba` 中文分词 + `sqlite-vec` 向量语义检索，通过倒数排名融合 (RRF) 算法合并。Agent 报错时主动弹出过去积累的解决方案，并支持优雅离线降级。
 - 🛟 **卡点雷达与死循环检测 (Stuck Radar)**  

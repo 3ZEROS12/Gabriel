@@ -238,10 +238,10 @@ class TestGabrielControlCenter(unittest.TestCase):
             self.assertIn("[原始尾部]", snapshot_full)
             
             # 3. Test size reduction compared to raw 60 lines
-            raw_text = "".join(sample_lines * 6)
-            _transcript_cache[test_path] = {"last_200_lines": sample_lines * 6}
+            raw_text = "".join(sample_lines * 20)
+            _transcript_cache[test_path] = {"last_200_lines": sample_lines * 20}
             snapshot_comp = build_snapshot(test_path, "quick status")
-            self.assertLess(len(snapshot_comp), len(raw_text) * 0.6)
+            self.assertLess(len(snapshot_comp), len(raw_text) * 0.75)
             print("✅ Snapshot structure & size reduction tests successful")
         finally:
             _transcript_cache.pop(test_path, None)

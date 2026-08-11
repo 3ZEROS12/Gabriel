@@ -19,6 +19,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+from typing import Optional
 from pydantic import BaseModel
 import json
 import logging
@@ -355,7 +356,8 @@ logger.addHandler(handler)
 
 CONFIG_FILE = os.path.join(ROOT_DIR, "config.json")
 DEFAULT_CONFIG = {
-    "base_url": "https://generativelanguage.googleapis.com/v1beta/openai/",
+    "provider": "custom",
+    "base_url": "https://api.openai.com/v1",
     "api_key": "",
     "model": "gpt-4o-mini",
     "target_agent": "auto",
@@ -393,6 +395,17 @@ def init_schema(conn: sqlite3.Connection):
     cursor.execute("CREATE TABLE IF NOT EXISTS session_meta (id INTEGER PRIMARY KEY, agent_name TEXT, path TEXT, ts DATETIME DEFAULT CURRENT_TIMESTAMP, turns INTEGER DEFAULT 0, chars INTEGER DEFAULT 0, est_cost REAL DEFAULT 0.0)")
     cursor.execute("CREATE TABLE IF NOT EXISTS chat_history (id INTEGER PRIMARY KEY, agent_path TEXT, role TEXT, content TEXT, ts DATETIME DEFAULT CURRENT_TIMESTAMP)")
     cursor.execute("CREATE TABLE IF NOT EXISTS kb_meta (key TEXT PRIMARY KEY, value TEXT)")
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS provider_configs (
+            provider_id TEXT PRIMARY KEY,
+            base_url TEXT,
+            api_key TEXT,
+            model TEXT,
+            price_input REAL DEFAULT 0.0,
+            price_output REAL DEFAULT 0.0,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
     
     for col_def in ["turns INTEGER DEFAULT 0", "chars INTEGER DEFAULT 0", "est_cost REAL DEFAULT 0.0",
                     "input_tokens INTEGER DEFAULT 0", "output_tokens INTEGER DEFAULT 0",
@@ -457,6 +470,30 @@ def init_db():
 
 init_db()
 
+def load_db_api_key():
+    try:
+        db_path = os.path.join(ROOT_DIR, "knowledge.db")
+        with sqlite3.connect(db_path) as conn:
+            cur = conn.cursor()
+            cur.execute("SELECT value FROM kb_meta WHERE key = 'user_api_key'")
+            row = cur.fetchone()
+            if row and row[0]:
+                return row[0]
+    except Exception:
+        pass
+    return ""
+
+def save_db_api_key(key_str):
+    if not key_str or "****" in key_str:
+        return
+    try:
+        db_path = os.path.join(ROOT_DIR, "knowledge.db")
+        with sqlite3.connect(db_path) as conn:
+            conn.execute("INSERT OR REPLACE INTO kb_meta (key, value) VALUES ('user_api_key', ?)", (key_str.strip(),))
+            conn.commit()
+    except Exception as e:
+        logger.warning(f"Failed to persist API key to db: {e}")
+
 def load_config():
     current_config = copy.deepcopy(DEFAULT_CONFIG)
     if os.path.exists(CONFIG_FILE):
@@ -470,11 +507,24 @@ def load_config():
             try:
                 shutil.copy(CONFIG_FILE, CONFIG_FILE + ".corrupt.bak")
             except: pass
+
+    # If api_key in config is empty, load stored key from local database
+    if not current_config.get("api_key"):
+        db_key = load_db_api_key()
+        if db_key:
+            current_config["api_key"] = db_key
+
     return current_config
 
 def save_config(cfg):
     temp_fd, temp_path = tempfile.mkstemp(dir=ROOT_DIR, prefix="cfg_tmp_")
     safe_cfg = copy.deepcopy(cfg)
+    
+    # Save API key to local SQLite database for persistent recovery across restarts
+    api_key_to_save = safe_cfg.get("api_key", "")
+    if api_key_to_save and "****" not in api_key_to_save:
+        save_db_api_key(api_key_to_save)
+
     safe_cfg.pop("api_key", None)
         
     try:
@@ -507,9 +557,17 @@ load_dotenv()
 
 def get_ai_client():
     if not hasattr(get_ai_client, "_client"):
+        user_key = (config.get("api_key") or "").strip()
+        env_key = (os.environ.get("OPENAI_API_KEY") or "").strip()
+        api_key = user_key or env_key or "dummy"
+
+        base_url = (config.get("base_url") or "https://api.openai.com/v1").strip()
+        if not base_url.endswith("/"):
+            base_url += "/"
+
         get_ai_client._client = AsyncOpenAI(
-            base_url=config.get("base_url") or "https://api.openai.com/v1",
-            api_key=os.environ.get("OPENAI_API_KEY") or config.get("api_key") or "dummy"
+            base_url=base_url,
+            api_key=api_key
         )
     return get_ai_client._client
 
@@ -517,6 +575,7 @@ current_contexts = {}
 last_file = None
 
 class ConfigModel(BaseModel):
+    provider: Optional[str] = "custom"
     base_url: str
     api_key: str
     model: str
@@ -613,12 +672,72 @@ async def create_auth_ticket():
 async def ping():
     return {"status": "ok"}
 
+def load_db_provider_configs():
+    providers = {}
+    try:
+        db_path = os.path.join(ROOT_DIR, "knowledge.db")
+        with sqlite3.connect(db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute("SELECT provider_id, base_url, api_key, model, price_input, price_output FROM provider_configs")
+            rows = cur.fetchall()
+            for r in rows:
+                providers[r["provider_id"]] = {
+                    "base_url": r["base_url"] or "",
+                    "api_key": r["api_key"] or "",
+                    "model": r["model"] or "",
+                    "price_input": r["price_input"] or 0.0,
+                    "price_output": r["price_output"] or 0.0
+                }
+    except Exception as e:
+        logger.warning(f"Failed to load provider configs from db: {e}")
+    return providers
+
+def save_db_provider_config(provider_id, base_url, api_key, model, price_input=0.0, price_output=0.0):
+    if not provider_id:
+        return
+    try:
+        db_path = os.path.join(ROOT_DIR, "knowledge.db")
+        with sqlite3.connect(db_path) as conn:
+            cur = conn.cursor()
+            if api_key and "****" in api_key:
+                cur.execute("SELECT api_key FROM provider_configs WHERE provider_id = ?", (provider_id,))
+                row = cur.fetchone()
+                if row and row[0]:
+                    api_key = row[0]
+                else:
+                    api_key = ""
+            conn.execute("""
+                INSERT OR REPLACE INTO provider_configs (provider_id, base_url, api_key, model, price_input, price_output, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+            """, (provider_id, (base_url or "").strip(), (api_key or "").strip(), (model or "").strip(), float(price_input or 0.0), float(price_output or 0.0)))
+            conn.commit()
+    except Exception as e:
+        logger.warning(f"Failed to save provider config '{provider_id}' to db: {e}")
+
 @api_router.get("/config")
 async def get_config():
     cfg = load_config()
+    db_providers = load_db_provider_configs()
     api_key = cfg.get("api_key", "")
-    if api_key and len(api_key) > 8:
-        cfg["api_key"] = api_key[:3] + "****" + api_key[-3:]
+    if api_key:
+        if len(api_key) > 8:
+            cfg["api_key"] = api_key[:3] + "****" + api_key[-3:]
+        else:
+            cfg["api_key"] = "****"
+            
+    masked_providers = {}
+    for pid, pdata in db_providers.items():
+        k = pdata.get("api_key", "")
+        m_k = (k[:3] + "****" + k[-3:]) if len(k) > 6 else ("****" if k else "")
+        masked_providers[pid] = {
+            "base_url": pdata.get("base_url", ""),
+            "api_key": m_k,
+            "model": pdata.get("model", ""),
+            "price_input": pdata.get("price_input", 0.0),
+            "price_output": pdata.get("price_output", 0.0)
+        }
+    cfg["providers"] = masked_providers
     return JSONResponse(cfg)
 
 @api_router.post("/config")
@@ -626,8 +745,27 @@ async def update_config(cfg: ConfigModel):
     global config
     try:
         new_cfg = cfg.model_dump() if hasattr(cfg, "model_dump") else cfg.dict()
-        if new_cfg.get("api_key") == "" or "****" in new_cfg.get("api_key", ""):
-            new_cfg["api_key"] = config.get("api_key", "")
+        input_key = (new_cfg.get("api_key") or "").strip()
+        provider_id = (new_cfg.get("provider") or "custom").strip()
+        
+        db_providers = load_db_provider_configs()
+        saved_provider_data = db_providers.get(provider_id, {})
+        
+        if not input_key or "****" in input_key:
+            new_cfg["api_key"] = saved_provider_data.get("api_key") or config.get("api_key", "")
+        else:
+            new_cfg["api_key"] = input_key
+            save_db_api_key(input_key)
+
+        save_db_provider_config(
+            provider_id=provider_id,
+            base_url=new_cfg.get("base_url", ""),
+            api_key=new_cfg.get("api_key", ""),
+            model=new_cfg.get("model", ""),
+            price_input=new_cfg.get("price_input_per_m", 0.0),
+            price_output=new_cfg.get("price_output_per_m", 0.0)
+        )
+
         config.update(new_cfg)
         save_config(config)
         
@@ -638,6 +776,111 @@ async def update_config(cfg: ConfigModel):
         return {"status": "ok"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+class TestConfigModel(BaseModel):
+    base_url: Optional[str] = None
+    api_key: Optional[str] = None
+    model: Optional[str] = None
+
+@api_router.post("/config/test")
+async def test_config(req: TestConfigModel):
+    try:
+        test_base_url = (req.base_url or config.get("base_url") or "https://api.openai.com/v1").strip()
+        test_api_key = (req.api_key or "").strip()
+        
+        if "****" in test_api_key:
+            test_api_key = (config.get("api_key") or "").strip()
+
+        if not test_api_key or test_api_key == "dummy":
+            return JSONResponse({
+                "status": "error",
+                "message": "API Key 为空，请输入有效的 API Key 后再进行连接测试。"
+            }, status_code=400)
+
+        if not test_base_url.endswith("/"):
+            test_base_url += "/"
+
+        # Provider mismatch heuristic diagnosis
+        if test_api_key.startswith("sk-") and "generativelanguage.googleapis.com" in test_base_url:
+            return JSONResponse({
+                "status": "error",
+                "message": "接口 Base URL 冲突：您输入的 Key 为 OpenAI/DeepSeek 格式，但当前 Base URL 为 Google Gemini。请在【服务商预设】下拉菜单中选择对应服务商。"
+            }, status_code=400)
+
+        test_client = AsyncOpenAI(
+            base_url=test_base_url,
+            api_key=test_api_key
+        )
+
+        await asyncio.wait_for(
+            test_client.chat.completions.create(
+                model=test_model,
+                messages=[{"role": "user", "content": "hi"}],
+                max_tokens=2
+            ),
+            timeout=10.0
+        )
+
+        return JSONResponse({
+            "status": "ok",
+            "message": f"✅ 连接测试成功！模型 '{test_model}' 响应正常。"
+        })
+    except asyncio.TimeoutError:
+        return JSONResponse({
+            "status": "error",
+            "message": "❌ 连接超时 (10s)：无法连接到指定 Base URL，请检查网络或 URL 拼写。"
+        }, status_code=504)
+    except openai.AuthenticationError as e:
+        return JSONResponse({
+            "status": "error",
+            "message": f"❌ 鉴权失败 (401)：API Key 无效或格式错误。详细信息: {e}"
+        }, status_code=401)
+    except openai.NotFoundError as e:
+        return JSONResponse({
+            "status": "error",
+            "message": f"❌ 端点/模型未找到 (404)：请检查 Model 名称 '{test_model}' 与 Base URL。详细信息: {e}"
+        }, status_code=404)
+    except Exception as e:
+        return JSONResponse({
+            "status": "error",
+            "message": f"❌ API 连接测试失败: {str(e)}"
+        }, status_code=400)
+
+@api_router.post("/config/models")
+async def fetch_provider_models(req: TestConfigModel):
+    try:
+        test_base_url = (req.base_url or config.get("base_url") or "https://api.openai.com/v1").strip()
+        test_api_key = (req.api_key or "").strip()
+        
+        if "****" in test_api_key:
+            test_api_key = (config.get("api_key") or "").strip()
+
+        if not test_api_key or test_api_key == "dummy":
+            return JSONResponse({
+                "status": "error",
+                "message": "API Key 为空，请输入 API Key 后再获取模型列表。"
+            }, status_code=400)
+
+        test_base_url = test_base_url.rstrip("/") + "/"
+
+        test_client = AsyncOpenAI(
+            base_url=test_base_url,
+            api_key=test_api_key
+        )
+
+        res = await asyncio.wait_for(test_client.models.list(), timeout=10.0)
+        models_list = [m.id for m in res.data]
+        return JSONResponse({
+            "status": "ok",
+            "models": models_list,
+            "message": f"✅ 成功获取 {len(models_list)} 个可用模型！"
+        })
+    except Exception as e:
+        logger.error(f"Fetch models error: {e}")
+        return JSONResponse({
+            "status": "error",
+            "message": f"无法自动拉取远程模型列表 ({str(e)})"
+        }, status_code=400)
 
 
 _agent_scan_cache = {}
@@ -2057,13 +2300,24 @@ async def websocket_endpoint(websocket: WebSocket, token: str = None, ticket: st
                     
                 except Exception as e:
                     logger.error(f"[AI Model Error]: {e}")
-                    error_msg = str(e)
+                    err_str = str(e)
+                    tip = "请在【设置】中检查 API Key 或 Base URL。"
+                    if "401" in err_str or "Authentication" in err_str:
+                        tip = "🔑 鉴权失败 (401)：当前服务商的 API Key 无效或过期，请前往【设置】重新填入 Key。"
+                    elif "404" in err_str or "Not Found" in err_str:
+                        tip = f"🤖 模型未找到 (404)：模型 '{config.get('model')}' 在该 Endpoint 上不可用，建议在【设置】中点击【🔄 自动获取可用模型】。"
+                    elif "429" in err_str or "Rate limit" in err_str or "quota" in err_str:
+                        tip = "💳 限流或余额不足 (429/402)：服务商账号欠费或请求过于频繁，请检查余额后重试。"
+                    elif "Timeout" in err_str or "Connection" in err_str:
+                        tip = "🌐 无法连接 API Endpoint (504/Timeout)：网络超时，请检查代理设置或 Base URL。"
+
                     friendly_error = (
-                        f"\n\n<div style='background:rgba(239, 68, 68, 0.1); border:1px solid rgba(239, 68, 68, 0.4); "
-                        f"padding:12px; border-radius:8px; color:#fca5a5; margin-top:8px; font-size:0.9rem;'>"
-                        f"<strong>⚠️ AI Request Failed</strong><br>"
-                        f"I couldn't process that request. The backend encountered an error: <br><code>{error_msg}</code><br>"
-                        f"<em>Tip: Check your API key or network connection.</em></div>"
+                        f"\n\n<div class='ai-err-card' style='background:var(--canvas-soft); border:1px solid var(--hairline-strong); "
+                        f"padding:10px 14px; border-radius:8px; margin-top:8px; font-size:0.85rem; color:var(--ink);'>"
+                        f"<strong>⚠️ 无法调通 AI 大模型响应</strong><br>"
+                        f"<span style='color:var(--ink-mute);'>{tip}</span><br>"
+                        f"<details style='margin-top:6px;'><summary style='cursor:pointer; font-size:0.75rem; color:var(--ink-mute);'>查看原始错误堆栈</summary>"
+                        f"<code style='font-size:0.75rem;'>{html.escape(err_str)}</code></details></div>"
                     )
                     try:
                         await wrapper.send_text(json.dumps({
@@ -2073,7 +2327,6 @@ async def websocket_endpoint(websocket: WebSocket, token: str = None, ticket: st
                         await wrapper.send_text(json.dumps({
                             "type": "ai_response_end"
                         }))
-                        # Remove the failed user prompt so it doesn't corrupt history
                         if chat_history and chat_history[-1]["role"] == "user":
                             chat_history.pop()
                     except Exception:

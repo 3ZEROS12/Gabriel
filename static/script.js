@@ -11,12 +11,16 @@ const dict = {
         "kb_title": "Knowledge Draft", "kb_copy": "Copy Injection Command", "kb_desc": "Review Gabriel's insight before injecting into main CLI.",
         "kb_placeholder": "Gabriel's insights will appear here...", "kb_save": "Save Draft",
         "settings_title": "API & Model Settings", "settings_desc": "Universal configuration for OpenAI-compatible endpoints.",
+        "settings_provider": "LLM Provider Preset", "settings_provider_hint": "Select a popular provider to auto-fill Base URL & Model Name.",
+        "provider_custom": "🛠️ Custom (Manual Endpoint)", "provider_openai": "⚡ OpenAI (Official)", "provider_deepseek": "🐋 DeepSeek (Official API)",
+        "provider_siliconflow": "🌊 SiliconFlow (硅基流动)", "provider_zhipu": "💡 Zhipu BigModel (GLM-4)", "provider_qwen": "🌐 Qwen DashScope (通义千问)",
+        "provider_moonshot": "🌙 Kimi (Moonshot AI)", "provider_ollama": "🦙 Ollama (Local Model)", "provider_groq": "🚀 Groq (Fast Inference)",
         "settings_baseurl": "Base URL", "settings_apikey": "API Key", "settings_model": "Model Name",
         "settings_workflow": "Workflow Strategy", "settings_merge": "Knowledge Base Merge", "settings_save": "Save Configuration",
         "mode_manual": "Manual (Geek)", "mode_auto": "Automatic",
-        "chat_mode_title": "Side-brain Mode", "mode_light": "💨 Quick (Snapshot + Save)", "mode_private": "🔒 Private (Snapshot, no save)", "mode_audit": "🔬 Deep Audit (Full + Save)", "mode_onedive": "⚡ One-shot Deep (Full, no save)",
+        "chat_mode_title": "Side-brain Mode", "mode_light": "💨 Quick", "mode_private": "🔒 Private", "mode_audit": "🔬 Audit", "mode_onedive": "⚡ One-Shot",
         "settings_ui": "UI Preferences", "settings_lang": "Language", "lang_en": "English", "lang_zh": "中文 (Chinese)",
-        "copied": "Copied to Clipboard!", "saved": "Saved", "scanning": "Scanning...","radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 4.0.0 (Light Indigo)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "👼 Gabriel",
+        "copied": "Copied to Clipboard!", "saved": "Saved", "scanning": "Scanning...","radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_fold_sidebar": "Toggle Navigation Fold (Ctrl+[)", "title_pin": "Toggle Always on Top", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 4.0.0 (Light Indigo)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "👼 Gabriel",
         "chat_feedback": "Feedback", "kb_recommendation": "Knowledge Base Recommendation"
     },
     "zh": {
@@ -31,13 +35,16 @@ const dict = {
         "kb_title": "知识注入草稿", "kb_copy": "复制注入指令", "kb_desc": "在注入主终端前，检查加百列整理的方案。",
         "kb_placeholder": "加百列的知识草稿将在此生成...", "kb_save": "保存草稿",
         "settings_title": "API 与模型设置", "settings_desc": "配置兼容 OpenAI 格式的大语言模型服务。",
+        "settings_provider": "LLM 服务商快捷预设", "settings_provider_hint": "选择服务商后将自动填入 URL 和默认模型，您只需输入 Key 即可。",
+        "provider_custom": "🛠️ 自定义接口 (OpenAI 兼容)", "provider_openai": "⚡ OpenAI 官方 API", "provider_deepseek": "🐋 DeepSeek 官方 API",
+        "provider_siliconflow": "🌊 硅基流动 (SiliconFlow)", "provider_zhipu": "💡 智谱 BigModel (GLM-4)", "provider_qwen": "🌐 阿里云通义千问 (Qwen DashScope)",
+        "provider_moonshot": "🌙 Kimi (Moonshot AI)", "provider_ollama": "🦙 Ollama 本地模型", "provider_groq": "🚀 Groq 极速 API",
         "settings_baseurl": "接口地址 (Base URL)", "settings_apikey": "密钥 (API Key)", "settings_model": "模型名称 (Model)",
         "settings_workflow": "工作流策略", "settings_merge": "知识库合并模式", "settings_save": "保存配置",
         "mode_manual": "手动提取 (极客)", "mode_auto": "全自动注入",
-        "chat_mode_title": "副脑模式", "mode_light": "💨 轻量助手（快照+保存）", "mode_private": "🔒 私密问答（快照+不保存）", "mode_audit": "🔬 深潜审计（完整上下文+保存）", "mode_onedive": "⚡ 一次性深潜（完整+不保存）",
+        "chat_mode_title": "副脑模式", "mode_light": "💨 轻量对话", "mode_private": "🔒 私密问答", "mode_audit": "🔬 深度审计", "mode_onedive": "⚡ 无痕深拆",
         "settings_ui": "界面偏好", "settings_lang": "显示语言",
-        "copied": "已复制到剪贴板！", "saved": "已保存", "scanning": "正在扫描...", "radar_target": "目标 Agent", "radar_scanning": "正在扫描 Agent...", "settings_about": "关于 Gabriel", "radar_empty": "未发现活跃 Agent", "radar_no_agents_hint": "在终端启动 Agent 后会显示在这里", "agent_last_active": "最后活跃:", "agent_volume": "体量:", "agent_steps": "步", "btn_lock": "锁定", "err_fetching_agents": "获取 Agent 列表失败。", "btn_edit": "✏️ 编辑", "btn_preview": "👁 预览", "status_connected": "已连接", "status_disconnected": "已断开", "gen_draft": "⏳ 正在生成解决方案草稿...", "saving": "保存中...", "title_minimize": "最小化", "title_close": "关闭", "title_control_center": "控制中心", "title_agent_radar": "Agent 雷达", "title_knowledge_base": "知识库", "title_settings": "设置", "btn_preview_kb": "👁 预览", "about_version": "版本 4.0.0（Light Indigo）", "about_created": "作者", "about_subtitle": "\"自主智能体缺失的视觉副驾\"", "auto_track": "自动追踪最新", "status_wait": "等待中...", "gabriel_logo": "👼 Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "反馈", "kb_recommendation": "知识库推荐",
-        
+        "copied": "已复制到剪贴板！", "saved": "已保存", "scanning": "正在扫描...", "radar_target": "目标 Agent", "radar_scanning": "正在扫描 Agent...", "settings_about": "关于 Gabriel", "radar_empty": "未发现活跃 Agent", "radar_no_agents_hint": "在终端启动 Agent 后会显示在这里", "agent_last_active": "最后活跃:", "agent_volume": "体量:", "agent_steps": "步", "btn_lock": "锁定", "err_fetching_agents": "获取 Agent 列表失败。", "btn_edit": "✏️ 编辑", "btn_preview": "👁 预览", "status_connected": "已连接", "status_disconnected": "已断开", "gen_draft": "⏳ 正在生成解决方案草稿...", "saving": "保存中...", "title_minimize": "最小化", "title_close": "关闭", "title_fold_sidebar": "折叠/展开导航栏 (Ctrl+[)", "title_pin": "置顶/取消置顶", "title_control_center": "控制中心", "title_agent_radar": "Agent 雷达", "title_knowledge_base": "知识库", "title_settings": "设置", "btn_preview_kb": "👁 预览", "about_version": "版本 4.0.0（Light Indigo）", "about_created": "作者", "about_subtitle": "\"自主智能体缺失的视觉副驾\"", "auto_track": "自动追踪最新", "status_wait": "等待中...", "gabriel_logo": "👼 Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "反馈", "kb_recommendation": "知识库推荐",
     },
     "ja": {
         "nav_chat": "チャット", "nav_radar": "レーダー", "nav_kb": "知識ベース", "nav_settings": "設定",
@@ -54,10 +61,9 @@ const dict = {
         "settings_baseurl": "ベース URL", "settings_apikey": "API キー", "settings_model": "モデル名",
         "settings_workflow": "ワークフロー戦略", "settings_merge": "知識ベース結合モード", "settings_save": "設定を保存",
         "mode_manual": "手動抽出", "mode_auto": "自動注入",
-        "chat_mode_title": "サイドブレインモード", "mode_light": "💨 クイック（スナップショット+保存）", "mode_private": "🔒 プライベート（スナップショット、保存なし）", "mode_audit": "🔬 ディープ監査（全文脈+保存）", "mode_onedive": "⚡ ワンショット（全文脈、保存なし）",
+        "chat_mode_title": "サイドブレインモード", "mode_light": "💨 クイック", "mode_private": "🔒 プライベート", "mode_audit": "🔬 監査", "mode_onedive": "⚡ ワンショット",
         "settings_ui": "UI 設定", "settings_lang": "表示言語",
         "copied": "コピーしました！", "saved": "保存しました", "scanning": "スキャン中...", "radar_target": "対象エージェント", "radar_scanning": "エージェントをスキャン中...", "settings_about": "Gabriel について", "radar_empty": "アクティブなエージェントなし", "radar_no_agents_hint": "ターミナルでエージェントを起動するとここに表示されます", "agent_last_active": "最終アクティブ:", "agent_volume": "ボリューム:", "agent_steps": "ステップ", "btn_lock": "ロック", "err_fetching_agents": "エージェントの取得に失敗", "btn_edit": "✏️ 編集", "btn_preview": "👁 プレビュー", "status_connected": "接続済み", "status_disconnected": "切断済み", "gen_draft": "⏳ ソリューション草案を生成中...", "saving": "保存中...", "title_minimize": "最小化", "title_close": "閉じる", "title_control_center": "コントロールセンター", "title_agent_radar": "エージェントレーダー", "title_knowledge_base": "ナレッジベース", "title_settings": "設定", "btn_preview_kb": "👁 プレビュー", "about_version": "バージョン 4.0.0（Light Indigo）", "about_created": "作成者", "about_subtitle": "\"自律エージェントに欠けたビジュアルサイドカー\"", "auto_track": "最新を自動追跡", "status_wait": "待機中...", "gabriel_logo": "👼 Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "フィードバック", "kb_recommendation": "ナレッジベースのおすすめ",
-        
     },
     "zh-TW": {
         "nav_chat": "對話", "nav_radar": "雷達", "nav_kb": "知識庫", "nav_settings": "設定",
@@ -74,10 +80,9 @@ const dict = {
         "settings_baseurl": "介面位址 (Base URL)", "settings_apikey": "密鑰 (API Key)", "settings_model": "模型名稱 (Model)",
         "settings_workflow": "工作流策略", "settings_merge": "知識庫合併模式", "settings_save": "保存配置",
         "mode_manual": "手動提取 (極客)", "mode_auto": "全自動注入",
-        "chat_mode_title": "副腦模式", "mode_light": "💨 輕量助手（快照+保存）", "mode_private": "🔒 私密問答（快照+不保存）", "mode_audit": "🔬 深潛審計（完整上下文+保存）", "mode_onedive": "⚡ 一次性深潛（完整+不保存）",
+        "chat_mode_title": "副腦模式", "mode_light": "💨 輕量對話", "mode_private": "🔒 私密問答", "mode_audit": "🔬 深度審計", "mode_onedive": "⚡ 無痕深拆",
         "settings_ui": "介面偏好", "settings_lang": "顯示語言",
         "copied": "已複製到剪貼簿！", "saved": "已保存", "scanning": "正在掃描...", "radar_target": "目標 Agent", "radar_scanning": "正在掃描 Agent...", "settings_about": "關於 Gabriel", "radar_empty": "未發現活躍 Agent", "radar_no_agents_hint": "在終端啟動 Agent 後會顯示在這裡", "agent_last_active": "最後活躍:", "agent_volume": "體量:", "agent_steps": "步", "btn_lock": "鎖定", "err_fetching_agents": "獲取 Agent 列表失敗。", "btn_edit": "✏️ 編輯", "btn_preview": "👁 預覽", "status_connected": "已連線", "status_disconnected": "已斷線", "gen_draft": "⏳ 正在生成解決方案草稿...", "saving": "儲存中...", "title_minimize": "最小化", "title_close": "關閉", "title_control_center": "控制中心", "title_agent_radar": "Agent 雷達", "title_knowledge_base": "知識庫", "title_settings": "設定", "btn_preview_kb": "👁 預覽", "about_version": "版本 4.0.0（Light Indigo）", "about_created": "作者", "about_subtitle": "\"自主智能體缺失的視覺副駕\"", "auto_track": "自動追蹤最新", "status_wait": "等待中...", "gabriel_logo": "👼 Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "回饋", "kb_recommendation": "知識庫推薦",
-        
     },
     "fr": {
         "nav_chat": "Chat", "nav_radar": "Radar", "nav_kb": "Base de C.", "nav_settings": "Paramètres",
@@ -94,10 +99,9 @@ const dict = {
         "settings_baseurl": "URL de base", "settings_apikey": "Clé API", "settings_model": "Modèle",
         "settings_workflow": "Stratégie de Workflow", "settings_merge": "Mode de Fusion", "settings_save": "Enregistrer",
         "mode_manual": "Manuel (Geek)", "mode_auto": "Automatique",
-        "chat_mode_title": "Mode second cerveau", "mode_light": "💨 Rapide (Snapshot + Sauvegarde)", "mode_private": "🔒 Privé (Snapshot, sans sauvegarde)", "mode_audit": "🔬 Audit profond (Contexte complet + Sauvegarde)", "mode_onedive": "⚡ Plongée unique (Complet, sans sauvegarde)",
+        "chat_mode_title": "Mode second cerveau", "mode_light": "💨 Rapide", "mode_private": "🔒 Privé", "mode_audit": "🔬 Audit", "mode_onedive": "⚡ Plongée unique",
         "settings_ui": "Préférences UI", "settings_lang": "Langue",
         "copied": "Copié !", "saved": "Enregistré", "scanning": "Analyse...", "radar_target": "Agent cible", "radar_scanning": "Analyse des agents...", "settings_about": "À propos de Gabriel", "radar_empty": "Aucun agent actif", "radar_no_agents_hint": "Démarrez un agent dans votre terminal pour le voir ici", "agent_last_active": "Dernière activité :", "agent_volume": "Volume :", "agent_steps": "étapes", "btn_lock": "Verrouiller", "err_fetching_agents": "Erreur lors du chargement des agents.", "btn_edit": "✏️ Éditer", "btn_preview": "👁 Aperçu", "status_connected": "Connecté", "status_disconnected": "Déconnecté", "gen_draft": "⏳ Génération du brouillon...", "saving": "Enregistrement...", "title_minimize": "Réduire", "title_close": "Fermer", "title_control_center": "Centre de contrôle", "title_agent_radar": "Radar d'agents", "title_knowledge_base": "Base de connaissances", "title_settings": "Paramètres", "btn_preview_kb": "👁 Aperçu", "about_version": "Version 4.0.0 (Light Indigo)", "about_created": "Créé par", "about_subtitle": "\"Le sidecar visuel manquant pour les agents autonomes\"", "auto_track": "Suivi auto du plus récent", "status_wait": "Attente...", "gabriel_logo": "👼 Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "Commentaires", "kb_recommendation": "Recommandation de la base",
-        
     },
     "es": {
         "nav_chat": "Chat", "nav_radar": "Radar", "nav_kb": "Base C.", "nav_settings": "Ajustes",
@@ -114,10 +118,9 @@ const dict = {
         "settings_baseurl": "URL Base", "settings_apikey": "Clave API", "settings_model": "Modelo",
         "settings_workflow": "Flujo de trabajo", "settings_merge": "Modo de Fusión", "settings_save": "Guardar Ajustes",
         "mode_manual": "Manual (Geek)", "mode_auto": "Automático",
-        "chat_mode_title": "Modo cerebro auxiliar", "mode_light": "💨 Rápido (Snapshot + Guardar)", "mode_private": "🔒 Privado (Snapshot, sin guardar)", "mode_audit": "🔬 Auditoría profunda (Contexto completo + Guardar)", "mode_onedive": "⚡ Inmersión única (Completo, sin guardar)",
+        "chat_mode_title": "Modo cerebro auxiliar", "mode_light": "💨 Rápido", "mode_private": "🔒 Privado", "mode_audit": "🔬 Auditoría", "mode_onedive": "⚡ Inmersión única",
         "settings_ui": "Preferencias de IU", "settings_lang": "Idioma",
-        "copied": "¡Copiado!", "saved": "Guardado", "scanning": "Escaneando...", "radar_target": "Agente objetivo", "radar_scanning": "Escaneando agentes...", "settings_about": "Acerca de Gabriel", "radar_empty": "Sin agentes activos", "radar_no_agents_hint": "Inicia un agente en tu terminal para verlo aquí", "agent_last_active": "Última actividad:", "agent_volume": "Volumen:", "agent_steps": "pasos", "btn_lock": "Bloquear", "err_fetching_agents": "Error al cargar agentes.", "btn_edit": "✏️ Editar", "btn_preview": "👁 Vista previa", "status_connected": "Conectado", "status_disconnected": "Desconectado", "gen_draft": "⏳ Generando borrador...", "saving": "Guardando...", "title_minimize": "Minimizar", "title_close": "Cerrar", "title_control_center": "Centro de control", "title_agent_radar": "Radar de agentes", "title_knowledge_base": "Base de conocimientos", "title_settings": "Ajustes", "btn_preview_kb": "👁 Vista previa", "about_version": "Versión 3.1.0 (Cyber-Dark)", "about_created": "Creado por", "about_subtitle": "\"El sidecar visual que faltaba para agentes autónomos\"", "auto_track": "Seguir el más reciente", "status_wait": "Esperando...", "gabriel_logo": "👼 Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "Comentarios", "kb_recommendation": "Recomendación de la base",
-        
+        "copied": "¡Copiado!", "saved": "Guardado", "scanning": "Escaneando...", "radar_target": "Agente objetivo", "radar_scanning": "Escaneando agentes...", "settings_about": "Acerca de Gabriel", "radar_empty": "Sin agentes activos", "radar_no_agents_hint": "Inicia un agente en tu terminal para verlo aquí", "agent_last_active": "Última actividad:", "agent_volume": "Volumen:", "agent_steps": "pasos", "btn_lock": "Bloquear", "err_fetching_agents": "Error al cargar agentes.", "btn_edit": "✏️ Editar", "btn_preview": "👁 Vista previa", "status_connected": "Conectado", "status_disconnected": "Desconectado", "gen_draft": "⏳ Generando borrador...", "saving": "Guardando...", "title_minimize": "Minimizar", "title_close": "Cerrar", "title_control_center": "Centro de control", "title_agent_radar": "Radar de agentes", "title_knowledge_base": "Base de conocimientos", "title_settings": "Ajustes", "btn_preview_kb": "👁 Vista previa", "about_version": "Versión 3.1.0 (Cyber-Dark)", "about_created": "Creado por", "about_subtitle": "\"El sidecar visual que faltaba para agentes autónomos\"", "auto_track": "Seguir el más reciente", "status_wait": "Esperando...", "gabriel_logo": "👼 Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "Comentarios", "kb_recommendation": "Recommandación de la base",
     },
     "ko": {
         "nav_chat": "채팅", "nav_radar": "레이더", "nav_kb": "지식 베이스", "nav_settings": "설정",
@@ -156,6 +159,18 @@ if (window.marked && window.hljs) {
     marked.setOptions({ renderer });
 }
 
+function safeMarkedParse(content) {
+    const strContent = (content !== null && content !== undefined) ? String(content) : '';
+    if (!strContent) return '';
+    try {
+        const rawHtml = window.marked ? marked.parse(strContent) : strContent;
+        return window.DOMPurify ? DOMPurify.sanitize(rawHtml) : rawHtml;
+    } catch (e) {
+        console.error("marked parse error:", e);
+        return window.DOMPurify ? DOMPurify.sanitize(strContent) : strContent;
+    }
+}
+
 // [NOTE]: Using localStorage for token is acceptable for this local single-machine tool. 
 // If Gabriel supports multi-user LAN access in the future, this must be re-evaluated.
 const urlParams = new URLSearchParams(window.location.search);
@@ -183,16 +198,23 @@ if (btnLogin) {
 }
 
 function applyLang() {
-    const map = dict[currentLang];
+    const map = dict[currentLang] || dict['en'];
     document.querySelectorAll('[data-i18n]').forEach(el => {
-        el.innerText = map[el.getAttribute('data-i18n')];
+        const key = el.getAttribute('data-i18n');
+        if (map && map[key] !== undefined) {
+            el.innerText = map[key];
+        }
     });
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-        el.placeholder = map[el.getAttribute('data-i18n-placeholder')];
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (map && map[key] !== undefined) {
+            el.placeholder = map[key];
+        }
     });
     document.querySelectorAll('[data-i18n-title]').forEach(el => {
-        if(map[el.getAttribute('data-i18n-title')]) {
-            el.title = map[el.getAttribute('data-i18n-title')];
+        const key = el.getAttribute('data-i18n-title');
+        if (map && map[key] !== undefined) {
+            el.title = map[key];
         }
     });
 }
@@ -205,12 +227,67 @@ document.getElementById('langSelect').addEventListener('change', (e) => {
     applyLang();
 });
 
+
 // --- Window Controls ---
-document.getElementById('btnClose').addEventListener('click', () => {
-    if(window.pywebview && window.pywebview.api) { window.pywebview.api.close(); }
-});
-document.getElementById('btnMin').addEventListener('click', () => {
-    if(window.pywebview && window.pywebview.api) { window.pywebview.api.minimize(); }
+const btnCloseEl = document.getElementById('btnClose');
+if (btnCloseEl) {
+    btnCloseEl.addEventListener('click', () => {
+        if (window.pywebview && window.pywebview.api) { window.pywebview.api.close(); }
+    });
+}
+const btnMinEl = document.getElementById('btnMin');
+if (btnMinEl) {
+    btnMinEl.addEventListener('click', () => {
+        if (window.pywebview && window.pywebview.api) { window.pywebview.api.minimize(); }
+    });
+}
+const btnPinEl = document.getElementById('btnPin');
+if (btnPinEl) {
+    btnPinEl.addEventListener('click', async () => {
+        if (window.pywebview && window.pywebview.api && window.pywebview.api.toggle_on_top) {
+            const isTop = await window.pywebview.api.toggle_on_top();
+            btnPinEl.style.opacity = isTop ? '1' : '0.4';
+        }
+    });
+}
+
+// --- Sidebar Collapse / Fold Logic ---
+const appSidebar = document.getElementById('appSidebar');
+const btnToggleSidebar = document.getElementById('btnToggleSidebar');
+const btnFoldSidebarFooter = document.getElementById('btnFoldSidebarFooter');
+
+function setSidebarCollapsed(collapsed) {
+    if (!appSidebar) return;
+    if (collapsed) {
+        appSidebar.classList.add('collapsed');
+        localStorage.setItem('gabriel_sidebar_collapsed', '1');
+    } else {
+        appSidebar.classList.remove('collapsed');
+        localStorage.setItem('gabriel_sidebar_collapsed', '0');
+    }
+}
+
+function toggleSidebar() {
+    if (!appSidebar) return;
+    const isColl = appSidebar.classList.contains('collapsed');
+    setSidebarCollapsed(!isColl);
+}
+
+if (btnToggleSidebar) btnToggleSidebar.addEventListener('click', toggleSidebar);
+if (btnFoldSidebarFooter) btnFoldSidebarFooter.addEventListener('click', toggleSidebar);
+
+(function initSidebar() {
+    const saved = localStorage.getItem('gabriel_sidebar_collapsed');
+    if (saved === '1' || (saved === null && window.innerWidth < 768)) {
+        setSidebarCollapsed(true);
+    }
+})();
+
+document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === '[') {
+        e.preventDefault();
+        toggleSidebar();
+    }
 });
 
 // --- Tab Navigation ---
@@ -232,7 +309,7 @@ navItems.forEach(item => {
     });
 });
 
-// URL ?tab= 深链支持（截图验收/书签用）— 读顶部缓存的 urlParams（replaceState 已清 search）
+// URL ?tab= 深链支持
 (function() {
     const wanted = urlParams.get('tab');
     if (wanted && document.querySelector('.nav-item[data-tab="tab-' + wanted + '"]')) {
@@ -240,32 +317,59 @@ navItems.forEach(item => {
     }
 })();
 
-// --- Toggle Context Panel ---
+// --- Toggle Context Panel & Persistence ---
 const contextPanel = document.getElementById('contextPanel');
 const dragResizer = document.getElementById('dragResizer');
-document.getElementById('btnToggleContext').addEventListener('click', () => {
-    contextPanel.classList.toggle('collapsed');
-    dragResizer.style.display = contextPanel.classList.contains('collapsed') ? 'none' : 'block';
-});
+
+function setContextCollapsed(collapsed) {
+    if (!contextPanel) return;
+    if (collapsed) {
+        contextPanel.classList.add('collapsed');
+        if (dragResizer) dragResizer.style.display = 'none';
+        localStorage.setItem('gabriel_context_collapsed', '1');
+    } else {
+        contextPanel.classList.remove('collapsed');
+        if (dragResizer) dragResizer.style.display = 'block';
+        localStorage.setItem('gabriel_context_collapsed', '0');
+    }
+}
+
+const btnToggleContext = document.getElementById('btnToggleContext');
+if (btnToggleContext) {
+    btnToggleContext.addEventListener('click', () => {
+        const isColl = contextPanel.classList.contains('collapsed');
+        setContextCollapsed(!isColl);
+    });
+}
 
 // Toggle Context Panel with Ctrl+B
 document.addEventListener('keydown', (e) => {
     if (e.ctrlKey && e.key.toLowerCase() === 'b') {
         e.preventDefault();
-        document.getElementById('btnToggleContext').click();
+        if (btnToggleContext) btnToggleContext.click();
     }
 });
 
+(function initContextPanel() {
+    const saved = localStorage.getItem('gabriel_context_collapsed');
+    if (saved === '1' || (saved === null && window.innerWidth < 768)) {
+        setContextCollapsed(true);
+    }
+})();
+
 // --- Resizer Logic ---
 let isResizing = false;
-dragResizer.addEventListener('mousedown', (e) => {
-    isResizing = true;
-    document.body.style.cursor = 'col-resize';
-});
+if (dragResizer) {
+    dragResizer.addEventListener('mousedown', (e) => {
+        isResizing = true;
+        document.body.style.cursor = 'col-resize';
+    });
+}
 document.addEventListener('mousemove', (e) => {
-    if (!isResizing) return;
-    const newWidth = e.clientX - 60; // 60 is sidebar width
-    if (newWidth > 200 && newWidth < window.innerWidth - 300) {
+    if (!isResizing || !contextPanel) return;
+    const sidebarW = appSidebar && appSidebar.classList.contains('collapsed') ? 56 : 240;
+    const newWidth = e.clientX - sidebarW;
+    if (newWidth > 150 && newWidth < window.innerWidth - 250) {
         contextPanel.style.flex = 'none';
         contextPanel.style.width = newWidth + 'px';
     }
@@ -277,13 +381,182 @@ document.addEventListener('mouseup', () => {
     }
 });
 
-// --- API Settings ---
+// --- API Settings & Provider Presets ---
 const cfgBaseUrl = document.getElementById('cfgBaseUrl');
 const cfgApiKey = document.getElementById('cfgApiKey');
 const cfgModel = document.getElementById('cfgModel');
+const cfgProviderPreset = document.getElementById('cfgProviderPreset');
 const cfgPriceInput = document.getElementById('cfgPriceInput');
 const cfgPriceOutput = document.getElementById('cfgPriceOutput');
 let currentTargetAgent = "auto";
+
+const PROVIDER_PRESETS = {
+    openai: {
+        base_url: 'https://api.openai.com/v1',
+        model: 'gpt-4o-mini',
+        price_input: 0.15,
+        price_output: 0.60
+    },
+    deepseek: {
+        base_url: 'https://api.deepseek.com/v1',
+        model: 'deepseek-chat',
+        price_input: 0.27,
+        price_output: 1.10
+    },
+    siliconflow: {
+        base_url: 'https://api.siliconflow.cn/v1',
+        model: 'deepseek-ai/DeepSeek-V3',
+        price_input: 0.20,
+        price_output: 0.80
+    },
+    zhipu: {
+        base_url: 'https://open.bigmodel.cn/api/paas/v4',
+        model: 'glm-4-flash',
+        price_input: 0.00,
+        price_output: 0.00
+    },
+    qwen: {
+        base_url: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+        model: 'qwen-plus',
+        price_input: 0.40,
+        price_output: 1.20
+    },
+    moonshot: {
+        base_url: 'https://api.moonshot.cn/v1',
+        model: 'moonshot-v1-8k',
+        price_input: 1.20,
+        price_output: 1.20
+    },
+    ollama: {
+        base_url: 'http://localhost:11434/v1',
+        model: 'qwen2.5-coder',
+        price_input: 0.00,
+        price_output: 0.00
+    },
+    groq: {
+        base_url: 'https://api.groq.com/openai/v1',
+        model: 'llama-3.3-70b-versatile',
+        price_input: 0.59,
+        price_output: 0.79
+    }
+};
+
+let savedProviderProfiles = {};
+
+function syncProviderPreset() {
+    if (!cfgProviderPreset || !cfgBaseUrl) return;
+    const url = (cfgBaseUrl.value || '').trim().replace(/\/+$/, '');
+    for (const [key, p] of Object.entries(PROVIDER_PRESETS)) {
+        if (p.base_url.replace(/\/+$/, '') === url) {
+            cfgProviderPreset.value = key;
+            return;
+        }
+    }
+    cfgProviderPreset.value = 'custom';
+}
+
+if (cfgProviderPreset) {
+    cfgProviderPreset.addEventListener('change', () => {
+        const val = cfgProviderPreset.value;
+        const saved = savedProviderProfiles[val];
+        const defaultPreset = PROVIDER_PRESETS[val];
+
+        if (saved && (saved.api_key || saved.base_url)) {
+            if (cfgBaseUrl) cfgBaseUrl.value = saved.base_url || (defaultPreset ? defaultPreset.base_url : '');
+            if (cfgApiKey) cfgApiKey.value = saved.api_key || '';
+            if (cfgModel) cfgModel.value = saved.model || (defaultPreset ? defaultPreset.model : '');
+            if (cfgPriceInput) cfgPriceInput.value = saved.price_input || (defaultPreset ? defaultPreset.price_input : 0);
+            if (cfgPriceOutput) cfgPriceOutput.value = saved.price_output || (defaultPreset ? defaultPreset.price_output : 0);
+        } else if (defaultPreset) {
+            if (cfgBaseUrl) cfgBaseUrl.value = defaultPreset.base_url;
+            if (cfgApiKey) cfgApiKey.value = '';
+            if (cfgModel) cfgModel.value = defaultPreset.model;
+            if (cfgPriceInput) cfgPriceInput.value = defaultPreset.price_input;
+            if (cfgPriceOutput) cfgPriceOutput.value = defaultPreset.price_output;
+        }
+        syncPricePreset();
+
+        // Sync active state on provider pills
+        const pills = document.querySelectorAll('.provider-pill');
+        pills.forEach(p => {
+            p.classList.toggle('active', p.dataset.provider === val);
+        });
+
+        // Auto trigger fetch models if API key is present
+        if (cfgApiKey && cfgApiKey.value.trim() && typeof btnFetchModelsEl !== 'undefined' && btnFetchModelsEl) {
+            btnFetchModelsEl.click();
+        }
+    });
+}
+
+// Multi-Provider Pill Grid Click Event Listener
+document.addEventListener('DOMContentLoaded', () => {
+    const providerPills = document.querySelectorAll('.provider-pill');
+    providerPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            const providerVal = pill.dataset.provider;
+            if (cfgProviderPreset) {
+                cfgProviderPreset.value = providerVal;
+                cfgProviderPreset.dispatchEvent(new Event('change'));
+            }
+        });
+    });
+
+    // Eye toggle for API Key visibility
+    const btnToggleVis = document.getElementById('btnToggleApiKeyVis');
+    const btnClearKey = document.getElementById('btnClearApiKey');
+    const inputApiKey = document.getElementById('cfgApiKey');
+
+    if (btnToggleVis && inputApiKey) {
+        btnToggleVis.addEventListener('click', () => {
+            const isPass = inputApiKey.type === 'password';
+            inputApiKey.type = isPass ? 'text' : 'password';
+            btnToggleVis.innerText = isPass ? '🔒' : '👁️';
+        });
+    }
+
+    if (btnClearKey && inputApiKey) {
+        btnClearKey.addEventListener('click', () => {
+            inputApiKey.value = '';
+            inputApiKey.focus();
+        });
+    }
+
+    if (inputApiKey) {
+        inputApiKey.addEventListener('focus', () => {
+            if (inputApiKey.value.includes('****')) {
+                inputApiKey.select();
+            }
+        });
+    }
+});
+
+if (cfgBaseUrl) cfgBaseUrl.addEventListener('input', syncProviderPreset);
+
+function updateProviderKeyStatusBadges() {
+    let configuredCount = 0;
+    const pills = document.querySelectorAll('.provider-pill');
+    pills.forEach(p => {
+        const pid = p.dataset.provider;
+        const profile = savedProviderProfiles ? savedProviderProfiles[pid] : null;
+        const currentSelected = cfgProviderPreset ? cfgProviderPreset.value : null;
+        
+        let hasKey = false;
+        if (profile && profile.api_key && profile.api_key.trim()) {
+            hasKey = true;
+        } else if (pid === currentSelected && cfgApiKey && cfgApiKey.value.trim() && cfgApiKey.value.trim() !== "dummy") {
+            hasKey = true;
+        }
+        
+        p.classList.toggle('has-key', hasKey);
+        if (hasKey) configuredCount++;
+    });
+    
+    const countBadge = document.getElementById('providerConfiguredCount');
+    if (countBadge) {
+        countBadge.innerText = `🔑 ${configuredCount} Configured`;
+    }
+}
 
 async function loadConfig() {
     try {
@@ -291,15 +564,25 @@ async function loadConfig() {
             headers: { 'X-Gabriel-Token': localToken }
         });
         const data = await res.json();
+        if (data.providers) {
+            savedProviderProfiles = data.providers;
+        }
         if(data.base_url) cfgBaseUrl.value = data.base_url;
         if(data.api_key) cfgApiKey.value = data.api_key;
         if(data.model) cfgModel.value = data.model;
         if(cfgPriceInput) cfgPriceInput.value = data.price_input_per_m ?? 1.0;
         if(cfgPriceOutput) cfgPriceOutput.value = data.price_output_per_m ?? 3.0;
+        if(data.provider && cfgProviderPreset) {
+            cfgProviderPreset.value = data.provider;
+            const pills = document.querySelectorAll('.provider-pill');
+            pills.forEach(p => p.classList.toggle('active', p.dataset.provider === data.provider));
+        }
         currentTargetAgent = data.target_agent || "auto";
         const toggleEl = document.getElementById('toggleAutoCursor');
         if (toggleEl) toggleEl.checked = (currentTargetAgent === "auto");
+        syncProviderPreset();
         syncPricePreset();
+        updateProviderKeyStatusBadges();
     } catch(e) { console.error("Config load error", e); }
 }
 
@@ -340,6 +623,7 @@ async function saveConfig() {
     if(isAuto) currentTargetAgent = "auto";
     
     const payload = {
+        provider: cfgProviderPreset ? cfgProviderPreset.value : "custom",
         base_url: cfgBaseUrl.value,
         api_key: cfgApiKey.value,
         model: cfgModel.value,
@@ -364,9 +648,133 @@ document.getElementById('btnSaveConfig').addEventListener('click', async () => {
     const originalText = btn.innerText;
     btn.innerText = dict[currentLang].saving || "Saving...";
     await saveConfig();
+    await loadConfig();
     btn.innerText = dict[currentLang].saved;
     setTimeout(() => btn.innerText = originalText, 1500);
 });
+
+const btnTestConfigEl = document.getElementById('btnTestConfig');
+if (btnTestConfigEl) {
+    btnTestConfigEl.addEventListener('click', async () => {
+        const resultEl = document.getElementById('cfgTestResult');
+        const origText = btnTestConfigEl.innerText;
+        btnTestConfigEl.disabled = true;
+        btnTestConfigEl.innerText = "⏳ Testing...";
+
+        if (resultEl) {
+            resultEl.classList.remove('hidden');
+            resultEl.style.background = 'var(--canvas-soft)';
+            resultEl.style.color = 'var(--ink)';
+            resultEl.style.border = '1px solid var(--hairline-strong)';
+            resultEl.innerText = "正在尝试连接大模型 API Endpoint，请稍候...";
+        }
+
+        try {
+            const payload = {
+                base_url: document.getElementById('cfgBaseUrl').value.trim(),
+                api_key: document.getElementById('cfgApiKey').value.trim(),
+                model: document.getElementById('cfgModel').value.trim()
+            };
+
+            const res = await fetch('/api/config/test', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Gabriel-Token': localToken
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            if (resultEl) {
+                if (res.ok && data.status === 'ok') {
+                    resultEl.style.background = '#dcfce7';
+                    resultEl.style.color = '#15803d';
+                    resultEl.style.border = '1px solid #86efac';
+                    resultEl.innerText = data.message || "✅ 连接测试成功！";
+                } else {
+                    resultEl.style.background = '#fee2e2';
+                    resultEl.style.color = '#991b1b';
+                    resultEl.style.border = '1px solid #fca5a5';
+                    resultEl.innerText = data.message || "❌ 连接测试失败，请检查设置。";
+                }
+            }
+        } catch (e) {
+            if (resultEl) {
+                resultEl.style.background = '#fee2e2';
+                resultEl.style.color = '#991b1b';
+                resultEl.style.border = '1px solid #fca5a5';
+                resultEl.innerText = "❌ 请求失败: " + e.message;
+            }
+        } finally {
+            btnTestConfigEl.disabled = false;
+            btnTestConfigEl.innerText = origText;
+        }
+    });
+}
+
+const btnFetchModelsEl = document.getElementById('btnFetchModels');
+const cfgModelSelectEl = document.getElementById('cfgModelSelect');
+const cfgFetchModelsStatusEl = document.getElementById('cfgFetchModelsStatus');
+
+if (btnFetchModelsEl) {
+    btnFetchModelsEl.addEventListener('click', async () => {
+        const origText = btnFetchModelsEl.innerText;
+        btnFetchModelsEl.disabled = true;
+        btnFetchModelsEl.innerText = "⏳ 正在获取...";
+        if (cfgFetchModelsStatusEl) {
+            cfgFetchModelsStatusEl.classList.remove('hidden');
+            cfgFetchModelsStatusEl.style.color = 'var(--ink-mute)';
+            cfgFetchModelsStatusEl.innerText = "正在向 API 服务商请求最新可用模型列表...";
+        }
+
+        try {
+            const payload = {
+                base_url: document.getElementById('cfgBaseUrl').value.trim(),
+                api_key: document.getElementById('cfgApiKey').value.trim(),
+                model: document.getElementById('cfgModel').value.trim()
+            };
+
+            const res = await fetch('/api/config/models', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Gabriel-Token': localToken
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            if (res.ok && data.status === 'ok' && Array.isArray(data.models) && data.models.length > 0) {
+                if (cfgModelSelectEl) {
+                    cfgModelSelectEl.innerHTML = data.models.map(m => `<option value="${m}">${m}</option>`).join('');
+                    cfgModelSelectEl.classList.remove('hidden');
+                    const currentM = cfgModel ? cfgModel.value.trim() : "";
+                    cfgModelSelectEl.value = data.models.includes(currentM) ? currentM : data.models[0];
+                    if (cfgModel) cfgModel.value = cfgModelSelectEl.value;
+                    cfgModelSelectEl.onchange = () => { if (cfgModel) cfgModel.value = cfgModelSelectEl.value; };
+                }
+                if (cfgFetchModelsStatusEl) {
+                    cfgFetchModelsStatusEl.style.color = '#15803d';
+                    cfgFetchModelsStatusEl.innerText = data.message || `✅ 成功拉取 ${data.models.length} 个模型！可在右侧下拉菜单直接选择。`;
+                }
+            } else {
+                if (cfgFetchModelsStatusEl) {
+                    cfgFetchModelsStatusEl.style.color = '#991b1b';
+                    cfgFetchModelsStatusEl.innerText = data.message || "❌ 获取模型失败，请手动输入模型名称。";
+                }
+            }
+        } catch (e) {
+            if (cfgFetchModelsStatusEl) {
+                cfgFetchModelsStatusEl.style.color = '#991b1b';
+                cfgFetchModelsStatusEl.innerText = "❌ 请求错误: " + e.message;
+            }
+        } finally {
+            btnFetchModelsEl.disabled = false;
+            btnFetchModelsEl.innerText = origText;
+        }
+    });
+}
 
 // --- Agent Monitor ---
 const toggleAutoCursorEl = document.getElementById('toggleAutoCursor');
@@ -524,13 +932,7 @@ const btnPreviewKb = document.getElementById('btnPreviewKb');
 const kbPreview = document.getElementById('kbPreview');
 btnPreviewKb.addEventListener('click', () => {
     if (kbPreview.classList.contains('hidden')) {
-        // Show Preview
-        const rawHtml = window.marked ? marked.parse(kbEditor.value) : kbEditor.value;
-        if (window.DOMPurify) {
-            kbPreview.innerHTML = DOMPurify.sanitize(rawHtml);
-        } else {
-            kbPreview.textContent = rawHtml;
-        }
+        kbPreview.innerHTML = safeMarkedParse(kbEditor.value);
         kbPreview.classList.remove('hidden');
         kbEditor.style.display = 'none';
         btnPreviewKb.innerText = dict[currentLang].btn_edit || '✏️ Edit';
@@ -558,15 +960,45 @@ document.getElementById('btnCopyInject').addEventListener('click', () => {
 
 
 
-// ==========================================
-// Safe Rendering
-// ==========================================
+let currentLogFilter = "all";
+
+function updateContextTokenGauge(logLength = 0) {
+    const chatHistoryEl = document.getElementById('chatHistory');
+    const chatText = chatHistoryEl ? chatHistoryEl.innerText : '';
+    const totalChars = logLength + chatText.length;
+    const estTokens = Math.round(totalChars / 3.8);
+    const maxTokens = 128000;
+    const percentage = Math.min(100, Math.round((estTokens / maxTokens) * 100));
+
+    const fillEl = document.getElementById('tokenBarFill');
+    const textEl = document.getElementById('tokenText');
+    if (fillEl) fillEl.style.width = Math.max(2, percentage) + '%';
+    if (textEl) textEl.innerText = `Context: ~${estTokens.toLocaleString()} / 128k Tokens (${percentage}%)`;
+}
+
+function updateAgentFocusBadge(agentName, agentPath = "") {
+    const nameEl = document.getElementById('focusAgentName');
+    const badgeEl = document.getElementById('agentFocusBadge');
+    if (nameEl) nameEl.innerText = agentName || "Auto";
+    if (badgeEl && agentPath) badgeEl.title = `正在监听终端: ${agentName}\n轨迹日志路径: ${agentPath}`;
+}
+
 function renderAgentContent(codeEl, content) {
-    // Round 52: DOM Memory Profiling & Cap (prevent UI freezing from 10k line logs)
+    codeEl.dataset.rawContent = content;
     const lines = content.split('\n');
-    let displayContent = content;
-    if (lines.length > 800) {
-        displayContent = "...\n[Gabriel DOM Capper: Older logs hidden for performance]\n...\n\n" + lines.slice(-800).join('\n');
+    let filteredLines = lines;
+
+    if (currentLogFilter === 'error') {
+        filteredLines = lines.filter(l => /error|exception|fail|traceback|500|404|401|429|fatal|reject|log-error/i.test(l));
+        if (filteredLines.length === 0) filteredLines = ['[Gabriel] 当前切片无明显 🔴 报错日志'];
+    } else if (currentLogFilter === 'tool') {
+        filteredLines = lines.filter(l => /tool_call|call:|run_command|view_file|replace_file_content|read_url_content|search_web|manage_task|log-tool/i.test(l));
+        if (filteredLines.length === 0) filteredLines = ['[Gabriel] 当前切片无明显的 🛠️ 工具调用日志'];
+    }
+
+    let displayContent = filteredLines.join('\n');
+    if (filteredLines.length > 800) {
+        displayContent = "...\n[Gabriel DOM Capper: Older logs hidden for performance]\n...\n\n" + filteredLines.slice(-800).join('\n');
     }
 
     if (window.DOMPurify && typeof DOMPurify.sanitize === 'function') {
@@ -576,9 +1008,22 @@ function renderAgentContent(codeEl, content) {
         });
     } else {
         codeEl.textContent = displayContent;
-        console.warn('[Gabriel] DOMPurify 未加载，已降级为纯文本渲染');
     }
+    updateContextTokenGauge(content.length);
 }
+
+// Log filter pills click listener
+document.querySelectorAll('.log-filter-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+        document.querySelectorAll('.log-filter-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        currentLogFilter = pill.getAttribute('data-filter') || 'all';
+        document.querySelectorAll('.agent-card-body code').forEach(codeEl => {
+            const rawContent = codeEl.dataset.rawContent || codeEl.innerText;
+            renderAgentContent(codeEl, rawContent);
+        });
+    });
+});
 
 // --- WebSocket & Chat ---
 let ws;
@@ -684,6 +1129,9 @@ async function connectWebSocket() {
     ws.onmessage = (event) => {
         const msg = JSON.parse(event.data);
         if (msg.type === "context_update" || msg.type === "context_append") {
+            if (msg.agent && msg.path && msg.path !== "all") {
+                updateAgentFocusBadge(msg.agent, msg.path);
+            }
             
             // Render logs into grid
             const grid = document.getElementById('contextGrid');
@@ -878,13 +1326,13 @@ async function connectWebSocket() {
             const toastContent = document.getElementById('kbToastContent');
             if (toast && toastContent) {
                 const encodedText = encodeURIComponent(msg.content);
-                const parsed = window.marked ? marked.parse(msg.content) : msg.content;
+                const parsed = safeMarkedParse(msg.content);
                 const insightId = msg.insight_id || 0;
                 let localToken = document.getElementById("inputToken") ? document.getElementById("inputToken").value : "";
                 
                 toastContent.innerHTML = `
                     <div class="insight-card-header">
-                        <span>${ICONS.zap} Agent Instruction / Insight</span>
+                        <span><img src="/static/assets/rose_sprites_final/sprite_05.png" class="rose-stem-badge" alt="Rose Badge"> ${ICONS.zap} Agent Instruction / Insight</span>
                         <div>
                             <button class="btn-insight-copy vote-useful" onclick="fetch('/api/kb/feedback', {method:'POST', headers:{'Content-Type': 'application/json', 'X-Gabriel-Token': '${localToken}'}, body: JSON.stringify({insight_id: ${insightId}, action: 'useful'})}); this.innerHTML=ICONS.check; this.disabled=true;" title="Useful (用过)">${ICONS['thumbs-up']}</button>
                             <button class="btn-insight-copy vote-useless" onclick="fetch('/api/kb/feedback', {method:'POST', headers:{'Content-Type': 'application/json', 'X-Gabriel-Token': '${localToken}'}, body: JSON.stringify({insight_id: ${insightId}, action: 'useless'})}); this.innerHTML=ICONS.check; this.disabled=true;" title="Useless (没用)">${ICONS['thumbs-down']}</button>
@@ -893,13 +1341,8 @@ async function connectWebSocket() {
                             <button class="btn-insight-copy" onclick="navigator.clipboard.writeText(decodeURIComponent('${encodedText}')); this.classList.add('success-pulse'); this.innerText='Copied!'; setTimeout(() => { this.classList.remove('success-pulse'); this.innerText='Copy'; }, 2000);">Copy</button>
                         </div>
                     </div>
-                    <div class="insight-content"></div>
+                    <div class="insight-content">${parsed}</div>
                 `;
-                if (window.DOMPurify) {
-                    toastContent.querySelector('.insight-content').innerHTML = DOMPurify.sanitize(parsed);
-                } else {
-                    toastContent.querySelector('.insight-content').textContent = parsed;
-                }
                 toast.classList.remove('hidden');
                 
                 // Round 32: Dynamic Toast Auto-hide logic (15s)
@@ -942,16 +1385,7 @@ async function connectWebSocket() {
             document.getElementById('chatHistory').appendChild(currentAiMessageDiv);
         } else if (msg.type === "ai_response_chunk") {
             currentAiMessageContent += msg.content;
-            if(window.marked) {
-                const parsed = marked.parse(currentAiMessageContent);
-                if (window.DOMPurify) {
-                    currentAiMessageDiv.innerHTML = DOMPurify.sanitize(parsed);
-                } else {
-                    currentAiMessageDiv.textContent = parsed;
-                }
-            } else {
-                currentAiMessageDiv.innerText = currentAiMessageContent;
-            }
+            currentAiMessageDiv.innerHTML = safeMarkedParse(currentAiMessageContent);
             // Round 11 (UX): Cinematic Scroll Smoothness & Auto-Scroll Lock
             const container = document.getElementById('chatHistory');
             // Allow 80px threshold for breathing room
@@ -981,13 +1415,8 @@ function createMessageDiv(className) {
 function appendMessage(text, className) {
     const container = document.getElementById('chatHistory');
     const div = createMessageDiv(className);
-    if(className === 'ai-message' && window.marked) {
-        const parsed = marked.parse(text);
-        if (window.DOMPurify) {
-            div.innerHTML = DOMPurify.sanitize(parsed);
-        } else {
-            div.textContent = parsed;
-        }
+    if (className === 'ai-message') {
+        div.innerHTML = safeMarkedParse(text);
     } else {
         div.innerText = text;
     }
@@ -996,10 +1425,10 @@ function appendMessage(text, className) {
 }
 
 // Per-message side-brain mode: controls context injection + persistence.
+let currentSelectedChatMode = localStorage.getItem('gabriel_chat_mode') || 'light';
+
 function getChatMode() {
-    const el = document.getElementById('chatMode');
-    const v = el ? el.value : 'light';
-    switch (v) {
+    switch (currentSelectedChatMode) {
         case 'light':   return { context: 'snapshot', save: true };
         case 'private': return { context: 'snapshot', save: false };
         case 'audit':   return { context: 'full', save: true };
@@ -1008,13 +1437,39 @@ function getChatMode() {
     }
 }
 
-// Restore + persist the selected side-brain mode across reloads.
-(function initChatMode() {
+const MODE_META = {
+    light:   { icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>`, label: 'Quick', zhLabel: '轻量对话' },
+    private: { icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`, label: 'Private', zhLabel: '私密问答' },
+    audit:   { icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`, label: 'Audit', zhLabel: '深度审计' },
+    onedive: { icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`, label: 'One-Shot', zhLabel: '无痕深拆' }
+};
+
+function updateChatModeUI(modeKey) {
+    currentSelectedChatMode = modeKey || 'light';
+    localStorage.setItem('gabriel_chat_mode', currentSelectedChatMode);
+
     const sel = document.getElementById('chatMode');
-    if (!sel) return;
-    const saved = localStorage.getItem('gabriel_chat_mode');
-    if (saved && sel.querySelector(`option[value="${saved}"]`)) sel.value = saved;
-    sel.addEventListener('change', () => localStorage.setItem('gabriel_chat_mode', sel.value));
+    if (sel) sel.value = currentSelectedChatMode;
+
+    const btns = document.querySelectorAll('#appleModeSegmentedBar .segmented-btn');
+    btns.forEach(btn => {
+        const isMatch = btn.getAttribute('data-mode') === currentSelectedChatMode;
+        btn.classList.toggle('active', isMatch);
+    });
+}
+
+(function initChatModeSwitcher() {
+    const btns = document.querySelectorAll('#appleModeSegmentedBar .segmented-btn');
+    btns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const mode = btn.getAttribute('data-mode');
+            updateChatModeUI(mode);
+        });
+    });
+
+    const saved = localStorage.getItem('gabriel_chat_mode') || 'light';
+    updateChatModeUI(saved);
 })();
 
 document.getElementById('btnSend').addEventListener('click', () => {
@@ -1047,8 +1502,8 @@ document.getElementById('btnSend').addEventListener('click', () => {
         window.currentThinkingId = 'thinking-' + Date.now();
         const thinkingDiv = document.createElement('div');
         thinkingDiv.id = window.currentThinkingId;
-        thinkingDiv.className = 'message sys-message';
-        thinkingDiv.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span> Gabriel is thinking...';
+        thinkingDiv.className = 'message sys-message thinking-indicator-row';
+        thinkingDiv.innerHTML = '<img src="/static/assets/rose_sprites_final/sprite_01.png" class="rose-bud-pulse-icon" alt="Rose Bud"> <span class="typing-dot"></span><span class="typing-dot"></span> Gabriel 思考中...';
         document.getElementById('chatHistory').appendChild(thinkingDiv);
         document.getElementById('chatHistory').scrollTop = document.getElementById('chatHistory').scrollHeight;
     }
@@ -1260,8 +1715,9 @@ async function fetchKbRules() {
                 const div = document.createElement('div');
                 div.className = 'kb-rule-card';
 
-                const displayContent = rule.content.length > 150 ? rule.content.substring(0, 150) + '...' : rule.content;
-                const parsed = window.DOMPurify && window.marked ? DOMPurify.sanitize(marked.parse(displayContent)) : displayContent;
+                const rawStr = String(rule.content || '');
+                const displayContent = rawStr.length > 150 ? rawStr.substring(0, 150) + '...' : rawStr;
+                const parsed = safeMarkedParse(displayContent);
 
                 div.innerHTML = `
                     <div class="fav-item-head">
@@ -1316,9 +1772,9 @@ async function fetchKbRules() {
             const div = document.createElement('div');
             div.className = 'kb-rule-card';
 
-            // Format content: truncate if too long
-            const displayContent = rule.content.length > 150 ? rule.content.substring(0, 150) + '...' : rule.content;
-            const parsed = window.DOMPurify && window.marked ? DOMPurify.sanitize(marked.parse(displayContent)) : displayContent;
+            const rawStr = String(rule.content || '');
+            const displayContent = rawStr.length > 150 ? rawStr.substring(0, 150) + '...' : rawStr;
+            const parsed = safeMarkedParse(displayContent);
 
             let tagsHtml = '';
             if (rule.tags) {

@@ -48,6 +48,7 @@ node --check static/script.js static/icons.js
 8. **前端收编纪律**：新 UI class 化（不写内联 style）；emoji 不充当功能图标（用 `ICONS`）；改 `style.css`/`script.js` 后把 `index.html` 里对应引用 bump `?v=`。
 9. **离线降级**：sqlite-vec / fastembed / 模型不可用 → 静默回退纯 FTS5，禁止阻塞主流程。
 10. **测试护栏**：`search_kb` 无反馈时结果序必须与纯 RRF 一致（回归护栏）；`check_active_kb` 返回形状 `{"id","content"}` 不许改。
+11. **开源对比全局指令**：全局约束——在后续所有功能迭代与 UI/UX 优化中，必须持续联网参考开源优质项目（Cherry Studio, LobeChat, NextChat, One-API）的设计规范与技术最佳实践。
 
 ## Common tasks
 
