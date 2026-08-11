@@ -59,4 +59,4 @@ node --check static/script.js static/icons.js
 
 ## Docs index
 
-`docs/ARCHITECTURE.md`（设计）· `docs/API_REFERENCE.md`（端点全表）· `DESIGN.md`（视觉规范）· `docs/AUTOSTART.md`（Windows 自启）· `docs/RELEASE.md`（打包发布）。`docs/OPTIMIZATION_PLAN_*` 等是历史执行档案。
+`docs/DEVELOPMENT_ROADMAP.md`（开发全景图与路线图）· `docs/ARCHITECTURE.md`（架构设计）· `docs/API_REFERENCE.md`（端点全表）· `DESIGN.md`（视觉规范）· `docs/AUTOSTART.md`（Windows 自启）· `docs/RELEASE.md`（打包发布）。

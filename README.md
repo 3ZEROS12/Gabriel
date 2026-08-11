@@ -1,152 +1,161 @@
-# Gabriel 👼
+# Gabriel 👼 (加百列)
 
-A lightweight, **zero-intrusion GUI sidecar** for CLI-based AI agents (Antigravity, Claude Code, Cursor).
+> **CLI AI Agent 的零侵入 GUI 副屏与旁路监视器** —— 零卡顿、零侵入、自带私有大脑。  
+> *A zero-intrusion, local-first GUI sidecar for Antigravity, Claude Code, and Cursor.*
 
-Gabriel runs independently alongside your terminal, tailing agent transcripts in real time to provide a dedicated dashboard for state monitoring, side-brain Q&A, session statistics, and knowledge base management — without ever blocking or hooking into your main CLI workflow.
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-brightgreen.svg)](pyproject.toml)
+[![Tests: 34 Passed](https://img.shields.io/badge/Tests-34%20Passed-success.svg)](tests/test_gabriel.py)
+[![Code Style: Ruff](https://img.shields.io/badge/Code%20Style-Ruff-000000.svg)](pyproject.toml)
 
-## ✨ Features
+---
 
-- **Zero-Intrusion Tailing** — Watches only known agent transcript paths (e.g. `~/.gemini/antigravity-cli/brain/**/logs/transcript.jsonl`, `~/.claude/projects/**/*.jsonl`, `~/.cursor/logs/*.log`). No PTY / STDOUT / terminal hooks, so it physically cannot crash your main agent. Byte-offset incremental reads keep tailing cheap even on huge transcripts.
-- **Real-time WebSocket Dashboard** — Parsed log lines are broadcast to the browser over a single WebSocket with a bounded non-blocking queue (slow clients drop frames instead of stalling the broker).
-- **Mission Control Grid** — Multiple active agent sessions side by side in a CSS Grid dashboard, each with its own live terminal card, scroll-lock, and one-click Markdown export.
-- **Side-brain Chat** — Ask "what is it doing?", "any errors?", or debug a stack trace without polluting the main agent's context. Optional terminal-snapshot attachment, streaming markdown responses, and SQLite-persisted chat history (40 turns per agent).
-- **Hybrid Knowledge Base (FTS5 + Vector RRF)** — Chinese-aware jieba tokenization + local vector search (`sqlite-vec` + `fastembed` BAAI/bge-small-zh-v1.5) fused via Reciprocal Rank Fusion (RRF). Proactive toast recommendations on repeated errors with graceful pure FTS5 offline fallback.
-- **Structured 4-Section Insights** — Insights automatically parse into structured `{problem, cause, solution, tags}` with tag chip rendering and legacy Markdown compatibility.
-- **Resilient AI Pipeline** — Exponential backoff retries via `tenacity` for API connections, rate limits, and network timeouts.
-- **Session Analytics** — `/api/stats` aggregates turns / characters / estimated cost per session; `/api/sessions` and `/api/sessions/{id}/transcript` expose full history.
-- **MCP Server** — Stdio MCP server (`src/mcp_server.py`) and optional `--http` transport lets Claude Code / Cursor query the knowledge base directly.
-- **Local-first & Secure** — Token auth on every API route and WebSocket (constant-time comparison); all frontend libs (DOMPurify, marked, highlight.js) vendored locally — **zero CDN dependencies**, fully offline; API key lives only in `.env`, never persisted to `config.json`.
-- **Standardized Toolchain** — Built with `pytest` for unit testing and `ruff` for fast linting.
+## ⚡ 为什么需要 Gabriel？
 
-## 🚀 Quickstart
+你在用 CLI Agent（如 Antigravity / Claude Code / Cursor）写代码时，是否有过这些痛点？
+1. **终端黑盒**：只能看着终端滚屏，不知道 Agent 当前的真实思考阶段与全局进度。
+2. **不敢发散提问**：想问“这行报错是什么原理？”却不敢在主终端提问，生怕**污染了主 Agent 的记忆**或让它做无用功。
+3. **重复踩坑**：上周解决过的编译坑，这周 Agent 又卡住了，还得人工去寻觅之前的解决方案。
 
-**Prerequisites:** Python 3.10+
+**Gabriel 就是为此而生的旁路副屏 (Sidecar)。** 它在后台静默 Tail 日志，提供专门的实时可视化大屏、发散对话沙盒与私有知识库 —— **完全不 Hook 主终端，物理级保证绝不崩挂主 Agent。**
+
+---
+
+## ✨ 核心亮点
+
+- 🛡️ **零侵入 Tailer (Zero-Intrusion)**  
+  基于增量字节偏移监听 Agent Transcript (`.jsonl`) 日志。无 PTY / 无 STDOUT 钩子，主 Agent 就算崩溃也影响不到 Gabriel，Gabriel 崩溃也绝不会打断主 Agent。
+- 🎨 **Light Indigo 极简设计**  
+  借鉴 Stripe 的现代美学设计（`DESIGN.md`）：纯净白底 (`#ffffff`) + 藏青文字 (`#0d253d`) + 靛紫 (`#533afd`) 唯一 CTA。**100% 零 CDN 外部依赖**，字体与图标全本地 Vendor，断网也能丝滑使用。
+- 🧠 **Side-brain 沙盒问答**  
+  独立副脑对话框，带有上下文快照挂载。随心提问“它现在在干嘛？”“帮我分析这个 Trace”，问答记录持久化在 SQLite 中，完全不占用主 Agent 上下文。
+- 🔍 **双重 RRF 混合知识库 (FTS5 + Vector)**  
+  `jieba` 中文分词 + `sqlite-vec` 向量语义检索，通过倒数排名融合 (RRF) 算法合并。Agent 报错时主动弹出过去积累的解决方案，并支持优雅离线降级。
+- 🛟 **卡点雷达与死循环检测 (Stuck Radar)**  
+  滑动窗口识别工具震荡与死循环，一键匹配知识库解决方案；自带保留策略与统计看板。
+- 🔌 **Stdio MCP 生态接口**  
+  原生内置 Stdio MCP 服务 (`src/mcp_server.py`)，暴露 4 大工具，让 Claude Code / Cursor 直接通过 MCP 调阅和写入 Gabriel 知识库。
+- 📦 **免环境绿色发行 (PyInstaller onedir)**  
+  支持 Windows 解压即用双击运行，数据目录 (`knowledge.db`) 与代码区隔离，自带单实例锁与端口自动避让。
+
+---
+
+## 🚀 30 秒快速上手
+
+### 1. 安装与启动 (开发模式)
+
+**预备条件：** Python 3.10+
 
 ```bash
+# 克隆仓库
 git clone https://github.com/3ZEROS12/Gabriel.git
 cd Gabriel
+
+# 创建并激活虚拟环境
 python -m venv venv
+venv\Scripts\activate          # Windows
+# source venv/bin/activate    # macOS / Linux
 
-# Windows
-venv\Scripts\activate
-# macOS / Linux
-source venv/bin/activate
+# 安装依赖
+pip install -r requirements.txt
+pip install -e .              # 可选：注册 gabriel 全局命令
 
-pip install -r requirements.txt        # 全部运行时依赖（必须）
-pip install -e .                       # 可选：提供 `gabriel` 命令
+# 启动服务
+gabriel                        # 或 python -m src.main --port 8080
 ```
 
-Configure environment:
-
-```bash
-cp .env.example .env
-# GABRIEL_TOKEN: 留空即可——每次启动自动生成随机 token 并打印在终端；
-#               需要固定 token 时用 `python -c "import secrets; print(secrets.token_hex(16))"` 生成填入。
-#               ⚠️ 切勿把 .env.example 的占位符原样留下（那会成为公开的真实 token）。
-# OPENAI_API_KEY: 可选，OpenAI 兼容接口密钥（优先于 Settings UI，永不写入磁盘配置）
+### 2. 打开仪表盘
+终端启动后会打印随机生成的安全 Token：
 ```
-
-Run the server:
-
-```bash
-gabriel          # or: python -m src.main --port 8080
+🔐 Security Token Generated: 8f3a9b2c...
+🌐 Gabriel running at http://127.0.0.1:8080
 ```
+在浏览器打开 `http://127.0.0.1:8080` 并粘贴 Token 即可登录！
 
-Open `http://127.0.0.1:8080` in your browser and paste the security token printed in the terminal. Start your CLI agent in another terminal — Gabriel auto-detects the newest transcript and begins tailing.
+> 💡 **桌面模式**：运行 `python src/run.py` 可在独立 pywebview 桌面窗口中打开 Gabriel。
 
-> **Desktop mode (optional):** `python src/run.py` launches the same UI inside a pywebview window instead of a browser tab.
+---
 
-## 🖥️ Dashboard
+## 🖥️ 4 大可视化大屏
 
-| View | What it does |
+| 视图 | 核心功能 |
 |---|---|
-| 💬 Control Center | Split view: live agent terminal cards (grid) + side-brain chat with quick prompts, model switch, attach-snapshot / keep-history toggles, KB merge & export |
-| 📡 Agent Radar | Agent list with lock-to-agent, sortable by activity / volume, real stats-driven telemetry |
-| 📖 Knowledge Base | Global insight graph (click a card to load the draft) + editor with markdown preview and "Copy Injection Command" |
-| ⚙️ Settings | OpenAI-compatible endpoint config, merge strategy, language, token management |
+| 💬 **控制中心 (Control Center)** | 分屏视图：Live Agent 终端卡片阵列 + 副脑对话沙盒（支持快照挂载、模型切换、一键 Markdown 复盘导出） |
+| 📡 **Agent 雷达 (Agent Radar)** | 全域会话监测：排序/锁定活跃 Agent，实时会话 Token 消耗、成本计算与历史 Turn 复盘 |
+| 📖 **私有知识库 (Knowledge Base)** | 图谱式经验卡片 + Markdown 结构化编辑器（支持 `{problem, cause, solution, tags}` 自动解析与注入） |
+| ⚙️ **运行配置 (Settings)** | 自定义 OpenAI 兼容 Endpoint、模型预设单价配置、Token 鉴权管理与多语言切换 |
 
-## 📡 API Overview
+---
 
-All `/api/*` endpoints require the token via the `X-Gabriel-Token` header; the WebSocket uses `?token=` (both compared constant-time).
+## 📡 API & MCP 一览
 
-| Endpoint | Description |
-|---|---|
-| `GET /api/ping` · `GET /api/health` | Liveness & tailer heartbeat |
-| `GET/POST /api/config` | Read / atomically update provider settings |
-| `POST /api/auth/ticket` | One-time WS auth ticket |
-| `GET /api/agents` | Active agent sessions (path, mtime, steps) |
-| `GET /api/knowledge` · `GET/POST /api/kb` | Knowledge base listing / CRUD |
-| `POST /api/kb/feedback` | Weighted re-ranking of KB entries |
-| `POST /api/kb/search` | Read-only KB search (used by the stuck-radar "find past fixes") |
-| `GET /api/stuck` · `GET /api/stuck/stats` | Stuck-reports list / 24h-7d aggregation (retention-capped) |
-| `GET /api/stats` | Per-session turns / chars / est. cost |
-| `GET /api/sessions` · `GET /api/sessions/{id}/transcript` | Session history (`?raw=1` returns last 200 lines + tokens + touched files for the review report) |
-| `POST /api/feedback` | User feedback (secrets redacted, stored locally) |
-| `WS /ws` | Log stream, chat, KB merge, insight injection |
+### REST & WebSocket
+所有 REST API 均要求 `X-Gabriel-Token` 请求头，WebSocket 连接推荐采用一次性 Ticket 握手 (`/api/auth/ticket`)。
 
-**MCP:** run `python -m src.mcp_server` as an stdio MCP server — exposes the `read_gabriel_kb` tool to external agents.
+- `GET /api/health` — Tailer 状态与心跳检查
+- `GET /api/agents` — 当前活跃 Agent 会话列表
+- `GET /api/kb` · `POST /api/kb` — 知识库 CRUD 与结构化四段写入 (`save_insight()`)
+- `POST /api/kb/search` — 基于 RRF 混合检索的只读搜索
+- `GET /api/stuck` · `GET /api/stuck/stats` — 卡点报告列表与 24h/7d 统计
+- `GET /api/sessions/{id}/transcript?raw=1` — 获取带有文件触及与 Cost 统计的完整 Session 导出数据
+- `WS /ws` — 双向日志追加、Waiting/Stuck 状态事件广播与副脑流式响应
 
-## 📁 Project Structure
+### Stdio MCP 4 大工具
+运行 `python -m src.mcp_server` 即可作为 Stdio MCP 服务器供 external agents 使用：
+- `read_gabriel_kb(query)`：检索私有知识库（含反馈加权）
+- `add_gabriel_insight(content)`：主动记录坑点与经验
+- `report_agent_stuck(agent, context)`：上报 Agent 卡点并匹配解法
+- `get_session_summary(agent_path)`：获取当前会话遥测摘要
+
+---
+
+## 📁 项目结构
 
 ```
 Gabriel/
 ├── src/
-│   ├── main.py            # FastAPI backend: REST + WebSocket + log tailer + FTS5 KB
-│   ├── mcp_server.py      # stdio MCP server for external agents
-│   └── run.py             # optional pywebview desktop wrapper
+│   ├── main.py            # FastAPI 后端: REST + WebSocket + 日志 Tailer + FTS5/向量 KB
+│   ├── mcp_server.py      # Stdio MCP 服务器
+│   └── run.py             # pywebview 桌面包装壳
 ├── static/
-│   ├── index.html         # dashboard UI (4 views + token login)
-│   ├── script.js          # frontend logic (WS client, sanitized rendering, i18n)
-│   ├── style.css          # Light Indigo theme (design tokens, parser CSS classes)
-│   ├── splash.html        # boot splash
-│   └── vendor/            # local copies of DOMPurify / marked / highlight.js — no CDN
+│   ├── index.html         # Dashboard 页面 (4 大视图 + Token 登录)
+│   ├── script.js          # 前端交互与 WebSocket 客户端 (DOMPurify 渲染)
+│   ├── style.css          # v4 Light Indigo 视觉规范
+│   ├── icons.js           # Lucide 图标模块
+│   └── vendor/            # 本地 Vendor 字体与库 (零 CDN 依赖)
+├── docs/
+│   ├── DEVELOPMENT_ROADMAP.md # 【主索引】开发全景图与路线图
+│   ├── ARCHITECTURE.md        # 系统架构设计说明
+│   ├── API_REFERENCE.md       # API 端点完整参考手册
+│   ├── AUTOSTART.md           # Windows 开机自启配置指南
+│   └── RELEASE.md             # PyPI / PyInstaller 打包分发指南
 ├── tests/
-│   └── test_gabriel.py    # 31 unit tests (auth, parsers, KB, WS, sessions, stats, stuck, search)
-├── docs/                  # architecture, API reference, optimization plans
-├── scripts/               # Windows autostart, snapshot generator
-├── requirements.txt
-├── setup.py               # `pip install -e .` → `gabriel` command
-└── .env.example           # GABRIEL_TOKEN / OPENAI_API_KEY
+│   └── test_gabriel.py    # 34 个 Pytest 自动化测试
+├── scripts/               # 开机启动与稳定性冒烟测试脚本
+├── requirements.txt       # Python 运行时依赖
+├── pyproject.toml         # Ruff & Pytest 工具链配置
+└── setup.py               # `pip install -e .` 安装入口
 ```
 
-## 🛠️ Development
+---
+
+## 🛠️ 质量验证与护栏
+
+在提交任何代码变动前，需确保以下三项防护全部通过：
 
 ```bash
-# Run the full test suite (pytest)
+# 1. 运行 Pytest 全量测试 (34 passed)
 venv\Scripts\python.exe -m pytest tests/ -q
 
-# Code linter check (ruff)
+# 2. 运行 Ruff 代码规范检查
 venv\Scripts\python.exe -m ruff check src tests
 
-# Frontend syntax check
-node --check static/script.js
+# 3. 运行 Node 前端语法静态检查
+node --check static/script.js static/icons.js
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
+---
 
-**Documentation map (`docs/`):** [ARCHITECTURE.md](docs/ARCHITECTURE.md) (system design) · [API_REFERENCE.md](docs/API_REFERENCE.md) (endpoints) · [AUTOSTART.md](docs/AUTOSTART.md) (Windows auto-launch) · [RELEASE.md](docs/RELEASE.md) (PyPI / PyInstaller packaging) · [SCREENSHOTS.md](docs/SCREENSHOTS.md) (demo capture guide). Files named `OPTIMIZATION_PLAN_*` / `*_REPORT` / `*_Snapshot` are historical execution archives — you usually don't need them.
+## 📄 许可证
 
-> **AI-assist users:** Claude Code / Gemini CLI users can point their assistant at [`CLAUDE.md`](CLAUDE.md) (project map & conventions) and [`DESIGN.md`](DESIGN.md) (visual spec) before editing anything.
-
-## 🩹 Troubleshooting
-
-| Symptom | Fix |
-|---|---|
-| `ModuleNotFoundError` at startup | You ran `pip install -e .` without `requirements.txt` first — run `pip install -r requirements.txt` |
-| Browser shows login dialog but you lost the token | Token is printed in the server terminal at startup (`🔐 Security Token Generated`); or set `GABRIEL_TOKEN` in `.env` and restart |
-| "Error fetching agents." in UI | Usually a stale token in the browser — clear localStorage (`F12 → Application → Local Storage`) or click **Forget Token** in Settings, then re-login |
-| Port 8080 already in use | `python -m src.main --port 8090`, or kill the stale process (`netstat -ano \| findstr 8080` on Windows) |
-| Knowledge Base vector search slow on first use | `fastembed` downloads the embedding model on first run (one-time, ~100 MB); FTS5 search works meanwhile |
-| UI looks unstyled/mixed after an update | Hard refresh (`Ctrl+F5`) — static assets are cache-busted with `?v=` |
-| `sqlite-vec` fails to load | Falls back to pure FTS5 automatically (KB search still works, vector ranking disabled) |
-
-## 🔒 Security Notes
-
-- Every API route is behind the `verify_token` dependency; the WebSocket rejects bad tokens with code 1008 before accepting.
-- All log/chat content is sanitized with a locally vendored DOMPurify before touching `innerHTML` (fallback: plain text).
-- Runtime artifacts (`knowledge.db`, `config.json`, `Gabriel_Insight.md`, logs, `.env`) are git-ignored; API keys are kept in the environment only.
-- No telemetry, no external calls — everything runs strictly local.
-
-## 📄 License
-
-AGPL-3.0 — see [LICENSE](LICENSE).
+本项目采用 [AGPL-3.0 开源许可证](LICENSE)。
