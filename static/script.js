@@ -21,7 +21,7 @@ const dict = {
         "chat_mode_title": "Side-brain Mode", "mode_light": "💨 Quick", "mode_private": "🔒 Private", "mode_audit": "🔬 Audit", "mode_onedive": "⚡ One-Shot",
         "settings_ui": "UI Preferences", "settings_lang": "Language", "lang_en": "English", "lang_zh": "中文 (Chinese)",
         "copied": "Copied to Clipboard!", "saved": "Saved", "scanning": "Scanning...","radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_fold_sidebar": "Toggle Navigation Fold (Ctrl+[)", "title_pin": "Toggle Always on Top", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 4.0.0 (Light Indigo)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "👼 Gabriel",
-        "chat_feedback": "Feedback", "kb_recommendation": "Knowledge Base Recommendation"
+        "chat_feedback": "Feedback", "kb_recommendation": "Knowledge Base Recommendation", "title_mini_mode": "Toggle Mini Pill Mode (Ctrl+M)"
     },
     "zh": {
         "nav_chat": "对话", "nav_radar": "雷达", "nav_kb": "知识库", "nav_settings": "设置",
@@ -44,7 +44,7 @@ const dict = {
         "mode_manual": "手动提取 (极客)", "mode_auto": "全自动注入",
         "chat_mode_title": "副脑模式", "mode_light": "💨 轻量对话", "mode_private": "🔒 私密问答", "mode_audit": "🔬 深度审计", "mode_onedive": "⚡ 无痕深拆",
         "settings_ui": "界面偏好", "settings_lang": "显示语言",
-        "copied": "已复制到剪贴板！", "saved": "已保存", "scanning": "正在扫描...", "radar_target": "目标 Agent", "radar_scanning": "正在扫描 Agent...", "settings_about": "关于 Gabriel", "radar_empty": "未发现活跃 Agent", "radar_no_agents_hint": "在终端启动 Agent 后会显示在这里", "agent_last_active": "最后活跃:", "agent_volume": "体量:", "agent_steps": "步", "btn_lock": "锁定", "err_fetching_agents": "获取 Agent 列表失败。", "btn_edit": "✏️ 编辑", "btn_preview": "👁 预览", "status_connected": "已连接", "status_disconnected": "已断开", "gen_draft": "⏳ 正在生成解决方案草稿...", "saving": "保存中...", "title_minimize": "最小化", "title_close": "关闭", "title_fold_sidebar": "折叠/展开导航栏 (Ctrl+[)", "title_pin": "置顶/取消置顶", "title_control_center": "控制中心", "title_agent_radar": "Agent 雷达", "title_knowledge_base": "知识库", "title_settings": "设置", "btn_preview_kb": "👁 预览", "about_version": "版本 4.0.0（Light Indigo）", "about_created": "作者", "about_subtitle": "\"自主智能体缺失的视觉副驾\"", "auto_track": "自动追踪最新", "status_wait": "等待中...", "gabriel_logo": "👼 Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "反馈", "kb_recommendation": "知识库推荐",
+        "copied": "已复制到剪贴板！", "saved": "已保存", "scanning": "正在扫描...", "radar_target": "目标 Agent", "radar_scanning": "正在扫描 Agent...", "settings_about": "关于 Gabriel", "radar_empty": "未发现活跃 Agent", "radar_no_agents_hint": "在终端启动 Agent 后会显示在这里", "agent_last_active": "最后活跃:", "agent_volume": "体量:", "agent_steps": "步", "btn_lock": "锁定", "err_fetching_agents": "获取 Agent 列表失败。", "btn_edit": "✏️ 编辑", "btn_preview": "👁 预览", "status_connected": "已连接", "status_disconnected": "已断开", "gen_draft": "⏳ 正在生成解决方案草稿...", "saving": "保存中...", "title_minimize": "最小化", "title_close": "关闭", "title_fold_sidebar": "折叠/展开导航栏 (Ctrl+[)", "title_pin": "置顶/取消置顶", "title_control_center": "控制中心", "title_agent_radar": "Agent 雷达", "title_knowledge_base": "知识库", "title_settings": "设置", "btn_preview_kb": "👁 预览", "about_version": "版本 4.0.0（Light Indigo）", "about_created": "作者", "about_subtitle": "\"自主智能体缺失的视觉副驾\"", "auto_track": "自动追踪最新", "status_wait": "等待中...", "gabriel_logo": "👼 Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "反馈", "kb_recommendation": "知识库推荐", "title_mini_mode": "切换胶囊极简副屏 (Ctrl+M)"
     },
     "ja": {
         "nav_chat": "チャット", "nav_radar": "レーダー", "nav_kb": "知識ベース", "nav_settings": "設定",
@@ -251,6 +251,28 @@ if (btnPinEl) {
     });
 }
 
+// --- Mini Pill Mode Controller ---
+const btnToggleMiniMode = document.getElementById('btnToggleMiniMode');
+function setMiniMode(enabled) {
+    if (enabled) {
+        document.body.classList.add('mini-mode');
+        localStorage.setItem('gabriel_mini_mode', '1');
+    } else {
+        document.body.classList.remove('mini-mode');
+        localStorage.setItem('gabriel_mini_mode', '0');
+    }
+    if (window.pywebview && window.pywebview.api && window.pywebview.api.toggle_mini_mode) {
+        window.pywebview.api.toggle_mini_mode(enabled);
+    }
+}
+function toggleMiniMode() {
+    const isMini = document.body.classList.contains('mini-mode');
+    setMiniMode(!isMini);
+}
+if (btnToggleMiniMode) {
+    btnToggleMiniMode.addEventListener('click', toggleMiniMode);
+}
+
 // --- Sidebar Collapse / Fold Logic ---
 const appSidebar = document.getElementById('appSidebar');
 const btnToggleSidebar = document.getElementById('btnToggleSidebar');
@@ -281,12 +303,19 @@ if (btnFoldSidebarFooter) btnFoldSidebarFooter.addEventListener('click', toggleS
     if (saved === '1' || (saved === null && window.innerWidth < 768)) {
         setSidebarCollapsed(true);
     }
+    const savedMini = localStorage.getItem('gabriel_mini_mode');
+    if (savedMini === '1') {
+        setMiniMode(true);
+    }
 })();
 
 document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === '[') {
         e.preventDefault();
         toggleSidebar();
+    } else if ((e.ctrlKey || e.metaKey) && (e.key === 'm' || e.key === 'M')) {
+        e.preventDefault();
+        toggleMiniMode();
     }
 });
 
@@ -983,6 +1012,114 @@ function updateAgentFocusBadge(agentName, agentPath = "") {
     if (badgeEl && agentPath) badgeEl.title = `正在监听终端: ${agentName}\n轨迹日志路径: ${agentPath}`;
 }
 
+function updateMiniStatusBanner(agentName, actionText, stateType, turnsCount, errorSnippet) {
+    const banner = document.getElementById('miniStatusBanner');
+    if (!banner) return;
+    
+    banner.classList.remove('is-running', 'is-waiting', 'is-error');
+    if (stateType) banner.classList.add(stateType);
+    
+    const nameEl = document.getElementById('bannerAgentName');
+    if (nameEl) nameEl.textContent = agentName || "No Active Agent";
+    
+    const actionEl = document.getElementById('bannerActionText');
+    if (actionEl) actionEl.textContent = actionText || "Standing by";
+    
+    const turnsEl = document.getElementById('bannerTurnsBadge');
+    if (turnsEl) turnsEl.textContent = (turnsCount || 0) + ' turns';
+    
+    const pinBtn = document.getElementById('bannerQuickPinBtn');
+    if (pinBtn) {
+        if (stateType === 'is-error' && errorSnippet) {
+            pinBtn.classList.remove('hidden');
+            pinBtn.onclick = () => pinLastError(errorSnippet);
+        } else {
+            pinBtn.classList.add('hidden');
+        }
+    }
+}
+
+// ==========================================
+// Multi-Agent Fleet Tab Bar Engine (Item B)
+// ==========================================
+window.agentFleet = new Map();
+window.currentFocusAgentPath = 'auto';
+
+function updateFleetAgent(agentName, agentPath, statusType = 'is-running') {
+    if (!agentPath || agentPath === 'all') return;
+    window.agentFleet.set(agentPath, {
+        name: agentName || 'Agent',
+        path: agentPath,
+        status: statusType,
+        lastSeen: Date.now()
+    });
+    renderFleetTabBar();
+}
+
+function renderFleetTabBar() {
+    const bar = document.getElementById('fleetTabBar');
+    if (!bar) return;
+    
+    let html = `<div class="fleet-tab ${window.currentFocusAgentPath === 'auto' ? 'active' : ''}" data-agent-path="auto" title="自动跟随最新活跃的 Agent">` +
+               `<span class="fleet-tab-dot is-running"></span>` +
+               `<span class="fleet-tab-name">⚡ Auto-Follow</span></div>`;
+               
+    window.agentFleet.forEach((info, path) => {
+        const isActive = window.currentFocusAgentPath === path;
+        const shortName = info.name.length > 22 ? info.name.slice(0, 20) + '..' : info.name;
+        html += `<div class="fleet-tab ${isActive ? 'active' : ''}" data-agent-path="${encodeURIComponent(path)}" title="${info.name}\n${path}">` +
+                `<span class="fleet-tab-dot ${info.status}"></span>` +
+                `<span class="fleet-tab-name">${shortName}</span></div>`;
+    });
+    
+    bar.innerHTML = html;
+    
+    bar.querySelectorAll('.fleet-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const rawPath = tab.getAttribute('data-agent-path');
+            const targetPath = rawPath === 'auto' ? 'auto' : decodeURIComponent(rawPath);
+            window.currentFocusAgentPath = targetPath;
+            renderFleetTabBar();
+            
+            if (targetPath === 'auto') {
+                updateAgentFocusBadge("Auto", "");
+                const cards = document.querySelectorAll('.agent-terminal-card');
+                cards.forEach(c => c.style.display = '');
+            } else {
+                const info = window.agentFleet.get(targetPath);
+                updateAgentFocusBadge(info ? info.name : targetPath, targetPath);
+                
+                const targetCardId = 'agent_' + targetPath.replace(/[^a-zA-Z0-9]/g, '_');
+                const cards = document.querySelectorAll('.agent-terminal-card');
+                cards.forEach(c => {
+                    if (c.id === targetCardId) {
+                        c.style.display = '';
+                        c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    } else {
+                        c.style.display = 'none';
+                    }
+                });
+            }
+        });
+    });
+}
+
+function formatCollapsibleLogs(html) {
+    if (!html || typeof html !== 'string') return html;
+    return html.replace(/<div class="log-entry">\s*<span class="log-tool">([\s\S]*?)<\/span>\s*<br\s*\/?>\s*<span class="log-subtext">([\s\S]*?)<\/span>\s*<\/div>/gi, function(match, title, content) {
+        const isError = /error|exception|fail|traceback|fatal|reject|500|404/i.test(content);
+        const textLen = content.length;
+        if (textLen > 100 || content.includes('\n') || content.includes('<br>')) {
+            const cleanSnippet = content.replace(/<[^>]+>/g, '').slice(0, 60);
+            const summaryTitle = isError ? `🔴 [TOOL ERROR] ${cleanSnippet}...` : `▶ 🛠️ [Tool Output] (${textLen} chars)`;
+            return `<div class="log-entry"><details class="log-fold ${isError ? 'has-error' : ''}" ${isError ? 'open' : ''}>` +
+                   `<summary class="log-fold-summary"><span class="log-fold-icon">▶</span> ${summaryTitle}</summary>` +
+                   `<div class="log-fold-body">${content}</div></details></div>`;
+        }
+        return match;
+    });
+}
+
 function renderAgentContent(codeEl, content) {
     codeEl.dataset.rawContent = content;
     const lines = content.split('\n');
@@ -1001,10 +1138,12 @@ function renderAgentContent(codeEl, content) {
         displayContent = "...\n[Gabriel DOM Capper: Older logs hidden for performance]\n...\n\n" + filteredLines.slice(-800).join('\n');
     }
 
+    displayContent = formatCollapsibleLogs(displayContent);
+
     if (window.DOMPurify && typeof DOMPurify.sanitize === 'function') {
         codeEl.innerHTML = DOMPurify.sanitize(displayContent, {
-            ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'code', 'pre', 'span', 'br', 'div'],
-            ALLOWED_ATTR: ['class']
+            ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'code', 'pre', 'span', 'br', 'div', 'details', 'summary'],
+            ALLOWED_ATTR: ['class', 'open', 'title']
         });
     } else {
         codeEl.textContent = displayContent;
@@ -1167,10 +1306,11 @@ async function connectWebSocket() {
                 const isAtBottom = parent.scrollHeight - parent.scrollTop - parent.clientHeight < 50;
                 
                 if (msg.type === "context_append") {
+                    const formatted = formatCollapsibleLogs(msg.content);
                     if (window.DOMPurify && typeof DOMPurify.sanitize === 'function') {
-                        codeEl.insertAdjacentHTML('beforeend', DOMPurify.sanitize(msg.content, {
-                            ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'code', 'pre', 'span', 'br', 'div'],
-                            ALLOWED_ATTR: ['class']
+                        codeEl.insertAdjacentHTML('beforeend', DOMPurify.sanitize(formatted, {
+                            ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'code', 'pre', 'span', 'br', 'div', 'details', 'summary'],
+                            ALLOWED_ATTR: ['class', 'open', 'title']
                         }));
                     } else {
                         const temp = document.createElement('div');
@@ -1185,6 +1325,35 @@ async function connectWebSocket() {
                 } else {
                     renderAgentContent(codeEl, msg.content);
                 }
+
+                // Update Mini Status Banner from latest telemetry
+                const rawSnippet = typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content);
+                let stateType = 'is-running';
+                let actionText = 'Executing steps';
+                let errorSnippet = '';
+
+                const isErr = /error|exception|fail|traceback|500|404|401|429|fatal|reject/i.test(rawSnippet);
+                if (isErr) {
+                    stateType = 'is-error';
+                    const lines = rawSnippet.split('\n');
+                    const errLine = lines.find(l => /error|exception|fail|traceback/i.test(l)) || lines[lines.length - 1];
+                    errorSnippet = errLine.replace(/<[^>]+>/g, '').trim();
+                    actionText = '🔴 ' + (errorSnippet.slice(0, 45) || 'Error detected');
+                } else if (/Call:\s*([a-zA-Z0-9_-]+)/i.test(rawSnippet)) {
+                    const m = rawSnippet.match(/Call:\s*([a-zA-Z0-9_-]+)/i);
+                    actionText = `Tool: ${m[1]}`;
+                    stateType = 'is-running';
+                } else if (/\[USER\]/i.test(rawSnippet)) {
+                    actionText = 'User Prompt Active';
+                    stateType = 'is-running';
+                } else if (/\[AGENT\]/i.test(rawSnippet) || /\[Claude\]/i.test(rawSnippet)) {
+                    actionText = 'Planning & Reasoning';
+                    stateType = 'is-running';
+                }
+
+                const turnsEstimate = (codeEl.innerText.match(/\[USER\]|\[AGENT\]|⚡ Call:/g) || []).length;
+                updateMiniStatusBanner(msg.agent, actionText, stateType, turnsEstimate, errorSnippet);
+                updateFleetAgent(msg.agent, msg.path || msg.file || msg.agent, stateType);
                 
                 // Update context gauge
                 if (typeof msg.context_percent !== 'undefined') {
@@ -1472,6 +1641,79 @@ function updateChatModeUI(modeKey) {
     updateChatModeUI(saved);
 })();
 
+// --- Context Pinning & Snapshot System ---
+window.pinnedSnapshotContext = null;
+
+function pinContextSnapshot(type, label, snippet, fullText) {
+    const bar = document.getElementById('pinnedContextBar');
+    const labelEl = document.getElementById('pinnedContextLabel');
+    const snippetEl = document.getElementById('pinnedContextSnippet');
+    
+    window.pinnedSnapshotContext = { type, label, snippet, fullText };
+    
+    if (labelEl) labelEl.textContent = label;
+    if (snippetEl) snippetEl.textContent = snippet.length > 80 ? snippet.slice(0, 80) + '...' : snippet;
+    if (bar) bar.classList.remove('hidden');
+}
+
+function clearPinnedContext() {
+    window.pinnedSnapshotContext = null;
+    const bar = document.getElementById('pinnedContextBar');
+    if (bar) bar.classList.add('hidden');
+}
+
+function pinLastError(customError) {
+    let errorText = customError || "";
+    if (!errorText) {
+        const activeCard = document.querySelector('.agent-terminal-card');
+        if (activeCard) {
+            const text = activeCard.innerText || "";
+            const lines = text.split('\n');
+            const errLines = lines.filter(l => /error|exception|fail|traceback|500|404|401|429|fatal|reject/i.test(l));
+            if (errLines.length > 0) {
+                errorText = errLines.slice(-8).join('\n');
+            }
+        }
+    }
+    if (!errorText) {
+        errorText = "未在当前终端抓取到明显异常报错行，已挂载最近上下文。";
+    }
+    pinContextSnapshot('error', '最新报错快照', errorText.slice(0, 60), errorText);
+    const input = document.getElementById('chatInput');
+    if (input && !input.value.trim()) {
+        input.value = "请分析刚才的这个报错原因，并给出针对性的修复步骤：";
+        input.focus();
+    }
+}
+
+function pinCurrentStep() {
+    let stepText = "";
+    const activeCard = document.querySelector('.agent-terminal-card');
+    if (activeCard) {
+        const text = activeCard.innerText || "";
+        const lines = text.split('\n').filter(l => l.trim().length > 0);
+        stepText = lines.slice(-8).join('\n');
+    }
+    if (!stepText) {
+        stepText = "正在监听 Agent 执行状态...";
+    }
+    pinContextSnapshot('step', '当前步骤快照', stepText.slice(0, 60), stepText);
+    const input = document.getElementById('chatInput');
+    if (input && !input.value.trim()) {
+        input.value = "请解释当前步骤正在做什么，以及后续的逻辑规划：";
+        input.focus();
+    }
+}
+
+const btnRemovePin = document.getElementById('btnRemovePinnedContext');
+if (btnRemovePin) btnRemovePin.addEventListener('click', clearPinnedContext);
+
+const btnPinErr = document.getElementById('btnPinLastError');
+if (btnPinErr) btnPinErr.addEventListener('click', () => pinLastError());
+
+const btnPinStep = document.getElementById('btnPinCurrentStep');
+if (btnPinStep) btnPinStep.addEventListener('click', pinCurrentStep);
+
 document.getElementById('btnSend').addEventListener('click', () => {
     const input = document.getElementById('chatInput');
     const text = input.value.trim();
@@ -1491,10 +1733,21 @@ document.getElementById('btnSend').addEventListener('click', () => {
         input.style.height = 'auto';
         return;
     }
+    if (text === '/digest' || text === '/d') {
+        input.value = '';
+        input.style.height = 'auto';
+        openDigestModal();
+        return;
+    }
 
     if (ws && ws.readyState === WebSocket.OPEN) {
         appendMessage(text, 'user-message');
-        ws.send(JSON.stringify({type: "chat", content: text, mode: getChatMode()}));
+        let promptToSend = text;
+        if (window.pinnedSnapshotContext && window.pinnedSnapshotContext.fullText) {
+            promptToSend = `[已挂载上下文快照 (${window.pinnedSnapshotContext.label})]:\n\`\`\`\n${window.pinnedSnapshotContext.fullText}\n\`\`\`\n\n${text}`;
+            clearPinnedContext();
+        }
+        ws.send(JSON.stringify({type: "chat", content: promptToSend, mode: getChatMode()}));
         input.value = '';
         input.style.height = 'auto';
         
@@ -2295,4 +2548,124 @@ if (chatInputBox) {
         }
     });
 }
+
+// ==========================================
+// Post-Session Digest (War Report Engine)
+// ==========================================
+window.currentDigestReport = "";
+window.currentDigestInsight = null;
+
+async function openDigestModal(customPath) {
+    const modal = document.getElementById('digestModal');
+    const loading = document.getElementById('digestLoading');
+    const content = document.getElementById('digestContent');
+    if (!modal) return;
+
+    modal.style.display = 'flex';
+    if (loading) loading.style.display = 'flex';
+    if (content) content.innerHTML = '';
+
+    const targetPath = customPath || (typeof currentActiveAgentPath !== 'undefined' ? currentActiveAgentPath : 'auto');
+
+    try {
+        const res = await fetch('/api/sessions/digest', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Gabriel-Token': localToken || ''
+            },
+            body: JSON.stringify({ agent_path: targetPath })
+        });
+        const data = await res.json();
+        if (loading) loading.style.display = 'none';
+
+        if (res.ok && data.status === 'success') {
+            window.currentDigestReport = data.report || '';
+            window.currentDigestInsight = data.insight || null;
+
+            const badgeAgent = document.getElementById('digestAgentBadge');
+            const badgeTurns = document.getElementById('digestTurnsBadge');
+            const badgeTokens = document.getElementById('digestTokensBadge');
+            const badgeFiles = document.getElementById('digestFilesBadge');
+
+            if (badgeAgent) badgeAgent.innerText = 'Agent: ' + (data.agent || 'Auto');
+            if (badgeTurns) badgeTurns.innerText = (data.turns || 0) + ' turns';
+            if (badgeTokens) badgeTokens.innerText = '~' + (data.est_tokens || 0) + ' tokens';
+            if (badgeFiles) badgeFiles.innerText = (data.touched_files ? data.touched_files.length : 0) + ' files touched';
+
+            if (content) {
+                content.innerHTML = safeMarkedParse(data.report);
+            }
+        } else {
+            if (content) {
+                content.innerHTML = `<div class="log-entry" style="color: var(--error);">❌ 生成复盘战报失败: ${data.message || '未知错误'}</div>`;
+            }
+        }
+    } catch (err) {
+        if (loading) loading.style.display = 'none';
+        if (content) {
+            content.innerHTML = `<div class="log-entry" style="color: var(--error);">❌ 网络请求异常: ${err.message}</div>`;
+        }
+    }
+}
+
+const btnCloseDigest = document.getElementById('btnCloseDigestModal');
+if (btnCloseDigest) {
+    btnCloseDigest.addEventListener('click', () => {
+        const modal = document.getElementById('digestModal');
+        if (modal) modal.style.display = 'none';
+    });
+}
+
+const btnCopyDigest = document.getElementById('btnCopyDigest');
+if (btnCopyDigest) {
+    btnCopyDigest.addEventListener('click', () => {
+        if (!window.currentDigestReport) return;
+        navigator.clipboard.writeText(window.currentDigestReport);
+        btnCopyDigest.innerText = '✅ 已复制 Markdown!';
+        setTimeout(() => { btnCopyDigest.innerText = '📋 复制 Markdown 报告'; }, 2000);
+    });
+}
+
+const btnSaveDigestToKb = document.getElementById('btnSaveDigestToKb');
+if (btnSaveDigestToKb) {
+    btnSaveDigestToKb.addEventListener('click', async () => {
+        if (!window.currentDigestReport) return;
+        const ins = window.currentDigestInsight || {};
+        try {
+            btnSaveDigestToKb.innerText = '⏳ 保存中...';
+            const res = await fetch('/api/kb', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Gabriel-Token': localToken || ''
+                },
+                body: JSON.stringify({
+                    content: window.currentDigestReport,
+                    problem: ins.problem || "会话复盘与经验沉淀",
+                    cause: ins.cause || "长任务执行链路复盘",
+                    solution: ins.solution || (ins.problem ? JSON.stringify(ins) : "见复盘战报内容"),
+                    tags: ins.tags ? (Array.isArray(ins.tags) ? ins.tags.join(',') : ins.tags) : "session,digest,war_report"
+                })
+            });
+            if (res.ok) {
+                btnSaveDigestToKb.innerText = '✅ 已沉淀入知识库!';
+                setTimeout(() => { btnSaveDigestToKb.innerText = '💾 经验沉淀至知识库'; }, 2500);
+            } else {
+                btnSaveDigestToKb.innerText = '❌ 保存失败';
+                setTimeout(() => { btnSaveDigestToKb.innerText = '💾 经验沉淀至知识库'; }, 2000);
+            }
+        } catch (e) {
+            btnSaveDigestToKb.innerText = '❌ 错误';
+            setTimeout(() => { btnSaveDigestToKb.innerText = '💾 经验沉淀至知识库'; }, 2000);
+        }
+    });
+}
+
+const btnTriggerDigest = document.getElementById('btnTriggerDigest');
+if (btnTriggerDigest) btnTriggerDigest.addEventListener('click', () => openDigestModal());
+
+const btnQuickDigest = document.getElementById('btnQuickDigest');
+if (btnQuickDigest) btnQuickDigest.addEventListener('click', () => openDigestModal());
+
 

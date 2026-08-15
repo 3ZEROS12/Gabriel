@@ -921,5 +921,54 @@ class TestGabrielControlCenter(unittest.TestCase):
         self.assertTrue(_single_instance_guard(9999))
         print("✅ 单实例锁：源码模式放行")
 
+    def test_window_api_toggle_mini_mode(self):
+        """测试 WindowApi mini 胶囊模式切换逻辑"""
+        from run import WindowApi
+        api = WindowApi()
+        self.assertFalse(api.is_mini)
+        res = api.toggle_mini_mode(True)
+        # Without pywebview windows active, it safely handles state and returns False or bool
+        self.assertIsInstance(res, bool)
+
+    def test_config_test_empty_key_rejected(self):
+        """测试 /api/config/test 拦截空 API Key"""
+        response = client.post("/api/config/test", json={"base_url": "https://api.openai.com/v1", "api_key": ""}, headers={"X-Gabriel-Token": API_KEY})
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("为空", response.json().get("message", ""))
+
+    def test_session_digest_endpoint_requires_auth(self):
+        """测试 /api/sessions/digest 需要 Token 鉴权"""
+        response = client.post("/api/sessions/digest", json={"agent_path": "non_existent"})
+        self.assertEqual(response.status_code, 401)
+
+    def test_session_digest_non_existent_file_returns_404(self):
+        """测试不存在的日志文件返回 404"""
+        response = client.post("/api/sessions/digest", json={"agent_path": "C:/invalid_path_to_log.jsonl"}, headers={"X-Gabriel-Token": API_KEY})
+        self.assertEqual(response.status_code, 404)
+
+    def test_extended_parsers_registered_and_parsing(self):
+        """测试 Aider, OpenHands, Gemini CLI 解析器注册与解析能力"""
+        from main import ParserRegistry, AiderParser, OpenHandsParser, GeminiCLIParser
+        
+        # 1. Verify parsers are in registry
+        self.assertIn(AiderParser, ParserRegistry.parsers)
+        self.assertIn(OpenHandsParser, ParserRegistry.parsers)
+        self.assertIn(GeminiCLIParser, ParserRegistry.parsers)
+
+        # 2. Test AiderParser
+        self.assertTrue(AiderParser.identify(".aider.chat.history.md", "#### User: Hello"))
+        aider_out = AiderParser.parse("#### User: Please fix bug")
+        self.assertIn("log-user", aider_out)
+        
+        # 3. Test OpenHandsParser
+        self.assertTrue(OpenHandsParser.identify("~/.openhands/logs/session.jsonl", "{}"))
+        oh_out = OpenHandsParser.parse('{"action": "run", "content": "pytest"}')
+        self.assertIn("OpenHands Action", oh_out)
+
+        # 4. Test GeminiCLIParser
+        self.assertTrue(GeminiCLIParser.identify("~/.gemini/logs/run.jsonl", "{}"))
+        gemini_out = GeminiCLIParser.parse('{"role": "user", "content": "Hi"}')
+        self.assertIn("log-user", gemini_out)
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

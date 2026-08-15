@@ -787,6 +787,7 @@ async def test_config(req: TestConfigModel):
     try:
         test_base_url = (req.base_url or config.get("base_url") or "https://api.openai.com/v1").strip()
         test_api_key = (req.api_key or "").strip()
+        test_model = (req.model or config.get("model") or "gpt-4o-mini").strip()
         
         if "****" in test_api_key:
             test_api_key = (config.get("api_key") or "").strip()
@@ -1293,6 +1294,114 @@ def get_session_transcript(session_id: int, raw: int = 0, db: sqlite3.Connection
         logger.error(f"Get Session Transcript Error: {e}")
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
 
+class DigestRequestModel(BaseModel):
+    session_id: Optional[int] = None
+    agent_path: Optional[str] = None
+    custom_instruction: Optional[str] = None
+
+@api_router.post("/sessions/digest")
+async def generate_session_digest(req: DigestRequestModel, db: sqlite3.Connection = Depends(get_db)):
+    """生成会话 Post-Mortem 复盘战报与经验沉淀"""
+    target_path = None
+    agent_name = "CLI Agent"
+    session_row = None
+    
+    if req.session_id:
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM session_meta WHERE id = ?", (req.session_id,))
+        session_row = cursor.fetchone()
+        if session_row:
+            target_path = session_row["path"]
+            agent_name = session_row["agent_name"]
+    elif req.agent_path and req.agent_path != "auto":
+        target_path = req.agent_path
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM session_meta WHERE path = ? ORDER BY id DESC LIMIT 1", (target_path,))
+        session_row = cursor.fetchone()
+        if session_row:
+            agent_name = session_row["agent_name"]
+    else:
+        active = await scan_active_agents()
+        if active:
+            target_path = active[0]["path"]
+            agent_name = active[0]["name"]
+            cursor = db.cursor()
+            cursor.execute("SELECT * FROM session_meta WHERE path = ? ORDER BY id DESC LIMIT 1", (target_path,))
+            session_row = cursor.fetchone()
+
+    if not target_path or not os.path.exists(target_path):
+        return JSONResponse({"status": "error", "message": "未找到有效或活跃的会话日志文件。"}, status_code=404)
+
+    try:
+        rendered_html, raw_lines, _ = _format_transcript_sync(target_path, is_initial=True)
+        raw_lines_list = list(raw_lines) if raw_lines else []
+        sample_lines = raw_lines_list[-120:] if len(raw_lines_list) > 120 else raw_lines_list
+        transcript_sample = "\n".join(sample_lines)
+        
+        touched = extract_touched_files(transcript_sample)
+        row_keys = session_row.keys() if session_row and hasattr(session_row, "keys") else []
+        turns = session_row["turns"] if session_row and "turns" in row_keys and session_row["turns"] else len(sample_lines)
+        chars = session_row["chars"] if session_row and "chars" in row_keys and session_row["chars"] else len(transcript_sample)
+        est_tokens = chars // 4
+        
+        prompt = (
+            "You are Gabriel Digest Engine (加百列会话复盘引擎). "
+            "Analyze the following CLI Agent session transcript slice and metadata to generate a comprehensive, professional, and structured Post-Mortem Report in Markdown.\n\n"
+            f"**Agent**: {agent_name}\n"
+            f"**Turns**: {turns}\n"
+            f"**Touched Files**: {', '.join(touched) if touched else 'None detected'}\n\n"
+            "**Transcript Slice**:\n"
+            "```\n"
+            f"{transcript_sample[:7500]}\n"
+            "```\n\n"
+            "Please generate a Markdown report with the following structure:\n"
+            "# 📊 Agent 会话复盘战报 (Session Digest)\n\n"
+            "### 📌 概览看板\n"
+            f"- **智能体**: `{agent_name}` | **执行步数**: `{turns}` 步 | **预估 Token**: `~{est_tokens}` | **触及文件**: {len(touched)} 个\n\n"
+            "### 🎯 任务目标与执行结果\n"
+            "- (简明总结 Agent 在此次会话中尝试完成的核心目标与最终达成状态)\n\n"
+            "### 🛠️ 关键执行链路与工具调用\n"
+            "- (提炼核心步骤如修改了哪些文件、执行了哪些命令)\n\n"
+            "### ⚠️ 遇到的卡点与踩坑分析\n"
+            "- (分析过程中出现的错误、异常或工具震荡，及其最终解决方式。若无明显报错则简述平稳执行)\n\n"
+            "### 💡 结构化经验沉淀 (可入库)\n"
+            "```json\n"
+            "{\n"
+            '  "problem": "简短问题描述",\n'
+            '  "cause": "根本原因",\n'
+            '  "solution": "解决方案",\n'
+            '  "tags": ["标签1", "标签2"]\n'
+            "}\n"
+            "```\n"
+        )
+
+        client = get_ai_client()
+        res = await retry_llm(client.chat.completions.create)(
+            model=config.get("model", "gpt-4o-mini"),
+            messages=[
+                {"role": "system", "content": "You are a senior AI DevOps engineer and telemetry analyst generating structured Markdown reports."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=1500,
+            temperature=0.3
+        )
+        report_md = res.choices[0].message.content
+        insight_data = parse_structured_insight(report_md)
+        
+        return JSONResponse({
+            "status": "success",
+            "agent": agent_name,
+            "path": target_path,
+            "turns": turns,
+            "touched_files": touched,
+            "est_tokens": est_tokens,
+            "report": report_md,
+            "insight": insight_data
+        })
+    except Exception as e:
+        logger.error(f"Digest generation failed: {e}")
+        return JSONResponse({"status": "error", "message": f"复盘报告生成失败: {str(e)}"}, status_code=500)
+
 async def get_target_transcript_file():
     if config["target_agent"] != "auto" and os.path.exists(config["target_agent"]):
         return config["target_agent"]
@@ -1492,6 +1601,117 @@ class CursorParser(BaseParser):
         else:
             return f'<div class="log-entry"><span class="log-cursor">🔵 [Cursor]:</span> <span class="log-text">{safe_content[:200]}...</span></div>'
 
+class AiderParser(BaseParser):
+    @staticmethod
+    def get_scan_patterns() -> list:
+        return [
+            os.path.join(os.getcwd(), ".aider.chat.history.md"),
+            os.path.expanduser(r"~/.aider/logs/*.log"),
+            os.path.join(os.getcwd(), ".aider", "logs", "*.log"),
+            os.path.join(os.getcwd(), ".aider.input.history")
+        ]
+
+    @staticmethod
+    def get_agent_name(filepath: str) -> str:
+        return f"aider ({os.path.basename(filepath)})"
+
+    @staticmethod
+    def identify(filepath: str, line: str) -> bool:
+        fp = filepath.lower()
+        return "aider" in fp or line.startswith("#### ") or line.startswith("```diff")
+
+    @staticmethod
+    def parse(line: str) -> str:
+        line = line.strip()
+        if not line: return None
+        safe_content = html.escape(line)
+        
+        if line.startswith("#### ") or line.startswith("> "):
+            return f'<div class="log-entry"><span class="log-user">👤 [USER]:</span> <span class="log-text">{safe_content[5:200]}</span></div>'
+        elif line.startswith("```diff") or line.startswith("```") or line.startswith("diff --git"):
+            return f'<div class="log-entry"><span class="log-tool">🛠️ [DIFF/EDIT]:</span><br><span class="log-subtext">{safe_content[:300]}</span></div>'
+        elif "Applied edit to" in line or "Commit" in line:
+            return f'<div class="log-entry"><span class="log-tool">⚡ [Aider Tool]:</span> <span class="log-text">{safe_content[:200]}</span></div>'
+        else:
+            return f'<div class="log-entry"><span class="log-agent">⚡ [Aider]:</span> <span class="log-text">{safe_content[:200]}</span></div>'
+
+class OpenHandsParser(BaseParser):
+    @staticmethod
+    def get_scan_patterns() -> list:
+        return [
+            os.path.expanduser(r"~/.openhands/logs/*.jsonl"),
+            os.path.expanduser(r"~/.openhands/sessions/*/*.jsonl"),
+            os.path.join(os.getcwd(), ".openhands", "logs", "*.jsonl")
+        ]
+
+    @staticmethod
+    def get_agent_name(filepath: str) -> str:
+        return f"openhands ({os.path.basename(filepath)})"
+
+    @staticmethod
+    def identify(filepath: str, line: str) -> bool:
+        return "openhands" in filepath.lower()
+
+    @staticmethod
+    def parse(line: str) -> str:
+        line = line.strip()
+        if not line: return None
+        try:
+            data = json.loads(line)
+            action = data.get("action") or data.get("type", "")
+            obs = data.get("observation", "")
+            content = data.get("message") or data.get("content") or data.get("args") or ""
+            safe_content = html.escape(str(content))
+            
+            if action in ("run", "browse", "write", "read", "call"):
+                return f'<div class="log-entry"><span class="log-tool">🛠️ [OpenHands Action - {action}]:</span><br><span class="log-subtext">{safe_content[:250]}</span></div>'
+            elif obs:
+                safe_obs = html.escape(str(obs)[:300])
+                return f'<div class="log-entry"><span class="log-tool">👁️ [OpenHands Observation]:</span><br><span class="log-subtext">{safe_obs}</span></div>'
+            elif data.get("role") == "user":
+                return f'<div class="log-entry"><span class="log-user">👤 [USER]:</span> <span class="log-text">{safe_content[:200]}</span></div>'
+            else:
+                return f'<div class="log-entry"><span class="log-agent">🤖 [OpenHands]:</span> <span class="log-text">{safe_content[:200]}</span></div>'
+        except Exception:
+            return PlainTextFallbackParser.parse(line)
+
+class GeminiCLIParser(BaseParser):
+    @staticmethod
+    def get_scan_patterns() -> list:
+        return [
+            os.path.expanduser(r"~/.gemini/logs/*.jsonl"),
+            os.path.expanduser(r"~/.gemini/transcripts/*.jsonl"),
+            os.path.join(os.getcwd(), ".gemini", "logs", "*.jsonl")
+        ]
+
+    @staticmethod
+    def get_agent_name(filepath: str) -> str:
+        return f"gemini-cli ({os.path.basename(filepath)})"
+
+    @staticmethod
+    def identify(filepath: str, line: str) -> bool:
+        fp = filepath.lower()
+        return "gemini" in fp and "antigravity" not in fp
+
+    @staticmethod
+    def parse(line: str) -> str:
+        line = line.strip()
+        if not line: return None
+        try:
+            data = json.loads(line)
+            role = data.get("role") or data.get("type") or ""
+            content = data.get("content") or data.get("text") or ""
+            safe_content = html.escape(str(content))
+            
+            if role in ("user", "USER_INPUT"):
+                return f'<div class="log-entry"><span class="log-user">👤 [USER]:</span> <span class="log-text">{safe_content[:200]}</span></div>'
+            elif role in ("tool", "TOOL_RESPONSE"):
+                return f'<div class="log-entry"><span class="log-tool">🛠️ [GEMINI TOOL]:</span><br><span class="log-subtext">{safe_content[:250]}</span></div>'
+            else:
+                return f'<div class="log-entry"><span class="log-agent">✨ [Gemini]:</span> <span class="log-text">{safe_content[:200]}</span></div>'
+        except Exception:
+            return PlainTextFallbackParser.parse(line)
+
 class PlainTextFallbackParser(BaseParser):
     @staticmethod
     def identify(filepath: str, line: str) -> bool:
@@ -1515,7 +1735,15 @@ class PlainTextFallbackParser(BaseParser):
         return f'<div style="{style}">{html.escape(display_line)}</div>'
 
 class ParserRegistry:
-    parsers = [AntigravityParser, ClaudeCodeParser, CursorParser, PlainTextFallbackParser]
+    parsers = [
+        AntigravityParser,
+        ClaudeCodeParser,
+        CursorParser,
+        AiderParser,
+        OpenHandsParser,
+        GeminiCLIParser,
+        PlainTextFallbackParser
+    ]
     
     @classmethod
     def get_all_scan_patterns(cls) -> list:

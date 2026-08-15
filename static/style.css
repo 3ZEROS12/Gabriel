@@ -1843,6 +1843,461 @@ input:checked + .slider:before { transform: translateX(20px); }
     box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
 }
 
+/* ============================================================
+   Multi-Agent Fleet Tab Bar (Item B)
+   ============================================================ */
+.fleet-tab-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px 0 12px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-bottom: 1px solid var(--hairline);
+    background: var(--canvas-soft);
+}
+
+.fleet-tab-bar::-webkit-scrollbar {
+    display: none;
+}
+
+.fleet-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--ink-secondary);
+    background: transparent;
+    border-radius: var(--radius-tag) var(--radius-tag) 0 0;
+    border: 1px solid transparent;
+    border-bottom: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all var(--motion-fast);
+    user-select: none;
+}
+
+.fleet-tab:hover {
+    color: var(--ink);
+    background: var(--hairline-subtle);
+}
+
+.fleet-tab.active {
+    color: var(--indigo);
+    background: var(--canvas);
+    border-color: var(--hairline);
+    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.02);
+    font-weight: 600;
+}
+
+.fleet-tab-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--ink-tertiary);
+    flex-shrink: 0;
+}
+
+.fleet-tab-dot.is-running {
+    background: var(--success);
+    box-shadow: 0 0 5px rgba(22, 163, 74, 0.6);
+}
+
+.fleet-tab-dot.is-waiting {
+    background: var(--warn);
+}
+
+.fleet-tab-dot.is-error {
+    background: var(--error);
+    box-shadow: 0 0 5px rgba(220, 38, 38, 0.6);
+}
+
+.fleet-tab-name {
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ============================================================
+   Mini Status Banner (Glanceable Sidecar Cockpit)
+   ============================================================ */
+.mini-status-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 12px;
+    margin: 8px 12px 4px 12px;
+    background: var(--canvas-soft);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-tag);
+    font-size: 12px;
+    color: var(--ink);
+    transition: all var(--motion-fast);
+}
+
+.mini-status-banner.is-running {
+    background: var(--canvas-card);
+    border-color: rgba(22, 163, 74, 0.3);
+}
+
+.mini-status-banner.is-waiting {
+    background: var(--warn-soft);
+    border-color: rgba(217, 119, 6, 0.3);
+}
+
+.mini-status-banner.is-error {
+    background: #fef2f2;
+    border-color: rgba(220, 38, 38, 0.4);
+}
+
+.banner-status-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.banner-pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ink-mute);
+    flex-shrink: 0;
+    transition: background 0.2s ease;
+}
+
+.mini-status-banner.is-running .banner-pulse-dot {
+    background: var(--success);
+    box-shadow: 0 0 8px rgba(22, 163, 74, 0.6);
+}
+
+.mini-status-banner.is-waiting .banner-pulse-dot {
+    background: var(--warn);
+}
+
+.mini-status-banner.is-error .banner-pulse-dot {
+    background: var(--error);
+    box-shadow: 0 0 8px rgba(220, 38, 38, 0.6);
+}
+
+.banner-agent-name {
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+}
+
+.banner-divider {
+    color: var(--ink-mute);
+}
+
+.banner-action-text {
+    color: var(--ink-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 220px;
+}
+
+.banner-status-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.banner-badge {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-mute);
+    background: var(--canvas-hover);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.banner-quick-pin {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    background: var(--error);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    transition: opacity var(--motion-fast);
+}
+
+.banner-quick-pin:hover {
+    opacity: 0.9;
+}
+
+/* ============================================================
+   Smart Collapsible Log Traces (Details / Summary)
+   ============================================================ */
+.log-fold {
+    margin: 4px 0;
+    border: 1px solid var(--hairline);
+    border-radius: 6px;
+    background: var(--canvas-card);
+    overflow: hidden;
+}
+
+.log-fold-summary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px;
+    font-size: 11.5px;
+    font-family: var(--font-mono);
+    color: var(--ink-secondary);
+    background: var(--canvas-soft);
+    cursor: pointer;
+    user-select: none;
+    outline: none;
+    list-style: none;
+    transition: background var(--motion-fast);
+}
+
+.log-fold-summary::-webkit-details-marker {
+    display: none;
+}
+
+.log-fold-summary:hover {
+    background: var(--canvas-hover);
+    color: var(--ink);
+}
+
+.log-fold-icon {
+    font-size: 10px;
+    color: var(--ink-mute);
+    transition: transform var(--motion-fast);
+}
+
+.log-fold[open] .log-fold-icon {
+    transform: rotate(90deg);
+}
+
+.log-fold-body {
+    padding: 8px 10px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--ink-secondary);
+    background: var(--canvas-card);
+    border-top: 1px solid var(--hairline);
+    max-height: 240px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.log-fold.has-error {
+    border-color: rgba(220, 38, 38, 0.4);
+}
+
+.log-fold.has-error .log-fold-summary {
+    background: #fef2f2;
+    color: var(--error);
+    font-weight: 500;
+}
+
+/* ============================================================
+   Pinned Context Snapshot Bar (Zero-Friction Prompting)
+   ============================================================ */
+.pinned-context-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 4px 12px 6px 12px;
+    padding: 5px 10px;
+    background: var(--indigo-soft);
+    border: 1px solid var(--indigo);
+    border-radius: var(--radius-tag);
+    font-size: 12px;
+    color: var(--ink);
+    animation: slideDown 0.15s ease;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.pinned-preview-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.pinned-pin-icon {
+    font-size: 12px;
+}
+
+.pinned-label {
+    font-weight: 600;
+    color: var(--indigo-press);
+}
+
+.pinned-snippet {
+    font-family: var(--font-mono);
+    color: var(--ink-secondary);
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 280px;
+}
+
+.btn-remove-pin {
+    background: transparent;
+    border: none;
+    color: var(--ink-mute);
+    cursor: pointer;
+    font-size: 12px;
+    padding: 0 4px;
+    border-radius: 4px;
+}
+
+.btn-remove-pin:hover {
+    color: var(--error);
+    background: rgba(0,0,0,0.05);
+}
+
+.quick-prompt-pill.highlight-pill {
+    background: var(--indigo-soft);
+    border-color: var(--indigo);
+    color: var(--indigo-press);
+    font-weight: 500;
+}
+
+.quick-prompt-pill.highlight-pill:hover {
+    background: var(--indigo);
+    color: #ffffff;
+}
+
+/* ============================================================
+   Mini Pill Mode (Desktop & Browser Ergonomics)
+   ============================================================ */
+.win-btn-mini {
+    font-size: 11px;
+    padding: 2px 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+body.mini-mode .sidebar,
+body.mini-mode .main-content,
+body.mini-mode .resizer,
+body.mini-mode .health-alert-banner {
+    display: none !important;
+}
+
+body.mini-mode {
+    background: transparent;
+    overflow: hidden;
+}
+
+body.mini-mode .title-bar {
+    height: 52px;
+    border-radius: 26px;
+    margin: 2px;
+    padding: 0 14px;
+    box-shadow: var(--shadow-2);
+    border: 1px solid var(--hairline-strong);
+    background: var(--canvas-card);
+}
+
+body.mini-mode .title-logo {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+body.mini-mode .win-btn-mini {
+    background: var(--indigo);
+    color: #ffffff;
+}
+
+/* ============================================================
+   Post-Session Digest Modal (War Report & Insights)
+   ============================================================ */
+.digest-modal-panel {
+    max-width: 680px !important;
+    width: 90% !important;
+    max-height: 85vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    padding: var(--space-5) !important;
+}
+
+.digest-status-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0 12px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--hairline);
+    flex-wrap: wrap;
+}
+
+.digest-loading-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 40px 20px;
+    color: var(--ink-secondary);
+    font-size: 13px;
+}
+
+.digest-content-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 4px 16px 4px;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ink);
+}
+
+.digest-content-body h1,
+.digest-content-body h2,
+.digest-content-body h3 {
+    color: var(--ink);
+    margin-top: 14px;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.digest-content-body h1 { font-size: 1.2rem; }
+.digest-content-body h2 { font-size: 1.05rem; }
+.digest-content-body h3 { font-size: 0.95rem; }
+
+.digest-content-body ul,
+.digest-content-body ol {
+    padding-left: 18px;
+    margin-bottom: 10px;
+}
+
+.digest-modal-actions {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--hairline);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+
 
 
 

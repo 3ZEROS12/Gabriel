@@ -1,177 +1,181 @@
 <p align="center">
-  <img src="static/assets/pixel_q_rose_transparent.png" width="160" alt="Gabriel Lily Bouquet" style="margin-bottom: 8px;">
+  <img src="static/assets/pixel_q_rose_transparent.png" width="160" alt="Gabriel Mascot" style="margin-bottom: 8px;">
 </p>
 
 <h1 align="center">Gabriel 👼 (加百列)</h1>
 
 <p align="center">
-  <strong>CLI AI Agent 的零侵入 GUI 副屏与旁路监视器</strong> —— 零卡顿、零侵入、自带私有大脑。<br>
-  <em>A zero-intrusion, local-first GUI sidecar for Antigravity, Claude Code, and Cursor.</em>
+  <strong>The Zero-Intrusion Desktop GUI Sidecar & Cognitive Sandbox for CLI AI Agents.</strong><br>
+  <em>"Keep the main flow unbroken; never lose the details."</em>
+</p>
+
+<p align="center">
+  <a href="README_CN.md">🇨🇳 中文文档</a> •
+  <a href="#-quick-start">🚀 Quick Start</a> •
+  <a href="#-key-features">✨ Key Features</a> •
+  <a href="#-the-origin-story">💡 Origin Story</a> •
+  <a href="docs/LAUNCH_KIT.md">📢 Launch Kit</a>
 </p>
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-AGPL--3.0-blue.svg" alt="License: AGPL-3.0"></a>
   <a href="pyproject.toml"><img src="https://img.shields.io/badge/Python-3.10+-brightgreen.svg" alt="Python 3.10+"></a>
-  <a href="tests/test_gabriel.py"><img src="https://img.shields.io/badge/Tests-34%20Passed-success.svg" alt="Tests: 34 Passed"></a>
+  <a href="tests/test_gabriel.py"><img src="https://img.shields.io/badge/Tests-39%20Passed-success.svg" alt="Tests: 39 Passed"></a>
   <a href="pyproject.toml"><img src="https://img.shields.io/badge/Code%20Style-Ruff-000000.svg" alt="Code Style: Ruff"></a>
+  <img src="https://img.shields.io/badge/Local%20First-Zero%20CDN-orange.svg" alt="Zero CDN Local First">
 </p>
 
 ---
 
-## 💡 开发初衷与起源 (Origin Story)
+## 💡 The Origin Story: Why Gabriel Exists
 
-Gabriel 最初是我在日常使用 CLI AI Agent（如 Antigravity / Claude Code / Cursor）时，为了解决**自己切身体会**而打造的个人工具：
+Gabriel wasn't born out of theoretical speculation. It originated from a very real, everyday learning dilemma:
 
-> 💬 **核心痛点**：  
-> 每当主 Agent 在终端里执行一项复杂的**长任务**时，我常常产生很多发散性的问题（例如“这行报错是什么原理？”“它现在用的算法是什么？”“帮我解释一下这个库”）。  
-> 但是在主终端里我**完全不敢随便打扰它** —— 生怕打断它的执行链路、污染主干记忆，或是让它在主任务中分心做无用功。
+> 📖 **The IELTS Breakthrough & Cognitive Dilemma**:  
+> While preparing for the IELTS exam, I used **Gemini 3.1 Pro** as an interactive tutor to practice advanced sentences and vocabulary.  
+> Whenever Gemini gave high-level feedback on my essay, I frequently encountered specific words or subtle grammatical nuances I didn't understand. But Gemini assumed I knew them and kept advancing the main curriculum.  
+> If I interrupted the conversation to ask basic vocabulary questions, **it derailed the entire evaluation flow and polluted the context window**. If I switched to a browser to search, **I was swamped by noisy dictionary ads and lost my mental focus**.
 
-**Gabriel 就是为了解决这个问题而诞生的旁路副屏 (Sidecar)。**  
-它在后台静默 Tail 日志，提供独立的**副脑问答沙盒**与**实时可视化大屏** —— 让你在主 Agent 默默干活的同时，随时向副屏 Ask / Debug，**完全不占用、不打扰主 Agent 的上下文记忆**，物理级保证绝不阻塞或挂掉主流程。
+When autonomous CLI coding agents (**Claude Code, Antigravity, Cursor, Aider, OpenHands**) arrived, I realized **every software developer is trapped in the exact same cognitive dilemma every day**:
 
----
+```
+Primary Task Flow (Terminal)          Secondary Sidecar Sandbox (Gabriel)
+┌────────────────────────────────┐     ┌────────────────────────────────┐
+│ Claude / Antigravity Agent     │     │ Gabriel Sidecar (1/4 Screen)   │
+│ Running 20-min long refactor...│ ──> │ Passive Telemetry Stream       │
+│                                │     │                                │
+│ 💥 ConnectionReset / Traceback │ ──> │ 🔴 Error Detected Pulse        │
+│                                │     │ 📌 One-Click Snapshot Pinning  │
+│ [Main loop keeps running!]     │     │ 💡 Ask Sidecar: "Why this bug?"│
+└────────────────────────────────┘     └────────────────────────────────┘
+```
 
-## ✨ 核心亮点
+* When your CLI Agent runs a 20-minute autonomous refactoring loop, **you dare not interrupt it** or inject side questions that bloat its expensive context window.
+* When hundreds of lines of raw tool calls flood your terminal, **spotting errors is painful**.
+* When the session exits, **all hard-won debugging lessons and token bills vanish into thin air**.
 
-- 🛡️ **零侵入 Tailer (Zero-Intrusion)**  
-  基于增量字节偏移监听 Agent Transcript (`.jsonl`) 日志。无 PTY / 无 STDOUT 钩子，主 Agent 就算崩溃也影响不到 Gabriel，Gabriel 崩溃也绝不会打断主 Agent。
-- 📐 **无边框 1/4 屏右侧悬浮副屏**  
-  启动自动定位在屏幕右上角 1/4 屏形态，支持自研无边框拖拽、窗口置顶 (`📌`) 与拉伸调节，并支持导航栏 (56px) 与终端面板一键隐藏折叠（`Ctrl + [` / `Ctrl + B`）。
-- 🧠 **CCSwitch 风格副脑问答沙盒**  
-  独立副脑对话框，配备 CCSwitch 风格的 **Segmented Pill 模式 Popover 选择器**（轻量助手 💨 / 私密问答 🔒 / 深度审计 🔬 / 一次性深拆 ⚡），自带终端上下文快照挂载与 SQLite 聊天持久化。
-- ⚙️ **多厂商开源 SVG Logo 与 Raycast 胶囊选择器**  
-  内置 OpenAI、Claude、DeepSeek、Gemini、硅基流动、智谱 GLM-4、通义千问、Kimi、Ollama 本地、Groq 等 10 大厂商**正版开源矢量 SVG Logo**。采用 24px 微型同圆徽章与 Raycast/Linear 极简胶囊造型，配备 **🟢 绿光 Key 状态指示灯** 与 **🔑 全局已配置 Key 计数器**。
-- 🔄 **极速 Key 替换与安全连接校验**  
-  支持一键清空 Key (`✕`) 与聚焦自动高亮覆盖。连接测试端点彻底去除了环境 Key 静默回退，空 Key 测试精准返回 400 校验拦截提示。
-- 🎨 **Claude Warm Parchment 与加百列百合美学**  
-  融合 Claude 暖羊皮纸背景 (`#faf8f5`)、赤陶琥珀高亮 (`#d97757`) 与 Nanobanana 加百列百合/月季切片图标 (`botanical_icon_*.png`)，自带 240px 浮动百合束启动页与系统托盘驻留。
-- 🔍 **双重 RRF 混合知识库 (FTS5 + Vector)**  
-  `jieba` 中文分词 + `sqlite-vec` 向量语义检索，通过倒数排名融合 (RRF) 算法合并。Agent 报错时主动弹出过去积累的解决方案，并支持优雅离线降级。
-- 🛟 **卡点雷达与死循环检测 (Stuck Radar)**  
-  滑动窗口识别工具震荡与死循环，一键匹配知识库解决方案；自带保留策略与统计看板。
-- 🔌 **Stdio MCP 生态接口**  
-  原生内置 Stdio MCP 服务 (`src/mcp_server.py`)，暴露 4 大工具，让 Claude Code / Cursor 直接通过 MCP 调阅和写入 Gabriel 知识库。
-- 📦 **免环境绿色发行 (PyInstaller onedir)**  
-  支持 Windows 解压即用双击运行，数据目录 (`knowledge.db`) 与代码区隔离，自带单实例锁与端口自动避让。
+**Gabriel is the dedicated 1/4-screen desktop GUI sidecar that solves this.** It silently monitors local agent traces in the background, offering an isolated auxiliary sandbox, glanceable status alerts, and post-session knowledge crystallization.
 
 ---
 
-## 🚀 30 秒快速上手
+## ✨ Key Features
 
-### 1. 安装与启动 (开发模式)
+### 1. 🟢 Glanceable Cockpit & Smart Collapsible Logs
+* **Mini Status Banner**: Displays live agent status (`🟢 Running` / `🟡 Reasoning` / `🔴 Error detected`) and step count at a single glance.
+* **Auto-Collapsible Details (`<details class="log-fold">`)**: Compresses verbose, multi-line tool outputs into single-line summaries (`▶ 🛠️ [Tool Output] (240 chars)`). Automatically expands and highlights errors in red.
 
-**预备条件：** Python 3.10+
+### 2. 📌 Zero-Friction Error Snapshot Pinning
+* Spot a tricky error or curious step in the terminal? Click **`📌 Pin Last Error`** or **`⚡ Pin Current Step`**.
+* Gabriel extracts the exact trace snippet, mounts it above your prompt, and queries your auxiliary model (e.g., DeepSeek, GPT-4o-mini, Local Ollama) **without touching or polluting the main agent's terminal**.
+
+### 3. 📊 Post-Session War Report & Token Ledger (`/digest`)
+* Type `/digest` or click **`📊 War Report`** to generate an instant, structured Post-Mortem Markdown summary:
+  * 🎯 **Core Goal & Completion State**
+  * 🛠️ **Key Execution Paths & Touched Files**
+  * ⚠️ **Bottlenecks & Root Causes**
+  * 💰 **Token Consumption & Cost Breakdown**
+  * 💾 **One-Click Save to Knowledge Base** (`knowledge.db`)
+
+### 4. 🚢 Multi-Agent Fleet Tab Bar
+* Running multiple agents concurrently? Gabriel's Linear-style **Fleet Tab Bar** automatically tracks all active sessions:
+  * `⚡ Auto-Follow` (Follows the newest active terminal)
+  * `[🟢 Antigravity]` `[🟣 Claude Code]` `[⚡ Aider]` `[🤖 OpenHands]` `[✨ Gemini CLI]`
+  * One-click tab switching to lock onto any specific session.
+
+### 5. 📐 Mini Pill Capsule Mode (`Ctrl + M`)
+* Shrinks the entire 1/4 screen UI into an unobtrusive 36px floating capsule at the edge of your screen.
+* Unobtrusive during deep coding flow; pulses gently only when attention is needed.
+
+### 6. 🧠 Dual RRF Hybrid Knowledge Base (FTS5 + Vector)
+* Built-in `sqlite-vec` semantic embeddings + `jieba` FTS5 keyword search fused via Reciprocal Rank Fusion (RRF).
+* Automatically suggests historical solutions when similar errors reoccur across projects.
+
+### 7. 🛡️ 100% Local-First & Zero CDN
+* Zero external CDN dependencies (bundled fonts, local Marked.js, local Highlight.js, local DOMPurify).
+* Strict CSP security headers and token authentication.
+
+---
+
+## 🚀 Quick Start
+
+### Method 1: Windows Standalone (No Python Setup Required)
+1. Download `Gabriel-v4.0.0-Windows.zip` from [GitHub Releases](https://github.com/3ZEROS12/Gabriel/releases).
+2. Extract and double-click `Gabriel.exe`.
+
+---
+
+### Method 2: From Source (Python 3.10+)
 
 ```bash
-# 克隆仓库
+# 1. Clone repository
 git clone https://github.com/3ZEROS12/Gabriel.git
 cd Gabriel
 
-# 创建并激活虚拟环境
+# 2. Create and activate virtual environment
 python -m venv venv
 venv\Scripts\activate          # Windows
 # source venv/bin/activate    # macOS / Linux
 
-# 安装依赖
+# 3. Install dependencies
 pip install -r requirements.txt
-pip install -e .              # 可选：注册 gabriel 全局命令
+pip install -e .              # Optional: install `gabriel` CLI globally
 
-# 启动服务
-gabriel                        # 或 python -m src.main --port 8080
+# 4. Launch Gabriel
+gabriel                        # Or: python -m src.main --port 8080
 ```
 
-### 2. 打开仪表盘
-终端启动后会打印随机生成的安全 Token：
-```
-🔐 Security Token Generated: 8f3a9b2c...
-🌐 Gabriel running at http://127.0.0.1:8080
-```
-在浏览器打开 `http://127.0.0.1:8080` 并粘贴 Token 即可登录！
-
-> 💡 **桌面模式**：运行 `python src/run.py` 可在独立 pywebview 桌面窗口中打开 Gabriel。
+* **Desktop Mode**: Run `python src/run.py` to open Gabriel inside a frameless native desktop window.
+* **Browser Access**: Open `http://127.0.0.1:8080` with the random security token printed in the terminal.
 
 ---
 
-## 🖥️ 4 大可视化大屏
+## 🔌 Supported CLI Agents & Ecosystem
 
-| 视图 | 核心功能 |
-|---|---|
-| 💬 **控制中心 (Control Center)** | 分屏视图：Live Agent 终端卡片阵列 + 副脑对话沙盒（支持快照挂载、模型切换、一键 Markdown 复盘导出） |
-| 📡 **Agent 雷达 (Agent Radar)** | 全域会话监测：排序/锁定活跃 Agent，实时会话 Token 消耗、成本计算与历史 Turn 复盘 |
-| 📖 **私有知识库 (Knowledge Base)** | 图谱式经验卡片 + Markdown 结构化编辑器（支持 `{problem, cause, solution, tags}` 自动解析与注入） |
-| ⚙️ **运行配置 (Settings)** | 自定义 OpenAI 兼容 Endpoint、模型预设单价配置、Token 鉴权管理与多语言切换 |
+Gabriel passively tails local trajectory files without requiring any IDE extensions or proxy configurations:
 
----
-
-## 📡 API & MCP 一览
-
-### REST & WebSocket
-所有 REST API 均要求 `X-Gabriel-Token` 请求头，WebSocket 连接推荐采用一次性 Ticket 握手 (`/api/auth/ticket`)。
-
-- `GET /api/health` — Tailer 状态与心跳检查
-- `GET /api/agents` — 当前活跃 Agent 会话列表
-- `GET /api/kb` · `POST /api/kb` — 知识库 CRUD 与结构化四段写入 (`save_insight()`)
-- `POST /api/kb/search` — 基于 RRF 混合检索的只读搜索
-- `GET /api/stuck` · `GET /api/stuck/stats` — 卡点报告列表与 24h/7d 统计
-- `GET /api/sessions/{id}/transcript?raw=1` — 获取带有文件触及与 Cost 统计的完整 Session 导出数据
-- `WS /ws` — 双向日志追加、Waiting/Stuck 状态事件广播与副脑流式响应
-
-### Stdio MCP 4 大工具
-运行 `python -m src.mcp_server` 即可作为 Stdio MCP 服务器供 external agents 使用：
-- `read_gabriel_kb(query)`：检索私有知识库（含反馈加权）
-- `add_gabriel_insight(content)`：主动记录坑点与经验
-- `report_agent_stuck(agent, context)`：上报 Agent 卡点并匹配解法
-- `get_session_summary(agent_path)`：获取当前会话遥测摘要
+| Agent | Target Trajectory Logs | Parser Engine |
+| :--- | :--- | :--- |
+| **Antigravity** | `~/.gemini/antigravity-cli/brain/*/logs/*.jsonl` | `AntigravityParser` |
+| **Claude Code** | `~/.claude/projects/*/*.jsonl`, `~/.claude/logs/*.jsonl` | `ClaudeCodeParser` |
+| **Cursor CLI** | `~/.cursor/logs/*.log`, `~/.config/Cursor/logs/*.log` | `CursorParser` |
+| **Aider** | `.aider.chat.history.md`, `.aider.input.history` | `AiderParser` |
+| **OpenHands** | `~/.openhands/logs/*.jsonl`, `~/.openhands/sessions/*/*.jsonl` | `OpenHandsParser` |
+| **Gemini CLI** | `~/.gemini/logs/*.jsonl`, `~/.gemini/transcripts/*.jsonl` | `GeminiCLIParser` |
+| **Plain Logs** | Standard stdout/stderr text files | `PlainTextFallbackParser` |
 
 ---
 
-## 📁 项目结构
+## ⌨️ Shortcuts & Hotkeys
 
-```
-Gabriel/
-├── src/
-│   ├── main.py            # FastAPI 后端: REST + WebSocket + 日志 Tailer + FTS5/向量 KB
-│   ├── mcp_server.py      # Stdio MCP 服务器
-│   └── run.py             # pywebview 桌面包装壳
-├── static/
-│   ├── index.html         # Dashboard 页面 (4 大视图 + Token 登录)
-│   ├── script.js          # 前端交互与 WebSocket 客户端 (DOMPurify 渲染)
-│   ├── style.css          # v4 Light Indigo 视觉规范
-│   ├── icons.js           # Lucide 图标模块
-│   └── vendor/            # 本地 Vendor 字体与库 (零 CDN 依赖)
-├── docs/
-│   ├── DEVELOPMENT_ROADMAP.md # 【主索引】开发全景图与路线图
-│   ├── ARCHITECTURE.md        # 系统架构设计说明
-│   ├── API_REFERENCE.md       # API 端点完整参考手册
-│   ├── AUTOSTART.md           # Windows 开机自启配置指南
-│   └── RELEASE.md             # PyPI / PyInstaller 打包分发指南
-├── tests/
-│   └── test_gabriel.py    # 34 个 Pytest 自动化测试
-├── scripts/               # 开机启动与稳定性冒烟测试脚本
-├── requirements.txt       # Python 运行时依赖
-├── pyproject.toml         # Ruff & Pytest 工具链配置
-└── setup.py               # `pip install -e .` 安装入口
-```
+| Shortcut | Action |
+| :--- | :--- |
+| `Ctrl + M` | Toggle Mini Pill Capsule Mode / Full 1/4 Screen |
+| `Ctrl + [` | Toggle Left Sidebar Fold / Expand |
+| `Ctrl + B` | Toggle Terminal Context Panel Fold / Expand |
+| `Ctrl + Enter` | Send Chat Prompt to Auxiliary Brain |
+| `/digest` or `/d` | Generate Instant Post-Session War Report |
+| `/clear` | Clear Auxiliary Chat History |
+| `/help` | Open Keyboard Shortcuts & Guidance Modal |
 
 ---
 
-## 🛠️ 质量验证与护栏
+## 🛡️ Quality & Test Suite
 
-在提交任何代码变动前，需确保以下三项防护全部通过：
+Gabriel is engineered with rigorous automated testing and static analysis:
 
 ```bash
-# 1. 运行 Pytest 全量测试 (34 passed)
-venv\Scripts\python.exe -m pytest tests/ -q
+# Run 39 automated unit & integration tests
+pytest tests/ -q
 
-# 2. 运行 Ruff 代码规范检查
-venv\Scripts\python.exe -m ruff check src tests
+# Run Ruff linter
+ruff check src tests
 
-# 3. 运行 Node 前端语法静态检查
+# Verify zero CDN frontend syntax
 node --check static/script.js static/icons.js
 ```
 
 ---
 
-## 📄 许可证
+## 📄 License
 
-本项目采用 [AGPL-3.0 开源许可证](LICENSE)。
+Gabriel is licensed under the [AGPL-3.0 License](LICENSE).

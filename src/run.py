@@ -17,12 +17,19 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from main import app
 
 class WindowApi:
+    def __init__(self):
+        self.normal_width = 480
+        self.normal_height = 750
+        self.is_mini = False
+
     def close(self):
         if webview.windows:
             webview.windows[0].destroy()
+
     def minimize(self):
         if webview.windows:
             webview.windows[0].minimize()
+
     def toggle_on_top(self):
         if webview.windows:
             w = webview.windows[0]
@@ -31,6 +38,26 @@ class WindowApi:
                 return w.on_top
             except Exception:
                 return True
+
+    def toggle_mini_mode(self, is_mini: bool = None):
+        if webview.windows:
+            w = webview.windows[0]
+            try:
+                if is_mini is None:
+                    self.is_mini = not self.is_mini
+                else:
+                    self.is_mini = bool(is_mini)
+                
+                if self.is_mini:
+                    self.normal_width = getattr(w, 'width', self.normal_width) or self.normal_width
+                    self.normal_height = getattr(w, 'height', self.normal_height) or self.normal_height
+                    w.resize(340, 56)
+                else:
+                    w.resize(self.normal_width, self.normal_height)
+                return self.is_mini
+            except Exception:
+                return False
+        return False
 
 def get_free_port():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
