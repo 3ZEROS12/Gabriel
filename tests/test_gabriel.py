@@ -930,6 +930,18 @@ class TestGabrielControlCenter(unittest.TestCase):
         # Without pywebview windows active, it safely handles state and returns False or bool
         self.assertIsInstance(res, bool)
 
+    def test_window_api_set_preset(self):
+        """测试 WindowApi 尺寸挡位切换 (1/4 sidecar, 1/2 half, mini)"""
+        from run import WindowApi
+        api = WindowApi()
+        self.assertEqual(api.current_preset, 'sidecar')
+        self.assertEqual(api.set_preset('half'), 'half')
+        self.assertEqual(api.current_preset, 'half')
+        self.assertEqual(api.set_preset('mini'), 'mini')
+        self.assertTrue(api.is_mini)
+        self.assertEqual(api.set_preset('sidecar'), 'sidecar')
+        self.assertFalse(api.is_mini)
+
     def test_config_test_empty_key_rejected(self):
         """测试 /api/config/test 拦截空 API Key"""
         response = client.post("/api/config/test", json={"base_url": "https://api.openai.com/v1", "api_key": ""}, headers={"X-Gabriel-Token": API_KEY})

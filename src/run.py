@@ -21,6 +21,7 @@ class WindowApi:
         self.normal_width = 480
         self.normal_height = 750
         self.is_mini = False
+        self.current_preset = 'sidecar'
 
     def close(self):
         if webview.windows:
@@ -38,6 +39,44 @@ class WindowApi:
                 return w.on_top
             except Exception:
                 return True
+
+    def set_preset(self, preset_name: str):
+        """Switch between 1/4 sidecar ('sidecar'), 1/2 half-screen ('half'), and mini ('mini')"""
+        if preset_name == 'mini':
+            self.is_mini = True
+            self.current_preset = 'mini'
+        elif preset_name == 'half':
+            self.is_mini = False
+            self.current_preset = 'half'
+        else:
+            self.is_mini = False
+            self.current_preset = 'sidecar'
+
+        if webview.windows:
+            w = webview.windows[0]
+            try:
+                sw, sh = 1920, 1080
+                if hasattr(webview, 'screens') and webview.screens:
+                    primary_screen = webview.screens[0]
+                    sw, sh = primary_screen.width, primary_screen.height
+
+                if preset_name == 'mini':
+                    w.resize(340, 56)
+                elif preset_name == 'half':
+                    width = max(640, int(sw * 0.5))
+                    height = max(600, int(sh * 0.9))
+                    w.resize(width, height)
+                    if hasattr(w, 'move'):
+                        w.move(sw - width, 10)
+                else:  # default 'sidecar' (1/4 screen)
+                    width = max(380, int(sw * 0.28))
+                    height = max(500, int(sh * 0.88))
+                    w.resize(width, height)
+                    if hasattr(w, 'move'):
+                        w.move(sw - width, 10)
+            except Exception:
+                pass
+        return self.current_preset
 
     def toggle_mini_mode(self, is_mini: bool = None):
         if webview.windows:

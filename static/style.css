@@ -2298,7 +2298,59 @@ body.mini-mode .title-logo {
     font-weight: 600;
 }
 
-body.mini-mode .win-btn-mini {
+/* ============================================================
+   Window Size Gear Presets (1/4 Sidecar, 1/2 Half, Mini Pill)
+   ============================================================ */
+.window-gear-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px;
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-pill);
+    margin-right: 6px;
+}
+
+.gear-preset-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 500;
+    font-family: var(--font-mono);
+    color: var(--ink-secondary);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: all var(--motion-fast);
+    user-select: none;
+}
+
+.gear-preset-btn:hover {
+    color: var(--ink);
+    background: rgba(255, 255, 255, 0.5);
+    transform: translateY(-0.5px);
+}
+
+.gear-preset-btn:active {
+    transform: scale(0.96);
+}
+
+.gear-preset-btn.active {
+    background: #ffffff;
+    color: var(--ink);
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.gear-preset-btn.btn-mini-pill {
+    padding: 2px 7px;
+}
+
+.gear-preset-btn.btn-mini-pill.active {
     background: var(--indigo);
     color: #ffffff;
 }

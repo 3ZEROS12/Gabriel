@@ -251,27 +251,72 @@ if (btnPinEl) {
     });
 }
 
-// --- Mini Pill Mode Controller ---
+// --- Window Size Gear Presets & Mini Mode Controller ---
 const btnToggleMiniMode = document.getElementById('btnToggleMiniMode');
+const btnPresetSidecar = document.getElementById('btnPresetSidecar');
+const btnPresetHalf = document.getElementById('btnPresetHalf');
+
+function setWindowPreset(preset) {
+    if (preset === 'mini') {
+        setMiniMode(true);
+        return;
+    }
+    setMiniMode(false);
+    
+    document.querySelectorAll('.gear-preset-btn').forEach(btn => btn.classList.remove('active'));
+    if (preset === 'half' && btnPresetHalf) {
+        btnPresetHalf.classList.add('active');
+    } else if (btnPresetSidecar) {
+        btnPresetSidecar.classList.add('active');
+    }
+    
+    localStorage.setItem('gabriel_window_preset', preset);
+    if (window.pywebview && window.pywebview.api && window.pywebview.api.set_preset) {
+        window.pywebview.api.set_preset(preset);
+    }
+}
+
 function setMiniMode(enabled) {
     if (enabled) {
         document.body.classList.add('mini-mode');
         localStorage.setItem('gabriel_mini_mode', '1');
+        document.querySelectorAll('.gear-preset-btn').forEach(btn => btn.classList.remove('active'));
+        if (btnToggleMiniMode) btnToggleMiniMode.classList.add('active');
     } else {
         document.body.classList.remove('mini-mode');
         localStorage.setItem('gabriel_mini_mode', '0');
+        if (btnToggleMiniMode) btnToggleMiniMode.classList.remove('active');
+        const savedPreset = localStorage.getItem('gabriel_window_preset') || 'sidecar';
+        if (savedPreset === 'half' && btnPresetHalf) btnPresetHalf.classList.add('active');
+        else if (btnPresetSidecar) btnPresetSidecar.classList.add('active');
     }
     if (window.pywebview && window.pywebview.api && window.pywebview.api.toggle_mini_mode) {
         window.pywebview.api.toggle_mini_mode(enabled);
     }
 }
+
 function toggleMiniMode() {
     const isMini = document.body.classList.contains('mini-mode');
     setMiniMode(!isMini);
 }
-if (btnToggleMiniMode) {
-    btnToggleMiniMode.addEventListener('click', toggleMiniMode);
-}
+
+if (btnToggleMiniMode) btnToggleMiniMode.addEventListener('click', toggleMiniMode);
+if (btnPresetSidecar) btnPresetSidecar.addEventListener('click', () => setWindowPreset('sidecar'));
+if (btnPresetHalf) btnPresetHalf.addEventListener('click', () => setWindowPreset('half'));
+
+// Window Preset Keyboard Shortcuts (Ctrl+1, Ctrl+2, Ctrl+M)
+document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === '1') {
+        e.preventDefault();
+        setWindowPreset('sidecar');
+    } else if ((e.ctrlKey || e.metaKey) && e.key === '2') {
+        e.preventDefault();
+        setWindowPreset('half');
+    } else if ((e.ctrlKey || e.metaKey) && (e.key === 'm' || e.key === 'M')) {
+        e.preventDefault();
+        toggleMiniMode();
+    }
+});
 
 // --- Sidebar Collapse / Fold Logic ---
 const appSidebar = document.getElementById('appSidebar');
