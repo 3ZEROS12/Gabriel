@@ -171,18 +171,51 @@ function safeMarkedParse(content) {
     }
 }
 
-// [NOTE]: Using localStorage for token is acceptable for this local single-machine tool. 
-// If Gabriel supports multi-user LAN access in the future, this must be re-evaluated.
-const urlParams = new URLSearchParams(window.location.search);
-let localToken = urlParams.get('token') || sessionStorage.getItem('gabriel_token') || localStorage.getItem('gabriel_token');
-if (localToken) {
-    sessionStorage.setItem('gabriel_token', localToken);
-    localStorage.setItem('gabriel_token', localToken);
-    window.history.replaceState({}, document.title, window.location.pathname);
-} else {
-    const loginModal = document.getElementById('loginModal');
-    if (loginModal) loginModal.style.display = 'flex';
+// Localhost Seamless Auto-Handshake & Session Authentication
+let localToken = null;
+
+async function initSessionToken() {
+    const urlParams = new URLSearchParams(window.location.search);
+    let token = urlParams.get('token');
+    
+    // Auto-fetch fresh session token from local backend if on localhost / 127.0.0.1
+    if (!token && (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost' || !window.location.hostname)) {
+        try {
+            const pingRes = await fetch('/api/ping');
+            if (pingRes.ok) {
+                const pingData = await pingRes.json();
+                if (pingData && pingData.token) {
+                    token = pingData.token;
+                }
+            }
+        } catch (e) {
+            console.warn('Ping handshake fallback:', e);
+        }
+    }
+    
+    if (!token) {
+        token = sessionStorage.getItem('gabriel_token') || localStorage.getItem('gabriel_token');
+    }
+    
+    if (token) {
+        localToken = token;
+        sessionStorage.setItem('gabriel_token', token);
+        localStorage.setItem('gabriel_token', token);
+        const loginModal = document.getElementById('loginModal');
+        if (loginModal) loginModal.style.display = 'none';
+        if (window.location.search.includes('token=')) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        // Auto-reconnect WebSocket if it hasn't connected yet
+        if (!ws || ws.readyState === WebSocket.CLOSED) {
+            connectWebSocket();
+        }
+    } else {
+        const loginModal = document.getElementById('loginModal');
+        if (loginModal) loginModal.style.display = 'flex';
+    }
 }
+initSessionToken();
 
 const btnLogin = document.getElementById('btnLogin');
 if (btnLogin) {
@@ -190,6 +223,7 @@ if (btnLogin) {
         const inputToken = document.getElementById('inputToken');
         const t = inputToken ? inputToken.value.trim() : "";
         if (t) {
+            localToken = t;
             sessionStorage.setItem('gabriel_token', t);
             localStorage.setItem('gabriel_token', t);
             window.location.reload();
@@ -1679,6 +1713,15 @@ async function connectWebSocket() {
             currentAiMessageDiv = createMessageDiv('ai-message');
             document.getElementById('chatHistory').appendChild(currentAiMessageDiv);
         } else if (msg.type === "ai_response_chunk") {
+            if (window.currentThinkingId) {
+                const el = document.getElementById(window.currentThinkingId);
+                if (el) el.remove();
+                window.currentThinkingId = null;
+            }
+            if (!currentAiMessageDiv) {
+                currentAiMessageDiv = createMessageDiv('ai-message');
+                document.getElementById('chatHistory').appendChild(currentAiMessageDiv);
+            }
             currentAiMessageContent += msg.content;
             currentAiMessageDiv.innerHTML = safeMarkedParse(currentAiMessageContent);
             // Round 11 (UX): Cinematic Scroll Smoothness & Auto-Scroll Lock
@@ -1692,10 +1735,25 @@ async function connectWebSocket() {
                 });
             }
         } else if (msg.type === "ai_response_end") {
+            if (window.currentThinkingId) {
+                const el = document.getElementById(window.currentThinkingId);
+                if (el) el.remove();
+                window.currentThinkingId = null;
+            }
             currentAiMessageDiv = null;
         } else if (msg.type === "ai_response") {
+            if (window.currentThinkingId) {
+                const el = document.getElementById(window.currentThinkingId);
+                if (el) el.remove();
+                window.currentThinkingId = null;
+            }
             appendMessage(msg.content, 'ai-message');
         } else if (msg.type === "sys_message") {
+            if (window.currentThinkingId) {
+                const el = document.getElementById(window.currentThinkingId);
+                if (el) el.remove();
+                window.currentThinkingId = null;
+            }
             appendMessage(msg.content, 'sys-message');
         }
     };
@@ -1866,26 +1924,30 @@ document.getElementById('btnSend').addEventListener('click', () => {
         return;
     }
 
-    if (ws && ws.readyState === WebSocket.OPEN) {
-        appendMessage(text, 'user-message');
-        let promptToSend = text;
-        if (window.pinnedSnapshotContext && window.pinnedSnapshotContext.fullText) {
-            promptToSend = `[已挂载上下文快照 (${window.pinnedSnapshotContext.label})]:\n\`\`\`\n${window.pinnedSnapshotContext.fullText}\n\`\`\`\n\n${text}`;
-            clearPinnedContext();
-        }
-        ws.send(JSON.stringify({type: "chat", content: promptToSend, mode: getChatMode()}));
-        input.value = '';
-        input.style.height = 'auto';
-        
-        // Add typing indicator
-        window.currentThinkingId = 'thinking-' + Date.now();
-        const thinkingDiv = document.createElement('div');
-        thinkingDiv.id = window.currentThinkingId;
-        thinkingDiv.className = 'message sys-message thinking-indicator-row';
-        thinkingDiv.innerHTML = '<img src="/static/assets/rose_sprites_final/sprite_01.png" class="rose-bud-pulse-icon" alt="Rose Bud"> <span class="typing-dot"></span><span class="typing-dot"></span> Gabriel 思考中...';
-        document.getElementById('chatHistory').appendChild(thinkingDiv);
-        document.getElementById('chatHistory').scrollTop = document.getElementById('chatHistory').scrollHeight;
+    if (!ws || ws.readyState !== WebSocket.OPEN) {
+        showToast("⚠️ 正在连接副脑通道，请稍候...");
+        connectWebSocket();
+        return;
     }
+
+    appendMessage(text, 'user-message');
+    let promptToSend = text;
+    if (window.pinnedSnapshotContext && window.pinnedSnapshotContext.fullText) {
+        promptToSend = `[已挂载上下文快照 (${window.pinnedSnapshotContext.label})]:\n\`\`\`\n${window.pinnedSnapshotContext.fullText}\n\`\`\`\n\n${text}`;
+        clearPinnedContext();
+    }
+    ws.send(JSON.stringify({type: "chat", content: promptToSend, mode: getChatMode()}));
+    input.value = '';
+    input.style.height = 'auto';
+    
+    // Add typing indicator
+    window.currentThinkingId = 'thinking-' + Date.now();
+    const thinkingDiv = document.createElement('div');
+    thinkingDiv.id = window.currentThinkingId;
+    thinkingDiv.className = 'message sys-message thinking-indicator-row';
+    thinkingDiv.innerHTML = '<img src="/static/assets/rose_sprites_final/sprite_01.png" class="rose-bud-pulse-icon" alt="Rose Bud"> <span class="typing-dot"></span><span class="typing-dot"></span> Gabriel 思考中...';
+    document.getElementById('chatHistory').appendChild(thinkingDiv);
+    document.getElementById('chatHistory').scrollTop = document.getElementById('chatHistory').scrollHeight;
 });
 document.getElementById('chatInput').addEventListener('input', function() {
     this.style.height = 'auto';

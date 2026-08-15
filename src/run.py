@@ -187,7 +187,7 @@ if __name__ == '__main__':
         'height': height,
         'frameless': True,
         'resizable': True,
-        'easy_drag': True,
+        'easy_drag': False,
         'on_top': True,
         'text_select': True,
         'min_size': (340, 420)
