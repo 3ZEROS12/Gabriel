@@ -12,13 +12,13 @@ const dict = {
         "kb_placeholder": "Gabriel's insights will appear here...", "kb_save": "Save Draft",
         "settings_title": "API & Model Settings", "settings_desc": "Universal configuration for OpenAI-compatible endpoints.",
         "settings_provider": "LLM Provider Preset", "settings_provider_hint": "Select a popular provider to auto-fill Base URL & Model Name.",
-        "provider_custom": "🛠️ Custom (Manual Endpoint)", "provider_openai": "⚡ OpenAI (Official)", "provider_deepseek": "🐋 DeepSeek (Official API)",
+        "provider_custom": "🛠️ Custom (Manual Endpoint)", "provider_openai": "OpenAI (Official)", "provider_deepseek": "🐋 DeepSeek (Official API)",
         "provider_siliconflow": "🌊 SiliconFlow (硅基流动)", "provider_zhipu": "💡 Zhipu BigModel (GLM-4)", "provider_qwen": "🌐 Qwen DashScope (通义千问)",
         "provider_moonshot": "🌙 Kimi (Moonshot AI)", "provider_ollama": "🦙 Ollama (Local Model)", "provider_groq": "🚀 Groq (Fast Inference)",
         "settings_baseurl": "Base URL", "settings_apikey": "API Key", "settings_model": "Model Name",
         "settings_workflow": "Workflow Strategy", "settings_merge": "Knowledge Base Merge", "settings_save": "Save Configuration",
         "mode_manual": "Manual (Geek)", "mode_auto": "Automatic",
-        "chat_mode_title": "Side-brain Mode", "mode_light": "💨 Quick", "mode_private": "🔒 Private", "mode_audit": "🔬 Audit", "mode_onedive": "⚡ One-Shot",
+        "chat_mode_title": "Side-brain Mode", "mode_light": "💨 Quick", "mode_private": "🔒 Private", "mode_audit": "🔬 Audit", "mode_onedive": "✦ One-Shot",
         "settings_ui": "UI Preferences", "settings_lang": "Language", "lang_en": "English", "lang_zh": "中文 (Chinese)",
         "copied": "Copied to Clipboard!", "saved": "Saved", "scanning": "Scanning...","radar_target": "Target Agent", "radar_scanning": "Scanning for agents...", "settings_about": "About Gabriel", "radar_empty": "No Active Agents Found", "radar_no_agents_hint": "Start an agent in your terminal to see it here", "agent_last_active": "Last Active:", "agent_volume": "Volume:", "agent_steps": "steps", "btn_lock": "Lock", "err_fetching_agents": "Error fetching agents.", "btn_edit": "✏️ Edit", "btn_preview": "👁 Preview", "status_connected": "Connected", "status_disconnected": "Disconnected", "gen_draft": "⏳ Generating solution draft...", "saving": "Saving...", "title_minimize": "Minimize", "title_close": "Close", "title_fold_sidebar": "Toggle Navigation Fold (Ctrl+[)", "title_pin": "Toggle Always on Top", "title_control_center": "Control Center", "title_agent_radar": "Agent Radar", "title_knowledge_base": "Knowledge Base", "title_settings": "Settings", "btn_preview_kb": "👁 Preview", "about_version": "Version 4.0.0 (Light Indigo)", "about_created": "Created by", "about_subtitle": "\"The Missing Visual Sidecar for Autonomous Agents\"", "auto_track": "Auto-track Newest", "status_wait": "Wait...", "gabriel_logo": "Gabriel",
         "chat_feedback": "Feedback", "kb_recommendation": "Knowledge Base Recommendation", "title_mini_mode": "Toggle Mini Pill Mode (Ctrl+M)"
@@ -36,13 +36,13 @@ const dict = {
         "kb_placeholder": "加百列的知识草稿将在此生成...", "kb_save": "保存草稿",
         "settings_title": "API 与模型设置", "settings_desc": "配置兼容 OpenAI 格式的大语言模型服务。",
         "settings_provider": "LLM 服务商快捷预设", "settings_provider_hint": "选择服务商后将自动填入 URL 和默认模型，您只需输入 Key 即可。",
-        "provider_custom": "🛠️ 自定义接口 (OpenAI 兼容)", "provider_openai": "⚡ OpenAI 官方 API", "provider_deepseek": "🐋 DeepSeek 官方 API",
+        "provider_custom": "🛠️ 自定义接口 (OpenAI 兼容)", "provider_openai": "OpenAI 官方 API", "provider_deepseek": "🐋 DeepSeek 官方 API",
         "provider_siliconflow": "🌊 硅基流动 (SiliconFlow)", "provider_zhipu": "💡 智谱 BigModel (GLM-4)", "provider_qwen": "🌐 阿里云通义千问 (Qwen DashScope)",
         "provider_moonshot": "🌙 Kimi (Moonshot AI)", "provider_ollama": "🦙 Ollama 本地模型", "provider_groq": "🚀 Groq 极速 API",
         "settings_baseurl": "接口地址 (Base URL)", "settings_apikey": "密钥 (API Key)", "settings_model": "模型名称 (Model)",
         "settings_workflow": "工作流策略", "settings_merge": "知识库合并模式", "settings_save": "保存配置",
         "mode_manual": "手动提取 (极客)", "mode_auto": "全自动注入",
-        "chat_mode_title": "副脑模式", "mode_light": "💨 轻量对话", "mode_private": "🔒 私密问答", "mode_audit": "🔬 深度审计", "mode_onedive": "⚡ 无痕深拆",
+        "chat_mode_title": "副脑模式", "mode_light": "💨 轻量对话", "mode_private": "🔒 私密问答", "mode_audit": "🔬 深度审计", "mode_onedive": "✦ 无痕深拆",
         "settings_ui": "界面偏好", "settings_lang": "显示语言",
         "copied": "已复制到剪贴板！", "saved": "已保存", "scanning": "正在扫描...", "radar_target": "目标 Agent", "radar_scanning": "正在扫描 Agent...", "settings_about": "关于 Gabriel", "radar_empty": "未发现活跃 Agent", "radar_no_agents_hint": "在终端启动 Agent 后会显示在这里", "agent_last_active": "最后活跃:", "agent_volume": "体量:", "agent_steps": "步", "btn_lock": "锁定", "err_fetching_agents": "获取 Agent 列表失败。", "btn_edit": "✏️ 编辑", "btn_preview": "👁 预览", "status_connected": "已连接", "status_disconnected": "已断开", "gen_draft": "⏳ 正在生成解决方案草稿...", "saving": "保存中...", "title_minimize": "最小化", "title_close": "关闭", "title_fold_sidebar": "折叠/展开导航栏 (Ctrl+[)", "title_pin": "置顶/取消置顶", "title_control_center": "控制中心", "title_agent_radar": "Agent 雷达", "title_knowledge_base": "知识库", "title_settings": "设置", "btn_preview_kb": "👁 预览", "about_version": "版本 4.0.0（Light Indigo）", "about_created": "作者", "about_subtitle": "\"自主智能体缺失的视觉副驾\"", "auto_track": "自动追踪最新", "status_wait": "等待中...", "gabriel_logo": "Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "反馈", "kb_recommendation": "知识库推荐", "title_mini_mode": "切换胶囊极简副屏 (Ctrl+M)"
     },
@@ -61,7 +61,7 @@ const dict = {
         "settings_baseurl": "ベース URL", "settings_apikey": "API キー", "settings_model": "モデル名",
         "settings_workflow": "ワークフロー戦略", "settings_merge": "知識ベース結合モード", "settings_save": "設定を保存",
         "mode_manual": "手動抽出", "mode_auto": "自動注入",
-        "chat_mode_title": "サイドブレインモード", "mode_light": "💨 クイック", "mode_private": "🔒 プライベート", "mode_audit": "🔬 監査", "mode_onedive": "⚡ ワンショット",
+        "chat_mode_title": "サイドブレインモード", "mode_light": "💨 クイック", "mode_private": "🔒 プライベート", "mode_audit": "🔬 監査", "mode_onedive": "✦ ワンショット",
         "settings_ui": "UI 設定", "settings_lang": "表示言語",
         "copied": "コピーしました！", "saved": "保存しました", "scanning": "スキャン中...", "radar_target": "対象エージェント", "radar_scanning": "エージェントをスキャン中...", "settings_about": "Gabriel について", "radar_empty": "アクティブなエージェントなし", "radar_no_agents_hint": "ターミナルでエージェントを起動するとここに表示されます", "agent_last_active": "最終アクティブ:", "agent_volume": "ボリューム:", "agent_steps": "ステップ", "btn_lock": "ロック", "err_fetching_agents": "エージェントの取得に失敗", "btn_edit": "✏️ 編集", "btn_preview": "👁 プレビュー", "status_connected": "接続済み", "status_disconnected": "切断済み", "gen_draft": "⏳ ソリューション草案を生成中...", "saving": "保存中...", "title_minimize": "最小化", "title_close": "閉じる", "title_control_center": "コントロールセンター", "title_agent_radar": "エージェントレーダー", "title_knowledge_base": "ナレッジベース", "title_settings": "設定", "btn_preview_kb": "👁 プレビュー", "about_version": "バージョン 4.0.0（Light Indigo）", "about_created": "作成者", "about_subtitle": "\"自律エージェントに欠けたビジュアルサイドカー\"", "auto_track": "最新を自動追跡", "status_wait": "待機中...", "gabriel_logo": "Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "フィードバック", "kb_recommendation": "ナレッジベースのおすすめ",
     },
@@ -99,7 +99,7 @@ const dict = {
         "settings_baseurl": "URL de base", "settings_apikey": "Clé API", "settings_model": "Modèle",
         "settings_workflow": "Stratégie de Workflow", "settings_merge": "Mode de Fusion", "settings_save": "Enregistrer",
         "mode_manual": "Manuel (Geek)", "mode_auto": "Automatique",
-        "chat_mode_title": "Mode second cerveau", "mode_light": "💨 Rapide", "mode_private": "🔒 Privé", "mode_audit": "🔬 Audit", "mode_onedive": "⚡ Plongée unique",
+        "chat_mode_title": "Mode second cerveau", "mode_light": "💨 Rapide", "mode_private": "🔒 Privé", "mode_audit": "🔬 Audit", "mode_onedive": "✦ Plongée unique",
         "settings_ui": "Préférences UI", "settings_lang": "Langue",
         "copied": "Copié !", "saved": "Enregistré", "scanning": "Analyse...", "radar_target": "Agent cible", "radar_scanning": "Analyse des agents...", "settings_about": "À propos de Gabriel", "radar_empty": "Aucun agent actif", "radar_no_agents_hint": "Démarrez un agent dans votre terminal pour le voir ici", "agent_last_active": "Dernière activité :", "agent_volume": "Volume :", "agent_steps": "étapes", "btn_lock": "Verrouiller", "err_fetching_agents": "Erreur lors du chargement des agents.", "btn_edit": "✏️ Éditer", "btn_preview": "👁 Aperçu", "status_connected": "Connecté", "status_disconnected": "Déconnecté", "gen_draft": "⏳ Génération du brouillon...", "saving": "Enregistrement...", "title_minimize": "Réduire", "title_close": "Fermer", "title_control_center": "Centre de contrôle", "title_agent_radar": "Radar d'agents", "title_knowledge_base": "Base de connaissances", "title_settings": "Paramètres", "btn_preview_kb": "👁 Aperçu", "about_version": "Version 4.0.0 (Light Indigo)", "about_created": "Créé par", "about_subtitle": "\"Le sidecar visuel manquant pour les agents autonomes\"", "auto_track": "Suivi auto du plus récent", "status_wait": "Attente...", "gabriel_logo": "Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "Commentaires", "kb_recommendation": "Recommandation de la base",
     },
@@ -118,7 +118,7 @@ const dict = {
         "settings_baseurl": "URL Base", "settings_apikey": "Clave API", "settings_model": "Modelo",
         "settings_workflow": "Flujo de trabajo", "settings_merge": "Modo de Fusión", "settings_save": "Guardar Ajustes",
         "mode_manual": "Manual (Geek)", "mode_auto": "Automático",
-        "chat_mode_title": "Modo cerebro auxiliar", "mode_light": "💨 Rápido", "mode_private": "🔒 Privado", "mode_audit": "🔬 Auditoría", "mode_onedive": "⚡ Inmersión única",
+        "chat_mode_title": "Modo cerebro auxiliar", "mode_light": "💨 Rápido", "mode_private": "🔒 Privado", "mode_audit": "🔬 Auditoría", "mode_onedive": "✦ Inmersión unique",
         "settings_ui": "Preferencias de IU", "settings_lang": "Idioma",
         "copied": "¡Copiado!", "saved": "Guardado", "scanning": "Escaneando...", "radar_target": "Agente objetivo", "radar_scanning": "Escaneando agentes...", "settings_about": "Acerca de Gabriel", "radar_empty": "Sin agentes activos", "radar_no_agents_hint": "Inicia un agente en tu terminal para verlo aquí", "agent_last_active": "Última actividad:", "agent_volume": "Volumen:", "agent_steps": "pasos", "btn_lock": "Bloquear", "err_fetching_agents": "Error al cargar agentes.", "btn_edit": "✏️ Editar", "btn_preview": "👁 Vista previa", "status_connected": "Conectado", "status_disconnected": "Desconectado", "gen_draft": "⏳ Generando borrador...", "saving": "Guardando...", "title_minimize": "Minimizar", "title_close": "Cerrar", "title_control_center": "Centro de control", "title_agent_radar": "Radar de agentes", "title_knowledge_base": "Base de conocimientos", "title_settings": "Ajustes", "btn_preview_kb": "👁 Vista previa", "about_version": "Versión 3.1.0 (Cyber-Dark)", "about_created": "Creado por", "about_subtitle": "\"El sidecar visual que faltaba para agentes autónomos\"", "auto_track": "Seguir el más reciente", "status_wait": "Esperando...", "gabriel_logo": "Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "Comentarios", "kb_recommendation": "Recommandación de la base",
     },
@@ -137,7 +137,7 @@ const dict = {
         "settings_baseurl": "기본 URL", "settings_apikey": "API 키", "settings_model": "모델명",
         "settings_workflow": "워크플로 전략", "settings_merge": "지식 베이스 병합 모드", "settings_save": "설정 저장",
         "mode_manual": "수동", "mode_auto": "자동",
-        "chat_mode_title": "보조 뇌 모드", "mode_light": "💨 빠른 (스냅샷+저장)", "mode_private": "🔒 비공개 (스냅샷, 저장 안 함)", "mode_audit": "🔬 딥 감사 (전체 컨텍스트+저장)", "mode_onedive": "⚡ 원샷 딥 (전체, 저장 안 함)",
+        "chat_mode_title": "보조 뇌 모드", "mode_light": "💨 빠른 (스냅샷+저장)", "mode_private": "🔒 비공개 (스냅샷, 저장 안 함)", "mode_audit": "🔬 딥 감사 (전체 컨텍스트+저장)", "mode_onedive": "✦ 원샷 딥 (전체, 저장 안 함)",
         "settings_ui": "UI 환경설정", "settings_lang": "언어",
         "copied": "복사 완료!", "saved": "저장됨", "scanning": "스캔 중...", "radar_target": "대상 에이전트", "radar_scanning": "에이전트 검색 중...", "settings_about": "Gabriel 정보", "radar_empty": "활성 에이전트 없음", "radar_no_agents_hint": "터미널에서 에이전트를 시작하면 여기에 표시됩니다", "agent_last_active": "최근 활동:", "agent_volume": "볼륨:", "agent_steps": "단계", "btn_lock": "잠금", "err_fetching_agents": "에이전트를 불러오는 중 오류", "btn_edit": "✏️ 편집", "btn_preview": "👁 미리보기", "status_connected": "연결됨", "status_disconnected": "연결 끊김", "gen_draft": "⏳ 솔루션 초안 생성 중...", "saving": "저장 중...", "title_minimize": "최소화", "title_close": "닫기", "title_control_center": "컨트롤 센터", "title_agent_radar": "에이전트 레이더", "title_knowledge_base": "지식 베이스", "title_settings": "설정", "btn_preview_kb": "👁 미리보기", "about_version": "버전 4.0.0 (Light Indigo)", "about_created": "만든 사람", "about_subtitle": "\"자율 에이전트를 위한 시각 사이드카\"", "auto_track": "최신 자동 추적", "status_wait": "대기 중...", "gabriel_logo": "Gabriel", "lang_en": "English", "lang_zh": "中文 (Chinese)", "chat_feedback": "피드백", "kb_recommendation": "지식 베이스 추천"
     }
@@ -1222,7 +1222,7 @@ function renderFleetTabBar() {
     
     let html = `<div class="fleet-tab ${window.currentFocusAgentPath === 'auto' ? 'active' : ''}" data-agent-path="auto" title="自动跟随最新活跃的 Agent">` +
                `<span class="fleet-tab-dot is-running"></span>` +
-               `<span class="fleet-tab-name">⚡ Auto-Follow</span></div>`;
+               `<span class="fleet-tab-name">✦ Auto-Follow</span></div>`;
                
     window.agentFleet.forEach((info, path) => {
         const isActive = window.currentFocusAgentPath === path;
@@ -1511,7 +1511,7 @@ async function connectWebSocket() {
                     stateType = 'is-running';
                 }
 
-                const turnsEstimate = (codeEl.innerText.match(/\[USER\]|\[AGENT\]|⚡ Call:/g) || []).length;
+                const turnsEstimate = (codeEl.innerText.match(/\[USER\]|\[AGENT\]|✦ Call:/g) || []).length;
                 updateMiniStatusBanner(msg.agent, actionText, stateType, turnsEstimate, errorSnippet);
                 updateFleetAgent(msg.agent, msg.path || msg.file || msg.agent, stateType);
                 
@@ -1692,7 +1692,7 @@ async function connectWebSocket() {
                     <strong>${ICONS['triangle-alert']} 疑似卡点预警 (${msg.agent || 'Agent'})</strong>
                     <div>
                         <button onclick="document.getElementById('${errId}').style.display = document.getElementById('${errId}').style.display === 'none' ? 'block' : 'none'" class="err-toggle-btn">详情</button>
-                        <button onclick="ws.send(JSON.stringify({type: 'chat', content: decodeURIComponent('${promptContent}'), mode: getChatMode()}))" class="err-diagnose-btn">⚡ 一键诊断</button>
+                        <button onclick="ws.send(JSON.stringify({type: 'chat', content: decodeURIComponent('${promptContent}'), mode: getChatMode()}))" class="err-diagnose-btn">✦ 一键诊断</button>
                     </div>
                 </div>
                 <div id="${errId}" class="err-detail"></div>
@@ -1791,10 +1791,10 @@ function getChatMode() {
 }
 
 const MODE_META = {
-    light:   { icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>`, label: 'Quick', zhLabel: '轻量对话' },
+    light:   { icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg>`, label: 'Quick', zhLabel: '轻量对话' },
     private: { icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`, label: 'Private', zhLabel: '私密问答' },
     audit:   { icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`, label: 'Audit', zhLabel: '深度审计' },
-    onedive: { icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`, label: 'One-Shot', zhLabel: '无痕深拆' }
+    onedive: { icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/></svg>`, label: 'One-Shot', zhLabel: '无痕深拆' }
 };
 
 function updateChatModeUI(modeKey) {
@@ -2312,7 +2312,7 @@ async function fetchSessionHistory() {
                 <div class="session-meta-row">
                     <div>${ICONS.clock} ${sess.ts}</div>
                     <div class="session-meta-accent">Turns: ${sess.turns || '--'} | Cost: $${(sess.est_cost || 0).toFixed(4)} | Avg: $${avgCost}/turn</div>
-                    <div class="session-meta-sub">⚡ ${fmtTokens(sess.input_tokens || 0)} in / ${fmtTokens(sess.output_tokens || 0)} out${(sess.cache_read_tokens || 0) ? ' | cache ' + fmtTokens(sess.cache_read_tokens) + 'r / ' + fmtTokens(sess.cache_creation_tokens || 0) + 'w' : ''}</div>
+                    <div class="session-meta-sub">✦ ${fmtTokens(sess.input_tokens || 0)} in / ${fmtTokens(sess.output_tokens || 0)} out${(sess.cache_read_tokens || 0) ? ' | cache ' + fmtTokens(sess.cache_read_tokens) + 'r / ' + fmtTokens(sess.cache_creation_tokens || 0) + 'w' : ''}</div>
                 </div>
             `;
             if (sess.exists) {

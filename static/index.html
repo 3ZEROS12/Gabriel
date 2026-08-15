@@ -79,7 +79,7 @@
     <!-- Custom Draggable Title Bar -->
     <div class="title-bar drag-region pywebview-drag-region">
         <div class="title-logo">
-            <img src="/static/assets/botanical_icon_quick.png" class="title-rose-icon" alt="Gabriel Lily">
+            <img src="/static/assets/rose_sprites_final/sprite_01.png" class="title-rose-icon" alt="Gabriel Lily">
             <span>Gabriel</span>
         </div>
         <div class="window-controls no-drag">
@@ -123,7 +123,7 @@
         <!-- Sidebar Navigation -->
         <nav class="sidebar" id="appSidebar">
             <div class="sidebar-logo">
-                <img src="/static/assets/botanical_icon_quick.png" class="sidebar-rose-icon" alt="Gabriel Lily">
+                <img src="/static/assets/rose_sprites_final/sprite_02.png" class="sidebar-rose-icon" alt="Gabriel Lily">
             </div>
             <div class="sidebar-nav">
                 <div class="nav-item active" data-tab="tab-chat" data-i18n-title="title_control_center" title="Control Center">
@@ -187,7 +187,7 @@
                     <div class="fleet-tab-bar" id="fleetTabBar">
                         <div class="fleet-tab active" data-agent-path="auto" id="fleetTabAuto" title="自动跟随最新活跃的 Agent">
                             <span class="fleet-tab-dot is-running"></span>
-                            <span class="fleet-tab-name">⚡ Auto-Follow</span>
+                            <span class="fleet-tab-name">✦ Auto-Follow</span>
                         </div>
                     </div>
 
@@ -229,7 +229,7 @@
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /> <circle cx="12" cy="12" r="3" /></svg>
                             </button>
                             <div class="header-title-container" style="display: flex; align-items: center; gap: 6px;">
-                                <img src="/static/assets/botanical_icon_quick.png" class="botanical-mode-icon" alt="Assistant">
+                                <img src="/static/assets/rose_sprites_final/sprite_01.png" class="botanical-mode-icon" alt="Gabriel Lily">
                                 <span class="header-title" data-i18n="chat_assistant">Assistant</span>
                             </div>
                             <select id="chatTargetAgent" class="sleek-input select-compact chat-target-select">
@@ -302,7 +302,7 @@
                     <div class="quick-prompts-container" id="quickPromptsContainer">
                         <button class="quick-prompt-pill highlight-pill" id="btnQuickDigest" title="深度分析当前会话并生成复盘报告">📊 复盘战报</button>
                         <button class="quick-prompt-pill highlight-pill" id="btnPinLastError" title="一键提取并挂载主 Agent 最新报错">📌 引用最新报错</button>
-                        <button class="quick-prompt-pill highlight-pill" id="btnPinCurrentStep" title="一键挂载主 Agent 当前执行状态">⚡ 挂载当前步骤</button>
+                        <button class="quick-prompt-pill highlight-pill" id="btnPinCurrentStep" title="一键挂载主 Agent 当前执行状态">✦ 挂载当前步骤</button>
                         <button class="quick-prompt-pill" onclick="document.getElementById('chatInput').value='What is it doing?'; document.getElementById('btnSend').click();">What is it doing?</button>
                         <button class="quick-prompt-pill" onclick="document.getElementById('chatInput').value='Explain this step'; document.getElementById('btnSend').click();">Explain this step</button>
                     </div>
@@ -677,7 +677,7 @@
     <!-- Onboarding Modal -->
     <div id="onboardingModal" class="modern-modal-overlay js-modal onboarding-overlay">
         <div class="panel modern-modal-panel onboarding-panel" style="text-align: center;">
-            <img src="/static/assets/pixel_botanical_gabriel.png" class="onboarding-gabriel-img" alt="Gabriel Mascot" style="width: 120px; height: 120px; object-fit: contain; margin: 0 auto 12px auto; filter: drop-shadow(0 4px 12px rgba(0,102,204,0.15)); display: block;">
+            <img src="/static/assets/pixel_q_rose_transparent.png" class="onboarding-gabriel-img" alt="Gabriel Lily" style="width: 120px; height: 120px; object-fit: contain; margin: 0 auto 12px auto; filter: drop-shadow(0 4px 12px rgba(0,102,204,0.15)); display: block;">
             <h2 class="onboarding-title">Hi, I'm Gabriel, your sidecar agent</h2>
             <p class="onboarding-desc">
                 While your CLI Agent (Michael) battles code in the terminal, I <b>watch</b>, <b>learn</b>, and <b>whisper</b> solutions when you get stuck.<br><br>
@@ -688,6 +688,6 @@
     </div>
 
     <script src="/static/icons.js?v=2"></script>
-    <script src="/static/script.js?v=21"></script>
+    <script src="/static/script.js?v=22"></script>
 </body>
 </html>

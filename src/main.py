@@ -1472,7 +1472,7 @@ class AntigravityParser(BaseParser):
                 for tc in data["tool_calls"]:
                     t_name = html.escape(tc.get("name", "unknown_tool"))
                     t_args = html.escape(json.dumps(tc.get("arguments", {}))[:100])
-                    tool_html += f'<div class="log-tool-call">⚡ Call: {t_name}({t_args}...)</div>'
+                    tool_html += f'<div class="log-tool-call">✦ Call: {t_name}({t_args}...)</div>'
             
             if step_type == "USER_INPUT":
                 return f'<div class="log-entry"><span class="log-user">👤 [USER]:</span> <span class="log-text">{safe_content[:200]}...</span></div>'
@@ -1627,9 +1627,9 @@ class AiderParser(BaseParser):
         elif line.startswith("```diff") or line.startswith("```") or line.startswith("diff --git"):
             return f'<div class="log-entry"><span class="log-tool">🛠️ [DIFF/EDIT]:</span><br><span class="log-subtext">{safe_content[:300]}</span></div>'
         elif "Applied edit to" in line or "Commit" in line:
-            return f'<div class="log-entry"><span class="log-tool">⚡ [Aider Tool]:</span> <span class="log-text">{safe_content[:200]}</span></div>'
+            return f'<div class="log-entry"><span class="log-tool">✦ [Aider Tool]:</span> <span class="log-text">{safe_content[:200]}</span></div>'
         else:
-            return f'<div class="log-entry"><span class="log-agent">⚡ [Aider]:</span> <span class="log-text">{safe_content[:200]}</span></div>'
+            return f'<div class="log-entry"><span class="log-agent">✦ [Aider]:</span> <span class="log-text">{safe_content[:200]}</span></div>'
 
 class OpenHandsParser(BaseParser):
     @staticmethod
@@ -2454,7 +2454,7 @@ async def websocket_endpoint(websocket: WebSocket, token: str = None, ticket: st
                     }))
                     await wrapper.send_text(json.dumps({
                         "type": "sys_message",
-                        "content": f"⚡ Context resumed for session: {os.path.basename(target_path)}"
+                        "content": f"✦ Context resumed for session: {os.path.basename(target_path)}"
                     }))
                 continue
                 
