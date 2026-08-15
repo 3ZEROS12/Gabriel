@@ -96,9 +96,11 @@
     --shadow-1: 0 2px 8px rgba(0, 0, 0, 0.03);
     --shadow-2: 0 12px 32px rgba(0, 0, 0, 0.05), 0 2px 6px rgba(0, 0, 0, 0.02);
 
-    /* Motion */
-    --motion-fast: 150ms ease;
-    --motion-normal: 250ms ease;
+    /* Motion (Apple/Linear Physics) */
+    --motion-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+    --motion-normal: 240ms cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
 
     --sidebar-w: 240px;
 
@@ -1596,56 +1598,75 @@ input:checked + .slider:before { transform: translateX(20px); }
     font-weight: 500;
 }
 
-/* ---------- Modals ---------- */
-.modern-modal-overlay {
+/* ---------- Modals (macOS Depth & Spring Physics) ---------- */
+.modern-modal-overlay,
+.modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(13, 37, 61, 0.4);
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(20px) saturate(180%);
     z-index: 9999;
     display: flex;
     justify-content: center;
     align-items: center;
+    animation: fadeInOverlay 0.2s ease;
 }
+
+@keyframes fadeInOverlay {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modalSpringPop {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
 #feedbackPreviewModal.modern-modal-overlay { z-index: 10000; }
+
 .modern-modal-panel {
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
     padding: var(--space-6) !important;
-    background: var(--canvas) !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(24px) !important;
     border: 1px solid var(--hairline) !important;
     border-radius: var(--radius-modal) !important;
-    box-shadow: var(--shadow-2) !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.16), 0 4px 16px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+    animation: modalSpringPop 0.28s var(--ease-spring) !important;
 }
+
 .modern-modal-panel h2 {
-    font-size: 1.1rem;
-    font-weight: 500;
+    font-size: 1.15rem;
+    font-weight: 600;
     color: var(--ink);
     margin-bottom: var(--space-3);
+    letter-spacing: -0.015em;
 }
+
 .preview-modal-panel { max-width: 600px; }
 
-.modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(13, 37, 61, 0.4);
-    z-index: 9990;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
 .modal-box {
-    background: var(--canvas);
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(24px);
     border: 1px solid var(--hairline);
     border-radius: var(--radius-modal);
-    box-shadow: var(--shadow-2);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.16), 0 4px 16px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9);
     padding: var(--space-5);
     max-width: 900px;
     width: 90%;
     max-height: 85vh;
     display: flex;
     flex-direction: column;
+    animation: modalSpringPop 0.28s var(--ease-spring);
 }
-.modal-box h3 { color: var(--indigo); font-weight: 500; }
+.modal-box h3 { color: var(--indigo); font-weight: 600; letter-spacing: -0.01em; }
 
 /* ---------- KB Toast ---------- */
 .kb-toast {
@@ -1844,17 +1865,21 @@ input:checked + .slider:before { transform: translateX(20px); }
 }
 
 /* ============================================================
-   Multi-Agent Fleet Tab Bar (Item B)
+   Multi-Agent Fleet Tab Bar (Raycast Floating Segmented Pill)
    ============================================================ */
 .fleet-tab-bar {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 12px 0 12px;
+    gap: 4px;
+    padding: 3px 4px;
+    margin: 6px 12px 2px 12px;
     overflow-x: auto;
     scrollbar-width: none;
-    border-bottom: 1px solid var(--hairline);
-    background: var(--canvas-soft);
+    background: rgba(240, 235, 225, 0.7);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-pill);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 .fleet-tab-bar::-webkit-scrollbar {
@@ -1865,14 +1890,13 @@ input:checked + .slider:before { transform: translateX(20px); }
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 4px 10px;
+    padding: 4px 12px;
     font-size: 11.5px;
     font-weight: 500;
     color: var(--ink-secondary);
     background: transparent;
-    border-radius: var(--radius-tag) var(--radius-tag) 0 0;
-    border: 1px solid transparent;
-    border-bottom: none;
+    border-radius: var(--radius-pill);
+    border: none;
     cursor: pointer;
     white-space: nowrap;
     transition: all var(--motion-fast);
@@ -1881,117 +1905,131 @@ input:checked + .slider:before { transform: translateX(20px); }
 
 .fleet-tab:hover {
     color: var(--ink);
-    background: var(--hairline-subtle);
+    background: rgba(255, 255, 255, 0.5);
+    transform: translateY(-0.5px);
+}
+
+.fleet-tab:active {
+    transform: scale(0.975);
 }
 
 .fleet-tab.active {
-    color: var(--indigo);
-    background: var(--canvas);
-    border-color: var(--hairline);
-    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.02);
+    color: var(--ink);
+    background: #ffffff;
     font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 0.5px 1px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .fleet-tab-dot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: var(--ink-tertiary);
+    background: var(--ink-mute);
     flex-shrink: 0;
+    transition: all 0.2s var(--ease-spring);
 }
 
 .fleet-tab-dot.is-running {
     background: var(--success);
-    box-shadow: 0 0 5px rgba(22, 163, 74, 0.6);
+    box-shadow: 0 0 6px rgba(22, 163, 74, 0.7);
 }
 
 .fleet-tab-dot.is-waiting {
     background: var(--warn);
+    box-shadow: 0 0 6px rgba(217, 119, 6, 0.6);
 }
 
 .fleet-tab-dot.is-error {
     background: var(--error);
-    box-shadow: 0 0 5px rgba(220, 38, 38, 0.6);
+    box-shadow: 0 0 8px rgba(220, 38, 38, 0.8);
 }
 
 .fleet-tab-name {
     max-width: 140px;
     overflow: hidden;
     text-overflow: ellipsis;
+    letter-spacing: -0.01em;
 }
 
 /* ============================================================
-   Mini Status Banner (Glanceable Sidecar Cockpit)
+   Mini Status Banner (Frosted Glanceable Cockpit)
    ============================================================ */
 .mini-status-banner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 6px 12px;
-    margin: 8px 12px 4px 12px;
-    background: var(--canvas-soft);
+    padding: 6px 14px;
+    margin: 6px 12px 4px 12px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
     border: 1px solid var(--hairline);
-    border-radius: var(--radius-tag);
+    border-radius: 12px;
     font-size: 12px;
     color: var(--ink);
-    transition: all var(--motion-fast);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    transition: all var(--motion-normal);
 }
 
 .mini-status-banner.is-running {
-    background: var(--canvas-card);
-    border-color: rgba(22, 163, 74, 0.3);
+    background: rgba(236, 253, 245, 0.85);
+    border-color: rgba(22, 163, 74, 0.25);
+    box-shadow: 0 2px 10px rgba(22, 163, 74, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .mini-status-banner.is-waiting {
-    background: var(--warn-soft);
-    border-color: rgba(217, 119, 6, 0.3);
+    background: rgba(254, 243, 199, 0.85);
+    border-color: rgba(217, 119, 6, 0.25);
+    box-shadow: 0 2px 10px rgba(217, 119, 6, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .mini-status-banner.is-error {
-    background: #fef2f2;
-    border-color: rgba(220, 38, 38, 0.4);
+    background: rgba(254, 242, 242, 0.9);
+    border-color: rgba(220, 38, 38, 0.35);
+    box-shadow: 0 0 16px rgba(220, 38, 38, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .banner-status-left {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 7px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
 .banner-pulse-dot {
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background: var(--ink-mute);
     flex-shrink: 0;
-    transition: background 0.2s ease;
+    transition: all 0.2s var(--ease-spring);
 }
 
 .mini-status-banner.is-running .banner-pulse-dot {
     background: var(--success);
-    box-shadow: 0 0 8px rgba(22, 163, 74, 0.6);
+    box-shadow: 0 0 8px rgba(22, 163, 74, 0.7);
 }
 
 .mini-status-banner.is-waiting .banner-pulse-dot {
     background: var(--warn);
+    box-shadow: 0 0 8px rgba(217, 119, 6, 0.6);
 }
 
 .mini-status-banner.is-error .banner-pulse-dot {
     background: var(--error);
-    box-shadow: 0 0 8px rgba(220, 38, 38, 0.6);
+    box-shadow: 0 0 10px rgba(220, 38, 38, 0.8);
 }
 
 .banner-agent-name {
     font-weight: 600;
     color: var(--ink);
-    letter-spacing: -0.01em;
+    letter-spacing: -0.015em;
 }
 
 .banner-divider {
     color: var(--ink-mute);
+    opacity: 0.6;
 }
 
 .banner-action-text {
@@ -2000,6 +2038,7 @@ input:checked + .slider:before { transform: translateX(20px); }
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 220px;
+    font-size: 11.5px;
 }
 
 .banner-status-right {
@@ -2014,70 +2053,83 @@ input:checked + .slider:before { transform: translateX(20px); }
     font-size: 11px;
     font-variant-numeric: tabular-nums;
     color: var(--ink-mute);
-    background: var(--canvas-hover);
-    padding: 2px 6px;
-    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.04);
+    padding: 2px 7px;
+    border-radius: 6px;
+    border: 1px solid var(--hairline);
 }
 
 .banner-quick-pin {
     display: inline-flex;
     align-items: center;
-    gap: 3px;
+    gap: 4px;
     font-size: 11px;
-    font-weight: 500;
-    padding: 2px 8px;
-    border-radius: 9999px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: var(--radius-pill);
     background: var(--error);
     color: #ffffff;
     border: none;
     cursor: pointer;
-    transition: opacity var(--motion-fast);
+    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
+    transition: all var(--motion-fast);
 }
 
 .banner-quick-pin:hover {
-    opacity: 0.9;
+    transform: translateY(-0.5px);
+    box-shadow: 0 3px 8px rgba(220, 38, 38, 0.35);
+}
+
+.banner-quick-pin:active {
+    transform: scale(0.96);
 }
 
 /* ============================================================
-   Smart Collapsible Log Traces (Details / Summary)
+   Smart Collapsible Log Traces (Linear-Style Accordion)
    ============================================================ */
 .log-fold {
     margin: 4px 0;
     border: 1px solid var(--hairline);
-    border-radius: 6px;
-    background: var(--canvas-card);
+    border-radius: 8px;
+    background: #ffffff;
     overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    transition: border-color var(--motion-fast), box-shadow var(--motion-fast);
+}
+
+.log-fold:hover {
+    border-color: var(--hairline-strong);
 }
 
 .log-fold-summary {
+    padding: 6px 10px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--ink-secondary);
+    cursor: pointer;
+    user-select: none;
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 5px 8px;
-    font-size: 11.5px;
-    font-family: var(--font-mono);
-    color: var(--ink-secondary);
-    background: var(--canvas-soft);
-    cursor: pointer;
-    user-select: none;
-    outline: none;
-    list-style: none;
-    transition: background var(--motion-fast);
+    background: rgba(0, 0, 0, 0.015);
+    transition: background var(--motion-fast), color var(--motion-fast);
+}
+
+.log-fold-summary:hover {
+    background: rgba(0, 0, 0, 0.035);
+    color: var(--ink);
 }
 
 .log-fold-summary::-webkit-details-marker {
     display: none;
 }
 
-.log-fold-summary:hover {
-    background: var(--canvas-hover);
-    color: var(--ink);
-}
-
 .log-fold-icon {
-    font-size: 10px;
+    font-size: 9px;
+    display: inline-block;
+    transition: transform 0.2s var(--ease-spring);
     color: var(--ink-mute);
-    transition: transform var(--motion-fast);
 }
 
 .log-fold[open] .log-fold-icon {
@@ -2085,48 +2137,68 @@ input:checked + .slider:before { transform: translateX(20px); }
 }
 
 .log-fold-body {
-    padding: 8px 10px;
-    font-size: 11px;
+    padding: 8px 12px;
     font-family: var(--font-mono);
-    color: var(--ink-secondary);
-    background: var(--canvas-card);
+    font-size: 12px;
+    line-height: 1.55;
+    background: #fafaf9;
     border-top: 1px solid var(--hairline);
-    max-height: 240px;
+    max-height: 280px;
     overflow-y: auto;
+    word-break: break-all;
     white-space: pre-wrap;
-    word-break: break-word;
+    color: var(--ink);
 }
 
 .log-fold.has-error {
-    border-color: rgba(220, 38, 38, 0.4);
+    border-color: rgba(220, 38, 38, 0.3);
+    background: #fffafa;
+    box-shadow: 0 0 12px rgba(220, 38, 38, 0.05);
 }
 
 .log-fold.has-error .log-fold-summary {
-    background: #fef2f2;
-    color: var(--error);
-    font-weight: 500;
+    color: #b91c1c;
+    background: rgba(220, 38, 38, 0.06);
+    font-weight: 600;
+}
+
+.log-fold.has-error .log-fold-body {
+    background: #fff5f5;
+    color: #991b1b;
+    border-top-color: rgba(220, 38, 38, 0.15);
 }
 
 /* ============================================================
-   Pinned Context Snapshot Bar (Zero-Friction Prompting)
+   Pinned Context Snapshot Bar (Apple Slide-Down Banner)
    ============================================================ */
 .pinned-context-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 6px 12px;
     margin: 4px 12px 6px 12px;
-    padding: 5px 10px;
-    background: var(--indigo-soft);
-    border: 1px solid var(--indigo);
-    border-radius: var(--radius-tag);
-    font-size: 12px;
-    color: var(--ink);
-    animation: slideDown 0.15s ease;
+    background: rgba(251, 240, 235, 0.95);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(217, 119, 87, 0.3);
+    border-radius: 10px;
+    font-size: 11.5px;
+    box-shadow: 0 2px 8px rgba(217, 119, 87, 0.06);
+    animation: slideDownSpring 0.25s var(--ease-spring);
 }
 
-@keyframes slideDown {
-    from { opacity: 0; transform: translateY(-4px); }
-    to { opacity: 1; transform: translateY(0); }
+@keyframes slideDownSpring {
+    from {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.pinned-context-bar.hidden {
+    display: none !important;
 }
 
 .pinned-preview-group {
@@ -2140,60 +2212,64 @@ input:checked + .slider:before { transform: translateX(20px); }
 
 .pinned-pin-icon {
     font-size: 12px;
+    color: var(--indigo);
 }
 
 .pinned-label {
     font-weight: 600;
-    color: var(--indigo-press);
+    color: var(--indigo-deep);
 }
 
 .pinned-snippet {
-    font-family: var(--font-mono);
     color: var(--ink-secondary);
+    font-family: var(--font-mono);
     font-size: 11px;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 280px;
 }
 
 .btn-remove-pin {
     background: transparent;
     border: none;
     color: var(--ink-mute);
-    cursor: pointer;
     font-size: 12px;
-    padding: 0 4px;
+    cursor: pointer;
+    padding: 2px 6px;
     border-radius: 4px;
+    transition: all var(--motion-fast);
 }
 
 .btn-remove-pin:hover {
     color: var(--error);
-    background: rgba(0,0,0,0.05);
-}
-
-.quick-prompt-pill.highlight-pill {
-    background: var(--indigo-soft);
-    border-color: var(--indigo);
-    color: var(--indigo-press);
-    font-weight: 500;
-}
-
-.quick-prompt-pill.highlight-pill:hover {
-    background: var(--indigo);
-    color: #ffffff;
+    background: rgba(220, 38, 38, 0.08);
 }
 
 /* ============================================================
-   Mini Pill Mode (Desktop & Browser Ergonomics)
+   Quick Prompts & Highlight Pills
    ============================================================ */
-.win-btn-mini {
-    font-size: 11px;
-    padding: 2px 6px;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
+.quick-prompt-pill.highlight-pill {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(217, 119, 87, 0.3);
+    color: var(--indigo-deep);
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(217, 119, 87, 0.08);
 }
 
+.quick-prompt-pill.highlight-pill:hover {
+    background: #ffffff;
+    border-color: var(--indigo);
+    color: var(--indigo);
+    box-shadow: 0 2px 8px rgba(217, 119, 87, 0.16);
+    transform: translateY(-1px);
+}
+
+.quick-prompt-pill:active {
+    transform: scale(0.97);
+}
+
+/* ============================================================
+   Desktop Mini Mode (36px Floating Dynamic Capsule)
+   ============================================================ */
 body.mini-mode .sidebar,
 body.mini-mode .main-content,
 body.mini-mode .resizer,
@@ -2207,13 +2283,14 @@ body.mini-mode {
 }
 
 body.mini-mode .title-bar {
-    height: 52px;
-    border-radius: 26px;
+    height: 48px;
+    border-radius: 24px;
     margin: 2px;
     padding: 0 14px;
-    box-shadow: var(--shadow-2);
-    border: 1px solid var(--hairline-strong);
-    background: var(--canvas-card);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(20px);
 }
 
 body.mini-mode .title-logo {
