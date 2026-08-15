@@ -668,10 +668,6 @@ async def create_auth_ticket():
     active_tickets[ticket] = now + 300
     return {"ticket": ticket}
 
-@api_router.get("/ping")
-async def ping():
-    return {"status": "ok"}
-
 def load_db_provider_configs():
     providers = {}
     try:
@@ -2359,6 +2355,11 @@ async def async_log_tailer():
         await asyncio.sleep(1)
 
 app.include_router(api_router)
+
+@app.get("/api/ping")
+@app.get("/ping")
+async def ping():
+    return JSONResponse({"status": "ok", "ready": True, "token": API_KEY})
 
 @app.get("/", response_class=HTMLResponse)
 async def get_ui():

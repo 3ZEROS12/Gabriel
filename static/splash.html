@@ -122,18 +122,22 @@
 <script>
     const checkServer = () => {
         fetch('/api/ping')
-        .then(r => { 
-            if(r.ok) {
+        .then(r => r.json())
+        .then(data => { 
+            if(data && data.status === 'ok') {
                 document.getElementById('statusMsg').innerText = "System Ready. Launching...";
+                if (data.token) {
+                    localStorage.setItem('gabriel_token', data.token);
+                }
                 setTimeout(() => {
-                    window.location.replace('/');
-                }, 1000);
+                    window.location.replace('/?token=' + encodeURIComponent(data.token || ''));
+                }, 500);
             } else {
-                setTimeout(checkServer, 250);
+                setTimeout(checkServer, 200);
             }
         })
         .catch(e => {
-            setTimeout(checkServer, 250);
+            setTimeout(checkServer, 200);
         });
     };
     checkServer();

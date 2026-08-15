@@ -24,7 +24,7 @@ class TestGabrielControlCenter(unittest.TestCase):
         """Test if the server is responsive"""
         response = client.get("/api/ping", headers={"X-Gabriel-Token": API_KEY})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), {"status": "ok"})
+        self.assertEqual(response.json().get("status"), "ok")
         print("✅ Ping successful")
 
     def test_get_config(self):
@@ -954,6 +954,15 @@ class TestGabrielControlCenter(unittest.TestCase):
         self.assertIn("width", size)
         self.assertIn("height", size)
         self.assertTrue(api.resize_to(500, 700))
+
+    def test_ping_endpoint_unauthenticated(self):
+        """测试 /api/ping 接口免鉴权返回系统就绪与 Token (启动页平滑过渡)"""
+        response = client.get("/api/ping")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["status"], "ok")
+        self.assertTrue(data["ready"])
+        self.assertIn("token", data)
 
     def test_config_test_empty_key_rejected(self):
         """测试 /api/config/test 拦截空 API Key"""
