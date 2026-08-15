@@ -367,24 +367,33 @@ if (btnSaveGear2) btnSaveGear2.addEventListener('click', (e) => {
     saveCurrentAsGear('custom2');
 });
 
-// Window Preset Keyboard Shortcuts (Ctrl+1, Ctrl+2, Ctrl+3, Ctrl+M, Ctrl+Shift+1/2 to Save)
+// Window Preset Keyboard Shortcuts (Safe & Conflict-Free)
 document.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === '1') {
+    // Guard: Never intercept hotkeys while user is typing in any text box or input!
+    if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName) || document.activeElement.isContentEditable) {
+        return;
+    }
+    
+    // Supports Alt+1/2/3/M (conflict-free) and Ctrl+1/2/3/M
+    const isModifier = e.altKey || e.ctrlKey || e.metaKey;
+    if (!isModifier) return;
+
+    if (e.shiftKey && e.key === '1') {
         e.preventDefault();
         saveCurrentAsGear('custom1');
-    } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === '2') {
+    } else if (e.shiftKey && e.key === '2') {
         e.preventDefault();
         saveCurrentAsGear('custom2');
-    } else if ((e.ctrlKey || e.metaKey) && e.key === '1') {
+    } else if (e.key === '1') {
         e.preventDefault();
         setWindowPreset('sidecar');
-    } else if ((e.ctrlKey || e.metaKey) && e.key === '2') {
+    } else if (e.key === '2') {
         e.preventDefault();
         setWindowPreset('custom1');
-    } else if ((e.ctrlKey || e.metaKey) && e.key === '3') {
+    } else if (e.key === '3') {
         e.preventDefault();
         setWindowPreset('custom2');
-    } else if ((e.ctrlKey || e.metaKey) && (e.key === 'm' || e.key === 'M')) {
+    } else if (e.key === 'm' || e.key === 'M') {
         e.preventDefault();
         toggleMiniMode();
     }
