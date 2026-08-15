@@ -2346,6 +2346,20 @@ body.mini-mode .title-logo {
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
+.gear-save-icon {
+    font-size: 9.5px;
+    opacity: 0.55;
+    margin-left: 2px;
+    cursor: pointer;
+    display: inline-block;
+    transition: opacity 0.15s ease, transform 0.15s var(--ease-spring);
+}
+
+.gear-save-icon:hover {
+    opacity: 1;
+    transform: scale(1.25);
+}
+
 .gear-preset-btn.btn-mini-pill {
     padding: 2px 7px;
 }
@@ -2353,6 +2367,34 @@ body.mini-mode .title-logo {
 .gear-preset-btn.btn-mini-pill.active {
     background: var(--indigo);
     color: #ffffff;
+}
+
+/* ============================================================
+   Fluid Responsive Reflow Protection (防挤压、防溢出、防消失)
+   ============================================================ */
+@media (max-width: 440px) {
+    .title-logo span {
+        max-width: 75px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .window-gear-group {
+        gap: 1px;
+        margin-right: 2px;
+    }
+    .gear-preset-btn {
+        padding: 2px 5px;
+        font-size: 10px;
+    }
+    .banner-action-text {
+        max-width: 100px !important;
+    }
+    .banner-agent-name {
+        max-width: 65px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }
 
 /* ============================================================

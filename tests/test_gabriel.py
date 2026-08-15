@@ -931,16 +931,29 @@ class TestGabrielControlCenter(unittest.TestCase):
         self.assertIsInstance(res, bool)
 
     def test_window_api_set_preset(self):
-        """测试 WindowApi 尺寸挡位切换 (1/4 sidecar, 1/2 half, mini)"""
+        """测试 WindowApi 尺寸挡位切换 (1/4 default, custom1, custom2, mini) 与自由几何测量"""
         from run import WindowApi
         api = WindowApi()
         self.assertEqual(api.current_preset, 'sidecar')
-        self.assertEqual(api.set_preset('half'), 'half')
-        self.assertEqual(api.current_preset, 'half')
+        self.assertEqual(api.set_preset('custom1', 600, 800), 'custom1')
+        self.assertEqual(api.current_preset, 'custom1')
+        self.assertEqual(api.normal_width, 600)
+        self.assertEqual(api.normal_height, 800)
+        
+        self.assertEqual(api.set_preset('custom2', 900, 950), 'custom2')
+        self.assertEqual(api.current_preset, 'custom2')
+        self.assertEqual(api.normal_width, 900)
+        
         self.assertEqual(api.set_preset('mini'), 'mini')
         self.assertTrue(api.is_mini)
+        
         self.assertEqual(api.set_preset('sidecar'), 'sidecar')
         self.assertFalse(api.is_mini)
+        
+        size = api.get_window_size()
+        self.assertIn("width", size)
+        self.assertIn("height", size)
+        self.assertTrue(api.resize_to(500, 700))
 
     def test_config_test_empty_key_rejected(self):
         """测试 /api/config/test 拦截空 API Key"""

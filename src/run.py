@@ -40,14 +40,45 @@ class WindowApi:
             except Exception:
                 return True
 
-    def set_preset(self, preset_name: str):
-        """Switch between 1/4 sidecar ('sidecar'), 1/2 half-screen ('half'), and mini ('mini')"""
+    def get_window_size(self):
+        """Get current live window geometry for saving custom gear presets"""
+        if webview.windows:
+            w = webview.windows[0]
+            try:
+                cur_w = getattr(w, 'width', self.normal_width) or self.normal_width
+                cur_h = getattr(w, 'height', self.normal_height) or self.normal_height
+                return {"width": cur_w, "height": cur_h}
+            except Exception:
+                pass
+        return {"width": self.normal_width, "height": self.normal_height}
+
+    def resize_to(self, width: int, height: int):
+        """Resize window to arbitrary user-saved custom dimensions"""
+        width = max(340, int(width))
+        height = max(420, int(height))
+        self.normal_width = width
+        self.normal_height = height
+        self.is_mini = False
+        if webview.windows:
+            w = webview.windows[0]
+            try:
+                w.resize(width, height)
+                return True
+            except Exception:
+                pass
+        return True
+
+    def set_preset(self, preset_name: str, custom_w: int = None, custom_h: int = None):
+        """Switch between 1/4 sidecar ('sidecar'), custom 1 ('custom1'), custom 2 ('custom2'), and mini ('mini')"""
         if preset_name == 'mini':
             self.is_mini = True
             self.current_preset = 'mini'
-        elif preset_name == 'half':
+        elif preset_name in ('custom1', 'custom2'):
             self.is_mini = False
-            self.current_preset = 'half'
+            self.current_preset = preset_name
+            if custom_w and custom_h:
+                self.normal_width = max(340, int(custom_w))
+                self.normal_height = max(420, int(custom_h))
         else:
             self.is_mini = False
             self.current_preset = 'sidecar'
@@ -62,18 +93,36 @@ class WindowApi:
 
                 if preset_name == 'mini':
                     w.resize(340, 56)
-                elif preset_name == 'half':
-                    width = max(640, int(sw * 0.5))
-                    height = max(600, int(sh * 0.9))
-                    w.resize(width, height)
+                elif preset_name in ('custom1', 'custom2') and custom_w and custom_h:
+                    target_w = max(340, int(custom_w))
+                    target_h = max(420, int(custom_h))
+                    self.normal_width = target_w
+                    self.normal_height = target_h
+                    w.resize(target_w, target_h)
+                elif preset_name == 'custom1':  # Fallback default for custom 1 (e.g. 50% half)
+                    target_w = max(640, int(sw * 0.45))
+                    target_h = max(600, int(sh * 0.9))
+                    self.normal_width = target_w
+                    self.normal_height = target_h
+                    w.resize(target_w, target_h)
                     if hasattr(w, 'move'):
-                        w.move(sw - width, 10)
-                else:  # default 'sidecar' (1/4 screen)
-                    width = max(380, int(sw * 0.28))
-                    height = max(500, int(sh * 0.88))
-                    w.resize(width, height)
+                        w.move(sw - target_w, 10)
+                elif preset_name == 'custom2':  # Fallback default for custom 2 (e.g. 70% wide)
+                    target_w = max(800, int(sw * 0.65))
+                    target_h = max(600, int(sh * 0.92))
+                    self.normal_width = target_w
+                    self.normal_height = target_h
+                    w.resize(target_w, target_h)
                     if hasattr(w, 'move'):
-                        w.move(sw - width, 10)
+                        w.move(sw - target_w, 10)
+                else:  # default 'sidecar' (1/4 screen standard)
+                    target_w = max(380, int(sw * 0.28))
+                    target_h = max(500, int(sh * 0.88))
+                    self.normal_width = target_w
+                    self.normal_height = target_h
+                    w.resize(target_w, target_h)
+                    if hasattr(w, 'move'):
+                        w.move(sw - target_w, 10)
             except Exception:
                 pass
         return self.current_preset

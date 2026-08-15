@@ -82,10 +82,17 @@
             <span data-i18n="gabriel_logo"><img src="/static/assets/botanical_icon_quick.png" class="title-rose-icon" alt="Rose Icon"> Gabriel</span>
         </div>
         <div class="window-controls no-drag">
-            <!-- Window Size Gear Presets -->
+            <!-- Window Size Gear Presets: 1/4 Default + 2 Custom Gears + Mini -->
             <div class="window-gear-group">
-                <button id="btnPresetSidecar" class="gear-preset-btn active" title="1/4 屏幕副屏 (Ctrl+1)">1/4</button>
-                <button id="btnPresetHalf" class="gear-preset-btn" title="1/2 半屏专注 (Ctrl+2)">1/2</button>
+                <button id="btnPresetSidecar" class="gear-preset-btn active" title="1/4 屏幕默认副屏 (Ctrl+1)">1/4</button>
+                <button id="btnPresetCustom1" class="gear-preset-btn" title="自定义挡位 1 (Ctrl+2，点击右侧💾保存当前窗口尺寸)">
+                    <span>自定 1</span>
+                    <span class="gear-save-icon" id="btnSaveGear1" title="将当前拖动尺寸保存至挡位 1">💾</span>
+                </button>
+                <button id="btnPresetCustom2" class="gear-preset-btn" title="自定义挡位 2 (Ctrl+3，点击右侧💾保存当前窗口尺寸)">
+                    <span>自定 2</span>
+                    <span class="gear-save-icon" id="btnSaveGear2" title="将当前拖动尺寸保存至挡位 2">💾</span>
+                </button>
                 <button id="btnToggleMiniMode" class="gear-preset-btn btn-mini-pill" data-i18n-title="title_mini_mode" title="灵动胶囊模式 (Ctrl+M)">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="8" rx="4"/></svg>
                     <span>Mini</span>

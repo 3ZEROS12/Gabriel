@@ -254,7 +254,40 @@ if (btnPinEl) {
 // --- Window Size Gear Presets & Mini Mode Controller ---
 const btnToggleMiniMode = document.getElementById('btnToggleMiniMode');
 const btnPresetSidecar = document.getElementById('btnPresetSidecar');
-const btnPresetHalf = document.getElementById('btnPresetHalf');
+const btnPresetCustom1 = document.getElementById('btnPresetCustom1');
+const btnPresetCustom2 = document.getElementById('btnPresetCustom2');
+const btnSaveGear1 = document.getElementById('btnSaveGear1');
+const btnSaveGear2 = document.getElementById('btnSaveGear2');
+
+async function saveCurrentAsGear(gearKey) {
+    let curW = window.innerWidth;
+    let curH = window.innerHeight;
+    
+    if (window.pywebview && window.pywebview.api && window.pywebview.api.get_window_size) {
+        try {
+            const size = await window.pywebview.api.get_window_size();
+            if (size && size.width) {
+                curW = size.width;
+                curH = size.height;
+            }
+        } catch (e) {
+            console.warn('Failed to query pywebview window size:', e);
+        }
+    }
+    
+    const gearData = { width: Math.max(340, curW), height: Math.max(420, curH) };
+    localStorage.setItem(`gabriel_gear_${gearKey}`, JSON.stringify(gearData));
+    
+    const btnSave = gearKey === 'custom1' ? btnSaveGear1 : btnSaveGear2;
+    if (btnSave) {
+        btnSave.textContent = '✅';
+        setTimeout(() => { btnSave.textContent = '💾'; }, 1500);
+    }
+    
+    const label = gearKey === 'custom1' ? '自定 1' : '自定 2';
+    showToast(`✅ 已保存当前窗口尺寸 (${gearData.width}×${gearData.height}) 到【${label}】`);
+    setWindowPreset(gearKey);
+}
 
 function setWindowPreset(preset) {
     if (preset === 'mini') {
@@ -264,15 +297,30 @@ function setWindowPreset(preset) {
     setMiniMode(false);
     
     document.querySelectorAll('.gear-preset-btn').forEach(btn => btn.classList.remove('active'));
-    if (preset === 'half' && btnPresetHalf) {
-        btnPresetHalf.classList.add('active');
-    } else if (btnPresetSidecar) {
-        btnPresetSidecar.classList.add('active');
+    
+    let targetW = null;
+    let targetH = null;
+    
+    if (preset === 'custom1') {
+        if (btnPresetCustom1) btnPresetCustom1.classList.add('active');
+        const raw = localStorage.getItem('gabriel_gear_custom1');
+        if (raw) {
+            try { const parsed = JSON.parse(raw); targetW = parsed.width; targetH = parsed.height; } catch (e) {}
+        }
+    } else if (preset === 'custom2') {
+        if (btnPresetCustom2) btnPresetCustom2.classList.add('active');
+        const raw = localStorage.getItem('gabriel_gear_custom2');
+        if (raw) {
+            try { const parsed = JSON.parse(raw); targetW = parsed.width; targetH = parsed.height; } catch (e) {}
+        }
+    } else {
+        preset = 'sidecar';
+        if (btnPresetSidecar) btnPresetSidecar.classList.add('active');
     }
     
     localStorage.setItem('gabriel_window_preset', preset);
     if (window.pywebview && window.pywebview.api && window.pywebview.api.set_preset) {
-        window.pywebview.api.set_preset(preset);
+        window.pywebview.api.set_preset(preset, targetW, targetH);
     }
 }
 
@@ -287,7 +335,8 @@ function setMiniMode(enabled) {
         localStorage.setItem('gabriel_mini_mode', '0');
         if (btnToggleMiniMode) btnToggleMiniMode.classList.remove('active');
         const savedPreset = localStorage.getItem('gabriel_window_preset') || 'sidecar';
-        if (savedPreset === 'half' && btnPresetHalf) btnPresetHalf.classList.add('active');
+        if (savedPreset === 'custom1' && btnPresetCustom1) btnPresetCustom1.classList.add('active');
+        else if (savedPreset === 'custom2' && btnPresetCustom2) btnPresetCustom2.classList.add('active');
         else if (btnPresetSidecar) btnPresetSidecar.classList.add('active');
     }
     if (window.pywebview && window.pywebview.api && window.pywebview.api.toggle_mini_mode) {
@@ -302,16 +351,39 @@ function toggleMiniMode() {
 
 if (btnToggleMiniMode) btnToggleMiniMode.addEventListener('click', toggleMiniMode);
 if (btnPresetSidecar) btnPresetSidecar.addEventListener('click', () => setWindowPreset('sidecar'));
-if (btnPresetHalf) btnPresetHalf.addEventListener('click', () => setWindowPreset('half'));
+if (btnPresetCustom1) btnPresetCustom1.addEventListener('click', (e) => {
+    if (e.target !== btnSaveGear1) setWindowPreset('custom1');
+});
+if (btnPresetCustom2) btnPresetCustom2.addEventListener('click', (e) => {
+    if (e.target !== btnSaveGear2) setWindowPreset('custom2');
+});
 
-// Window Preset Keyboard Shortcuts (Ctrl+1, Ctrl+2, Ctrl+M)
+if (btnSaveGear1) btnSaveGear1.addEventListener('click', (e) => {
+    e.stopPropagation();
+    saveCurrentAsGear('custom1');
+});
+if (btnSaveGear2) btnSaveGear2.addEventListener('click', (e) => {
+    e.stopPropagation();
+    saveCurrentAsGear('custom2');
+});
+
+// Window Preset Keyboard Shortcuts (Ctrl+1, Ctrl+2, Ctrl+3, Ctrl+M, Ctrl+Shift+1/2 to Save)
 document.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === '1') {
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === '1') {
+        e.preventDefault();
+        saveCurrentAsGear('custom1');
+    } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === '2') {
+        e.preventDefault();
+        saveCurrentAsGear('custom2');
+    } else if ((e.ctrlKey || e.metaKey) && e.key === '1') {
         e.preventDefault();
         setWindowPreset('sidecar');
     } else if ((e.ctrlKey || e.metaKey) && e.key === '2') {
         e.preventDefault();
-        setWindowPreset('half');
+        setWindowPreset('custom1');
+    } else if ((e.ctrlKey || e.metaKey) && e.key === '3') {
+        e.preventDefault();
+        setWindowPreset('custom2');
     } else if ((e.ctrlKey || e.metaKey) && (e.key === 'm' || e.key === 'M')) {
         e.preventDefault();
         toggleMiniMode();
