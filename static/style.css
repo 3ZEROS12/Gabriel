@@ -2347,17 +2347,30 @@ body.mini-mode .title-logo {
 }
 
 .gear-save-icon {
-    font-size: 9.5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     opacity: 0.55;
-    margin-left: 2px;
+    margin-left: 3px;
     cursor: pointer;
-    display: inline-block;
-    transition: opacity 0.15s ease, transform 0.15s var(--ease-spring);
+    color: currentColor;
+    transition: opacity 0.15s ease, transform 0.2s var(--ease-spring), color 0.2s ease;
+}
+
+.gear-save-icon svg {
+    display: block;
 }
 
 .gear-save-icon:hover {
     opacity: 1;
-    transform: scale(1.25);
+    color: var(--indigo);
+    transform: scale(1.2);
+}
+
+.gear-save-icon.saved {
+    opacity: 1;
+    color: var(--success) !important;
+    transform: scale(1.3) rotate(10deg);
 }
 
 .gear-preset-btn.btn-mini-pill {

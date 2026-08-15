@@ -280,12 +280,12 @@ async function saveCurrentAsGear(gearKey) {
     
     const btnSave = gearKey === 'custom1' ? btnSaveGear1 : btnSaveGear2;
     if (btnSave) {
-        btnSave.textContent = '✅';
-        setTimeout(() => { btnSave.textContent = '💾'; }, 1500);
+        btnSave.classList.add('saved');
+        setTimeout(() => { btnSave.classList.remove('saved'); }, 1400);
     }
     
     const label = gearKey === 'custom1' ? '自定 1' : '自定 2';
-    showToast(`✅ 已保存当前窗口尺寸 (${gearData.width}×${gearData.height}) 到【${label}】`);
+    showToast(`已保存当前窗口尺寸 (${gearData.width}×${gearData.height}) 到【${label}】`);
     setWindowPreset(gearKey);
 }
 
