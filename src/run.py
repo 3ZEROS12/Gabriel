@@ -190,7 +190,7 @@ if __name__ == '__main__':
         'easy_drag': False,
         'on_top': True,
         'text_select': True,
-        'min_size': (340, 420)
+        'min_size': (300, 48)
     }
     if x is not None and y is not None:
         window_kwargs['x'] = x

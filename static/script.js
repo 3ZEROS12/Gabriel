@@ -178,14 +178,27 @@ async function initSessionToken() {
     const urlParams = new URLSearchParams(window.location.search);
     let token = urlParams.get('token');
     
-    // Auto-fetch fresh session token from local backend if on localhost / 127.0.0.1
-    if (!token && (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost' || !window.location.hostname)) {
+    if (token) {
+        localToken = token;
+        sessionStorage.setItem('gabriel_token', token);
+        localStorage.setItem('gabriel_token', token);
+    } else {
+        token = sessionStorage.getItem('gabriel_token') || localStorage.getItem('gabriel_token');
+        if (token) {
+            localToken = token;
+        }
+    }
+    
+    // Always verify or auto-acquire fresh session token on localhost
+    if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost' || !window.location.hostname) {
         try {
             const pingRes = await fetch('/api/ping');
             if (pingRes.ok) {
                 const pingData = await pingRes.json();
                 if (pingData && pingData.token) {
-                    token = pingData.token;
+                    localToken = pingData.token;
+                    sessionStorage.setItem('gabriel_token', localToken);
+                    localStorage.setItem('gabriel_token', localToken);
                 }
             }
         } catch (e) {
@@ -193,29 +206,17 @@ async function initSessionToken() {
         }
     }
     
-    if (!token) {
-        token = sessionStorage.getItem('gabriel_token') || localStorage.getItem('gabriel_token');
-    }
-    
-    if (token) {
-        localToken = token;
-        sessionStorage.setItem('gabriel_token', token);
-        localStorage.setItem('gabriel_token', token);
+    if (localToken) {
         const loginModal = document.getElementById('loginModal');
         if (loginModal) loginModal.style.display = 'none';
         if (window.location.search.includes('token=')) {
             window.history.replaceState({}, document.title, window.location.pathname);
-        }
-        // Auto-reconnect WebSocket if it hasn't connected yet
-        if (!ws || ws.readyState === WebSocket.CLOSED) {
-            connectWebSocket();
         }
     } else {
         const loginModal = document.getElementById('loginModal');
         if (loginModal) loginModal.style.display = 'flex';
     }
 }
-initSessionToken();
 
 const btnLogin = document.getElementById('btnLogin');
 if (btnLogin) {
@@ -978,7 +979,25 @@ if (toggleAutoCursorEl) {
 }
 
 // Token 失效统一处理：清凭据并重新弹登录（供 fetch/WS 401 调用）
-function handleAuthFailure() {
+async function handleAuthFailure() {
+    if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost' || !window.location.hostname) {
+        try {
+            const pingRes = await fetch('/api/ping');
+            if (pingRes.ok) {
+                const pingData = await pingRes.json();
+                if (pingData && pingData.token) {
+                    localToken = pingData.token;
+                    sessionStorage.setItem('gabriel_token', localToken);
+                    localStorage.setItem('gabriel_token', localToken);
+                    const loginModal = document.getElementById('loginModal');
+                    if (loginModal) loginModal.style.display = 'none';
+                    return;
+                }
+            }
+        } catch (e) {
+            console.warn('Auto-healing auth failed:', e);
+        }
+    }
     sessionStorage.removeItem('gabriel_token');
     localStorage.removeItem('gabriel_token');
     localToken = null;
@@ -2061,10 +2080,18 @@ document.getElementById('btnForgetToken').addEventListener('click', () => {
     window.location.reload();
 });
 
-// Init
-applyLang();
-loadConfig();
-connectWebSocket();
+// Init Lifecycle Entry Point
+async function initGabrielApp() {
+    applyLang();
+    await initSessionToken();
+    if (localToken) {
+        await loadConfig();
+        await connectWebSocket();
+        fetchAgents();
+        pollHealth();
+    }
+}
+initGabrielApp();
 
 async function pollHealth() {
     if (!localToken) return;
