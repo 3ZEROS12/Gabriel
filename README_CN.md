@@ -25,6 +25,10 @@
   <img src="https://img.shields.io/badge/Local%20First-零%20CDN-orange.svg" alt="Zero CDN Local First">
 </p>
 
+<p align="center">
+  <img src="docs/demo.gif" width="100%" alt="加百列双轨副屏演示动图" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin-top: 10px;">
+</p>
+
 ---
 
 ## 💡 开发初衷与起源故事 (Origin Story)

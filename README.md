@@ -25,6 +25,10 @@
   <img src="https://img.shields.io/badge/Local%20First-Zero%20CDN-orange.svg" alt="Zero CDN Local First">
 </p>
 
+<p align="center">
+  <img src="docs/demo.gif" width="100%" alt="Gabriel Dual-Track Sidecar Demo Animation" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin-top: 10px;">
+</p>
+
 ---
 
 ## 💡 The Origin Story: Why Gabriel Exists
