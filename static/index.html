@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gabriel Control Center</title>
-    <link rel="stylesheet" href="/static/style.css?v=15">
+    <link rel="stylesheet" href="/static/style.css?v=16">
     <!-- Use local vendor assets instead of CDNs -->
     <script src="/static/vendor/marked.min.js"></script>
     <script src="/static/vendor/purify.min.js"></script>
@@ -65,7 +65,7 @@
                 <span id="digestFilesBadge" class="banner-badge">0 files touched</span>
             </div>
             <div id="digestLoading" class="digest-loading-box" style="display: none;">
-                <img src="/static/assets/rose_sprites_final/sprite_01.png" class="rose-bud-pulse-icon" alt="Loading">
+                <img src="/static/assets/botanical_icon_quick.png" class="rose-bud-pulse-icon" alt="Loading">
                 <span>加百列正在深度回溯会话 Trace 并提炼战报与经验...</span>
             </div>
             <div id="digestContent" class="digest-content-body markdown-body"></div>
@@ -79,7 +79,8 @@
     <!-- Custom Draggable Title Bar -->
     <div class="title-bar drag-region pywebview-drag-region">
         <div class="title-logo">
-            <span data-i18n="gabriel_logo"><img src="/static/assets/botanical_icon_quick.png" class="title-rose-icon" alt="Rose Icon"> Gabriel</span>
+            <img src="/static/assets/botanical_icon_quick.png" class="title-rose-icon" alt="Gabriel Lily">
+            <span>Gabriel</span>
         </div>
         <div class="window-controls no-drag">
             <!-- Window Size Gear Presets: 1/4 Default + 2 Custom Gears + Mini -->
@@ -122,7 +123,7 @@
         <!-- Sidebar Navigation -->
         <nav class="sidebar" id="appSidebar">
             <div class="sidebar-logo">
-                <img src="/static/assets/rose_sprites_final/sprite_02.png" class="sidebar-rose-icon" alt="Rose Icon">
+                <img src="/static/assets/botanical_icon_quick.png" class="sidebar-rose-icon" alt="Gabriel Lily">
             </div>
             <div class="sidebar-nav">
                 <div class="nav-item active" data-tab="tab-chat" data-i18n-title="title_control_center" title="Control Center">
@@ -687,6 +688,6 @@
     </div>
 
     <script src="/static/icons.js?v=2"></script>
-    <script src="/static/script.js?v=20"></script>
+    <script src="/static/script.js?v=21"></script>
 </body>
 </html>

@@ -593,7 +593,7 @@ class ConfigModel(BaseModel):
 # Read from env if present (for persistent setups), otherwise generate randomly for session
 API_KEY = os.environ.get("GABRIEL_TOKEN", secrets.token_hex(16))
 print(f"\n=======================================================")
-print(f"👼 Gabriel is starting up!")
+print(f"🕊️ Gabriel is starting up!")
 print(f"🔐 Security Token Generated. Please use this token to login:")
 print(f"Token: {API_KEY}")
 print(f"Access the Control Center at: http://127.0.0.1:8080")

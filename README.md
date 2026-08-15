@@ -2,7 +2,7 @@
   <img src="static/assets/pixel_q_rose_transparent.png" width="160" alt="Gabriel Mascot" style="margin-bottom: 8px;">
 </p>
 
-<h1 align="center">Gabriel 👼 (加百列)</h1>
+<h1 align="center">Gabriel 🕊️ (加百列)</h1>
 
 <p align="center">
   <strong>The Zero-Intrusion Desktop GUI Sidecar & Cognitive Sandbox for CLI AI Agents.</strong><br>

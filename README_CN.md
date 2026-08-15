@@ -2,7 +2,7 @@
   <img src="static/assets/pixel_q_rose_transparent.png" width="160" alt="Gabriel Mascot" style="margin-bottom: 8px;">
 </p>
 
-<h1 align="center">Gabriel 👼 (加百列)</h1>
+<h1 align="center">Gabriel 🕊️ (加百列)</h1>
 
 <p align="center">
   <strong>专为 CLI AI Agent 设计的桌面零侵入 GUI 智慧副屏与战术副脑</strong><br>
