@@ -38,9 +38,12 @@
       box-shadow: 0 24px 60px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
       animation: appleFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  @keyframes appleFadeIn {
-      from { opacity: 0; transform: scale(0.96) translateY(12px); }
-      to { opacity: 1; transform: scale(1) translateY(0); }
+  @keyframes appleFadeOut {
+      from { opacity: 1; transform: scale(1) translateY(0); }
+      to { opacity: 0; transform: scale(1.03) translateY(-8px); }
+  }
+  .splash-container.exit-anim {
+      animation: appleFadeOut 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
   /* Spacious unconstrained hero bouquet frame */
   .rose-hero-wrapper {
@@ -48,7 +51,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       padding: 10px;
   }
   .rose-hero-img {
@@ -56,12 +59,12 @@
       height: auto;
       object-fit: contain;
       image-rendering: pixelated;
-      filter: drop-shadow(0 16px 32px rgba(99, 102, 241, 0.15));
+      filter: drop-shadow(0 16px 36px rgba(99, 102, 241, 0.18));
       animation: floatBouquet 4s ease-in-out infinite;
   }
   @keyframes floatBouquet {
       0% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-10px) rotate(0.5deg); }
+      50% { transform: translateY(-8px) rotate(0.5deg); }
       100% { transform: translateY(0px) rotate(0deg); }
   }
   .brand-title { 
@@ -76,10 +79,10 @@
       color: var(--text-sub);
       font-weight: 400;
       letter-spacing: 0.2px;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
   }
   .loader-track {
-      width: 140px;
+      width: 160px;
       height: 4px;
       background: rgba(0, 0, 0, 0.06);
       border-radius: 4px;
@@ -93,7 +96,14 @@
       background: linear-gradient(90deg, #6366f1, #a855f7);
       border-radius: 4px;
       position: absolute;
-      animation: pulseTrack 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      animation: pulseTrack 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      transition: width 0.4s ease;
+  }
+  .loader-fill.ready {
+      width: 100% !important;
+      left: 0 !important;
+      animation: none !important;
+      background: #10b981;
   }
   @keyframes pulseTrack {
       0% { left: -45%; }
@@ -102,36 +112,59 @@
   .status-text {
       font-size: 0.78rem;
       color: var(--text-sub);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Mono", SFMono-Regular, monospace;
-      letter-spacing: 0.5px;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Mono", "JetBrains Mono", monospace;
+      letter-spacing: 0.3px;
+      transition: all 0.3s ease;
   }
 </style>
 </head>
 <body>
-<div class="splash-container">
+<div class="splash-container" id="splashBox">
     <div class="rose-hero-wrapper">
         <img src="/static/assets/rose_sprites_final/01_big_bouquet.png" alt="Gabriel Rose Bouquet" class="rose-hero-img">
     </div>
     <div class="brand-title">G A B R I E L</div>
     <div class="brand-subtitle">Sidecar Agent for Autonomous Coding</div>
     <div class="loader-track">
-        <div class="loader-fill"></div>
+        <div class="loader-fill" id="loaderFill"></div>
     </div>
-    <div class="status-text" id="statusMsg">Initializing Gabriel Side-Brain...</div>
+    <div class="status-text" id="statusMsg">Awakening Gabriel Side-Brain...</div>
 </div>
 <script>
+    const startTime = Date.now();
+    const minDisplayMs = 1800; // Graceful 1.8s awakening ritual
+
     const checkServer = () => {
         fetch('/api/ping')
         .then(r => r.json())
         .then(data => { 
             if(data && data.status === 'ok') {
-                document.getElementById('statusMsg').innerText = "System Ready. Launching...";
                 if (data.token) {
                     localStorage.setItem('gabriel_token', data.token);
                 }
+
+                // Stage 2 message
                 setTimeout(() => {
-                    window.location.replace('/?token=' + encodeURIComponent(data.token || ''));
-                }, 500);
+                    document.getElementById('statusMsg').innerText = "Connecting Local Neural Radar...";
+                }, 600);
+
+                // Stage 3 message + completion
+                setTimeout(() => {
+                    document.getElementById('statusMsg').innerText = "System Ready. Welcome, Creator.";
+                    document.getElementById('loaderFill').classList.add('ready');
+                }, 1300);
+
+                // Calculate remaining delay to honor 1.8s graceful viewing
+                const elapsed = Date.now() - startTime;
+                const remaining = Math.max(0, minDisplayMs - elapsed);
+
+                setTimeout(() => {
+                    const box = document.getElementById('splashBox');
+                    if (box) box.classList.add('exit-anim');
+                    setTimeout(() => {
+                        window.location.replace('/?token=' + encodeURIComponent(data.token || ''));
+                    }, 350);
+                }, remaining);
             } else {
                 setTimeout(checkServer, 200);
             }
