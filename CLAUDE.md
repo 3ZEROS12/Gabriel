@@ -1,6 +1,9 @@
 # Gabriel — Project Map for AI Assistants
 
-Gabriel（加百列）是 CLI 型 AI Agent（Claude Code / Gemini CLI / Cursor / Antigravity）的**零侵入 GUI 副屏**：旁路 tail 它们的 transcript 日志，提供实时仪表盘、副脑问答、私有知识库（FTS5 + 向量 RRF）、会话统计与 MCP 生态接口。**不 hook 主 Agent 的终端**（纯只读 tail）。
+> 🚀 **新会话启动强制指令 (Session Startup Mandate)**:  
+> 每次开启全新对话或新任务时，AI 助理必须**首先阅读并遵循 `MEMORY.md`、`GEMINI.md` 与本文件**，无缝继承用户的桌面工作流习惯与核心心智模型。在任何文件清理或重构中，**绝对禁止删除或清空 `MEMORY.md`、`GEMINI.md`、`CLAUDE.md`**！
+
+Gabriel（加百列）是 CLI 型 AI Agent（Claude Code / Gemini CLI / Cursor / Antigravity / Aider / OpenHands）的**零侵入 GUI 副屏**：旁路 tail 它们的 transcript 日志，提供实时仪表盘、副脑问答、私有知识库（FTS5 + 向量 RRF）、会话统计与 MCP 生态接口。**不 hook 主 Agent 的终端**（纯只读 tail）。
 
 ## Run
 
@@ -18,7 +21,7 @@ python -m src.main --port 8080                  # 或 pip install -e . 后用 ga
 ## Verify (must be green after any change)
 
 ```bash
-venv\Scripts\python.exe -m pytest tests/ -q      # 31 tests
+venv\Scripts\python.exe -m pytest tests/ -q      # 39 tests passed
 venv\Scripts\python.exe -m ruff check src tests
 node --check static/script.js static/icons.js
 ```
